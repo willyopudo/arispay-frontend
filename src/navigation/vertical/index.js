@@ -1,8 +1,8 @@
-import appsAndPages from './apps-and-pages'
-import charts from './charts'
+import adminHub from './admin-hub'
+//import charts from './charts'
 import dashboard from './dashboard'
-import forms from './forms'
-import others from './others'
-import uiElements from './ui-elements'
+import system from './system'
+import support from './support'
+import transactional from './transactional'
 
-export default [...dashboard, ...appsAndPages, ...uiElements, ...forms, ...charts, ...others]
+export default [...dashboard, ...adminHub, ...transactional, ...system, ...support]
