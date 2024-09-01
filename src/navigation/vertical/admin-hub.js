@@ -1,11 +1,11 @@
 export default [
-  { heading: 'Admin Hub' },
+  { heading: 'Hub' },
   {
     title: 'Company',
     icon: { icon: 'tabler-building' },
     children: [
-      { title: 'Accounts', to: 'apps-logistics-dashboard' },
-      { title: 'Clients', to: 'apps-logistics-fleet' },
+      { title: 'Accounts', to: 'apps-user-list' },
+      { title: 'Clients', to: 'front-pages-landing-page' },
     ],
   },
   {

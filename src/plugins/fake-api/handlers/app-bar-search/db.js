@@ -5,7 +5,7 @@ export const db = {
       category: 'dashboards',
       children: [
         {
-          url: { name: 'dashboards-analytics' },
+          url: { name: 'dashboards-crm' },
           icon: 'tabler-timeline',
           title: 'Analytics Dashboard',
         },
@@ -15,17 +15,17 @@ export const db = {
           title: 'CRM Dashboard',
         },
         {
-          url: { name: 'dashboards-ecommerce' },
+          url: { name: 'dashboards-crm' },
           icon: 'tabler-shopping-cart',
           title: 'ECommerce Dashboard',
         },
         {
-          url: { name: 'dashboards-academy' },
+          url: { name: 'dashboards-crm' },
           icon: 'tabler-book',
           title: 'Academy Dashboard',
         },
         {
-          url: { name: 'dashboards-logistics' },
+          url: { name: 'dashboards-crm' },
           icon: 'tabler-truck',
           title: 'Logistics Dashboard',
         },

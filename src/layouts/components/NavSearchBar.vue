@@ -20,7 +20,7 @@ const suggestionGroups = [
       {
         icon: 'tabler-chart-bar',
         title: 'Analytics',
-        url: { name: 'dashboards-analytics' },
+        url: { name: 'dashboards-crm' },
       },
       {
         icon: 'tabler-chart-donut-3',
@@ -30,12 +30,12 @@ const suggestionGroups = [
       {
         icon: 'tabler-shopping-cart',
         title: 'eCommerce',
-        url: { name: 'dashboards-ecommerce' },
+        url: { name: 'dashboards-crm' },
       },
       {
         icon: 'tabler-truck',
         title: 'Logistics',
-        url: { name: 'dashboards-logistics' },
+        url: { name: 'dashboards-crm' },
       },
     ],
   },
@@ -124,7 +124,7 @@ const noDataSuggestions = [
   {
     title: 'Analytics',
     icon: 'tabler-chart-bar',
-    url: { name: 'dashboards-analytics' },
+    url: { name: 'dashboards-crm' },
   },
   {
     title: 'CRM',
@@ -134,7 +134,7 @@ const noDataSuggestions = [
   {
     title: 'eCommerce',
     icon: 'tabler-shopping-cart',
-    url: { name: 'dashboards-ecommerce' },
+    url: { name: 'dashboards-crm' },
   },
 ]
 
