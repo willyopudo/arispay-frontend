@@ -35,7 +35,7 @@ watch([
 <template>
   <Component
     v-bind="layoutAttrs"
-    DefaultLayoutWithVerticalNav
+    :is="configStore.appContentLayoutNav === AppContentLayoutNav.Vertical ? DefaultLayoutWithVerticalNav : DefaultLayoutWithVerticalNav"
   >
     <AppLoadingIndicator ref="refLoadingIndicator" />
 

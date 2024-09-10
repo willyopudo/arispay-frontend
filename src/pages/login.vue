@@ -35,8 +35,8 @@ const errors = ref({
 const refVForm = ref()
 
 const credentials = ref({
-  email: 'admin@demo.com',
-  password: 'admin',
+  email: '',
+  password: ''
 })
 
 const rememberMe = ref(false)
@@ -46,23 +46,37 @@ const login = async () => {
     const res = await $api('/auth/login', {
       method: 'POST',
       body: {
-        email: credentials.value.email,
-        password: credentials.value.password,
+        client_id: credentials.value.email,
+        client_secret: credentials.value.password,
+        grant_type: "client_credentials",
+        scope: "web"
       },
       onResponseError({ response }) {
+        console.log(response._data)
         errors.value = response._data.errors
       },
     })
+    console.log(res)
 
-    const { accessToken, userData, userAbilityRules } = res
+    const { access_token, email, username, roles } = res
+    const userAbilityRules = [
+        {
+          action: 'manage',
+          subject: 'all',
+        },
+      ]
+    useCookie('roles').value = roles
+    useCookie('access_token').value = access_token
+    useCookie('email').value = email
+    useCookie('username').value = username
 
     useCookie('userAbilityRules').value = userAbilityRules
     ability.update(userAbilityRules)
-    useCookie('userData').value = userData
-    useCookie('accessToken').value = accessToken
-    await nextTick(() => {
+    // useCookie('userData').value = userData
+    // useCookie('accessToken').value = accessToken
+    //await nextTick(() => {
       router.replace(route.query.to ? String(route.query.to) : '/')
-    })
+    //})
   } catch (err) {
     console.error(err)
   }
@@ -161,7 +175,7 @@ const onSubmit = () => {
                   placeholder="johndoe@email.com"
                   type="email"
                   autofocus
-                  :rules="[requiredValidator, emailValidator]"
+                  :rules="[requiredValidator]"
                   :error-messages="errors.email"
                 />
               </VCol>
