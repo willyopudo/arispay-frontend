@@ -58,25 +58,23 @@ const login = async () => {
     })
     console.log(res)
 
-    const { access_token, email, username, roles } = res
+    const { access_token, userDetails } = res
     const userAbilityRules = [
         {
           action: 'manage',
           subject: 'all',
         },
       ]
-    useCookie('roles').value = roles
-    useCookie('access_token').value = access_token
-    useCookie('email').value = email
-    useCookie('username').value = username
+    //useCookie('roles').value = roles
+    useCookie('accessToken').value = access_token
 
     useCookie('userAbilityRules').value = userAbilityRules
     ability.update(userAbilityRules)
-    // useCookie('userData').value = userData
+    useCookie('userData').value = userDetails
     // useCookie('accessToken').value = accessToken
-    //await nextTick(() => {
+    await nextTick(() => {
       router.replace(route.query.to ? String(route.query.to) : '/')
-    //})
+    })
   } catch (err) {
     console.error(err)
   }
