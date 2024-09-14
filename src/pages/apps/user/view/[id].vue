@@ -26,10 +26,10 @@ const tabs = [
     icon: 'tabler-bell',
     title: 'Notifications',
   },
-  {
-    icon: 'tabler-link',
-    title: 'Connections',
-  },
+  // {
+  //   icon: 'tabler-link',
+  //   title: 'Connections',
+  // },
 ]
 
 const { data: userData } = await useApi(`/apps/users/${ route.params.id }`)
@@ -88,9 +88,9 @@ const { data: userData } = await useApi(`/apps/users/${ route.params.id }`)
           <UserTabNotifications />
         </VWindowItem>
 
-        <VWindowItem>
+        <!-- <VWindowItem>
           <UserTabConnections />
-        </VWindowItem>
+        </VWindowItem> -->
       </VWindow>
     </VCol>
   </VRow>

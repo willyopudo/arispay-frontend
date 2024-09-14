@@ -59,6 +59,7 @@ const login = async () => {
     console.log(res)
 
     const { access_token, userDetails } = res
+    userDetails.avatar = `${import.meta.env.BASE_URL ?? '/'}images/avatars/` + userDetails.avatar
     const userAbilityRules = [
         {
           action: 'manage',

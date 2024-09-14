@@ -194,46 +194,13 @@ const resolveUserRoleVariant = role => {
                 </h6>
               </VListItemTitle>
             </VListItem>
-
-            <VListItem>
-              <VListItemTitle>
-                <h6 class="text-h6">
-                  Tax ID:
-                  <div class="d-inline-block text-body-1">
-                    {{ props.userData.taxId }}
-                  </div>
-                </h6>
-              </VListItemTitle>
-            </VListItem>
-
+            
             <VListItem>
               <VListItemTitle>
                 <h6 class="text-h6">
                   Contact:
                   <div class="d-inline-block text-body-1">
                     {{ props.userData.contact }}
-                  </div>
-                </h6>
-              </VListItemTitle>
-            </VListItem>
-
-            <VListItem>
-              <VListItemTitle>
-                <h6 class="text-h6">
-                  Language:
-                  <div class="d-inline-block text-body-1">
-                    {{ props.userData.language }}
-                  </div>
-                </h6>
-              </VListItemTitle>
-            </VListItem>
-
-            <VListItem>
-              <VListItemTitle>
-                <h6 class="text-h6">
-                  Country:
-                  <div class="d-inline-block text-body-1">
-                    {{ props.userData.country }}
                   </div>
                 </h6>
               </VListItemTitle>

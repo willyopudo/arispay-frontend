@@ -273,9 +273,9 @@ const moreList = [
         <!-- !SECTION -->
       </VCard>
     </VCol>
-
-    <VCol cols="12">
-      <!-- 👉 User Activity timeline -->
+<!--TODO Activity Timeline-->
+    <!--<VCol cols="12">
+      <!-- 👉 User Activity timeline 
       <VCard title="User Activity Timeline">
         <VCardText>
           <VTimeline
@@ -285,12 +285,12 @@ const moreList = [
             truncate-line="start"
             density="compact"
           >
-            <!-- SECTION Timeline Item: Flight -->
+            <!-- SECTION Timeline Item: Flight --
             <VTimelineItem
               dot-color="primary"
               size="x-small"
             >
-              <!-- 👉 Header -->
+              <!-- 👉 Header --
               <div class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2">
                 <span class="app-timeline-title">
                   12 Invoices have been paid
@@ -298,7 +298,7 @@ const moreList = [
                 <span class="app-timeline-meta">12 min ago</span>
               </div>
 
-              <!-- 👉 Content -->
+              <!-- 👉 Content --
               <div class="app-timeline-text mt-1">
                 Invoices have been paid to the company
               </div>
@@ -315,14 +315,14 @@ const moreList = [
                 </span>
               </div>
             </VTimelineItem>
-            <!-- !SECTION -->
+            <!-- !SECTION --
 
-            <!-- SECTION Timeline Item: Interview Schedule -->
+            <!-- SECTION Timeline Item: Interview Schedule --
             <VTimelineItem
               size="x-small"
               dot-color="success"
             >
-              <!-- 👉 Header -->
+              <!-- 👉 Header --
               <div class="d-flex justify-space-between align-center flex-wrap mb-2">
                 <div class="app-timeline-title">
                   Client Meeting
@@ -334,9 +334,9 @@ const moreList = [
                 Project meeting with john @10:15am
               </div>
 
-              <!-- 👉 Person -->
+              <!-- 👉 Person --
               <div class="d-flex justify-space-between align-center flex-wrap">
-                <!-- 👉 Avatar & Personal Info -->
+                <!-- 👉 Avatar & Personal Info --
                 <div class="d-flex align-center mt-2">
                   <VAvatar
                     size="32"
@@ -352,14 +352,14 @@ const moreList = [
                 </div>
               </div>
             </VTimelineItem>
-            <!-- !SECTION -->
+            <!-- !SECTION --
 
-            <!-- SECTION Design Review -->
+            <!-- SECTION Design Review --
             <VTimelineItem
               size="x-small"
               dot-color="info"
             >
-              <!-- 👉 Header -->
+              <!-- 👉 Header --
               <div class="d-flex justify-space-between align-center flex-wrap mb-2">
                 <span class="app-timeline-title">
                   Create a new project for client
@@ -367,7 +367,7 @@ const moreList = [
                 <span class="app-timeline-meta">2 Day Ago</span>
               </div>
 
-              <!-- 👉 Content -->
+              <!-- 👉 Content --
               <p class="app-timeline-text mt-1 mb-2">
                 6 team members in a project
               </p>
@@ -411,11 +411,11 @@ const moreList = [
                 </VAvatar>
               </div>
             </VTimelineItem>
-            <!-- !SECTION -->
+            <!-- !SECTION --
           </VTimeline>
         </VCardText>
       </VCard>
-    </VCol>
+    </VCol> -->
 
     <VCol cols="12">
       <UserInvoiceTable />
