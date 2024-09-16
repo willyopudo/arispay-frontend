@@ -30,13 +30,13 @@ const headers = [
     key: 'role',
   },
   {
-    title: 'Plan',
+    title: 'Subscription Plan',
     key: 'plan',
   },
-  {
-    title: 'Billing',
-    key: 'billing',
-  },
+  // {
+  //   title: 'Billing',
+  //   key: 'billing',
+  // },
   {
     title: 'Status',
     key: 'status',
@@ -74,21 +74,13 @@ const roles = [
     value: 'admin',
   },
   {
-    title: 'Author',
-    value: 'author',
+    title: 'Company User',
+    value: 'compuser',
   },
   {
-    title: 'Editor',
-    value: 'editor',
-  },
-  {
-    title: 'Maintainer',
-    value: 'maintainer',
-  },
-  {
-    title: 'Subscriber',
-    value: 'subscriber',
-  },
+    title: 'Super Admin',
+    value: 'superadmin',
+  }
 ]
 
 const plans = [
@@ -97,16 +89,16 @@ const plans = [
     value: 'basic',
   },
   {
-    title: 'Company',
-    value: 'company',
+    title: 'Standard',
+    value: 'standard',
   },
   {
     title: 'Enterprise',
     value: 'enterprise',
   },
   {
-    title: 'Team',
-    value: 'team',
+    title: 'Special',
+    value: 'special',
   },
 ]
 
@@ -127,36 +119,22 @@ const status = [
 
 const resolveUserRoleVariant = role => {
   const roleLowerCase = role.toLowerCase()
-  if (roleLowerCase === 'subscriber')
+  if (roleLowerCase === 'compuser')
     return {
       color: 'success',
       icon: 'tabler-user',
     }
-  if (roleLowerCase === 'author')
+  if (roleLowerCase === 'admin')
     return {
       color: 'error',
       icon: 'tabler-device-desktop',
     }
-  if (roleLowerCase === 'maintainer')
+  if (roleLowerCase === 'superadmin')
     return {
       color: 'info',
       icon: 'tabler-chart-pie',
     }
-  if (roleLowerCase === 'editor')
-    return {
-      color: 'warning',
-      icon: 'tabler-edit',
-    }
-  if (roleLowerCase === 'admin')
-    return {
-      color: 'primary',
-      icon: 'tabler-crown',
-    }
   
-  return {
-    color: 'primary',
-    icon: 'tabler-user',
-  }
 }
 
 const resolveUserStatusVariant = stat => {

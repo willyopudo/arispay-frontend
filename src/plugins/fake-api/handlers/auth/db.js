@@ -37,7 +37,7 @@ export const db = {
       password: 'client',
       avatar: `${import.meta.env.BASE_URL ?? '/'}images/avatars/avatar-2.png`,
       email: 'client@demo.com',
-      role: 'client',
+      role: 'compuser',
       abilityRules: [
         {
           action: 'read',
