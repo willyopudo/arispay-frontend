@@ -49,33 +49,33 @@ const headers = [
 ]
 
 const {
-  data: usersData,
+  data: usersList,
   execute: fetchUsers,
-} = await useApi(createUrl('/apps/users', {
-  query: {
-    q: searchQuery,
-    status: selectedStatus,
-    plan: selectedPlan,
-    role: selectedRole,
-    itemsPerPage,
-    page,
-    sortBy,
-    orderBy,
-  },
+} = await useApi(createUrl('/user', {
+  // query: {
+  //   q: searchQuery,
+  //   status: selectedStatus,
+  //   plan: selectedPlan,
+  //   role: selectedRole,
+  //   itemsPerPage,
+  //   page,
+  //   sortBy,
+  //   orderBy,
+  // },
 }))
-
-const users = computed(() => usersData.value.users)
-const totalUsers = computed(() => usersData.value.totalUsers)
+console.log(usersList.value)
+const users = computed(() => usersList.value)
+const totalUsers = computed(() => usersList.value.length)
 
 // 👉 search filters
 const roles = [
   {
     title: 'Admin',
-    value: 'admin',
+    value: 'ROLE_ADMIN',
   },
   {
     title: 'Company User',
-    value: 'compuser',
+    value: 'ROLE_USER',
   },
   {
     title: 'Super Admin',
@@ -119,12 +119,12 @@ const status = [
 
 const resolveUserRoleVariant = role => {
   const roleLowerCase = role.toLowerCase()
-  if (roleLowerCase === 'compuser')
+  if (roleLowerCase === 'role_user')
     return {
       color: 'success',
       icon: 'tabler-user',
     }
-  if (roleLowerCase === 'admin')
+  if (roleLowerCase === 'role_admin')
     return {
       color: 'error',
       icon: 'tabler-device-desktop',
