@@ -41,6 +41,8 @@ declare module 'vue-router/auto-routes' {
     'apps-roles': RouteRecordInfo<'apps-roles', '/apps/roles', Record<never, never>, Record<never, never>>,
     'apps-user-list': RouteRecordInfo<'apps-user-list', '/apps/user/list', Record<never, never>, Record<never, never>>,
     'apps-user-view-id': RouteRecordInfo<'apps-user-view-id', '/apps/user/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    'apps-user copy-list': RouteRecordInfo<'apps-user copy-list', '/apps/user copy/list', Record<never, never>, Record<never, never>>,
+    'apps-user copy-view-id': RouteRecordInfo<'apps-user copy-view-id', '/apps/user copy/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'apps-email-filter': RouteRecordInfo<'apps-email-filter', '/apps/email/:filter', { filter: ParamValue<true> }, { filter: ParamValue<false> }>,
     'apps-email-label': RouteRecordInfo<'apps-email-label', '/apps/email/:label', { label: ParamValue<true> }, { label: ParamValue<false> }>,
     'charts-apex-chart': RouteRecordInfo<'charts-apex-chart', '/charts/apex-chart', Record<never, never>, Record<never, never>>,
