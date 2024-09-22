@@ -48,10 +48,7 @@ const headers = [
   },
 ]
 
-const {
-  data: usersList,
-  execute: fetchUsers,
-} = await useApi(createUrl('/user', {
+const result = await customUseApi('/user', {
   // query: {
   //   q: searchQuery,
   //   status: selectedStatus,
@@ -62,10 +59,12 @@ const {
   //   sortBy,
   //   orderBy,
   // },
-}))
-console.log(usersList.value)
-const users = computed(() => usersList.value)
-const totalUsers = computed(() => usersList.value.length)
+})
+// console.log(result.data.value)
+// console.log(result.error.value)
+// console.log(result.response.value)
+const users = computed(() => result.data.value)
+const totalUsers = computed(() => result.data.value.length)
 
 // 👉 search filters
 const roles = [

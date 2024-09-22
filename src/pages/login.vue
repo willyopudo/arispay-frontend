@@ -56,9 +56,9 @@ const login = async () => {
         errors.value = response._data.errors
       },
     })
-    console.log(res)
+    //console.log(res)
 
-    const { access_token, userDetails } = res
+    const { access_token, refresh_token, userDetails } = res
     userDetails.avatar = `${import.meta.env.BASE_URL ?? '/'}images/avatars/` + userDetails.avatar
     const userAbilityRules = [
         {
@@ -68,6 +68,7 @@ const login = async () => {
       ]
     //useCookie('roles').value = roles
     useCookie('accessToken').value = access_token
+    useCookie('refreshToken').value = refresh_token
 
     useCookie('userAbilityRules').value = userAbilityRules
     ability.update(userAbilityRules)
@@ -148,19 +149,6 @@ const onSubmit = () => {
           </p>
         </VCardText>
         <VCardText>
-          <VAlert
-            color="primary"
-            variant="tonal"
-          >
-            <p class="text-sm mb-2">
-              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
-            </p>
-            <p class="text-sm mb-0">
-              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
-            </p>
-          </VAlert>
-        </VCardText>
-        <VCardText>
           <VForm
             ref="refVForm"
             @submit.prevent="onSubmit"
@@ -226,7 +214,7 @@ const onSubmit = () => {
                   Create an account
                 </RouterLink>
               </VCol>
-              <VCol
+              <!-- <VCol
                 cols="12"
                 class="d-flex align-center"
               >
@@ -235,13 +223,13 @@ const onSubmit = () => {
                 <VDivider />
               </VCol>
 
-              <!-- auth providers -->
+              auth providers 
               <VCol
                 cols="12"
                 class="text-center"
               >
                 <AuthProvider />
-              </VCol>
+              </VCol> -->
             </VRow>
           </VForm>
         </VCardText>
