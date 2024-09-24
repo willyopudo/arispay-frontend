@@ -51,7 +51,7 @@ const headers = [
 const {
   data: usersList,
   execute: fetchUsers,
-} = await useApi(createUrl('/user', {
+} = await customUseApi(createUrl('/user', {
   // query: {
   //   q: searchQuery,
   //   status: selectedStatus,
