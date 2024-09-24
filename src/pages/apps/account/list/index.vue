@@ -49,9 +49,9 @@ const headers = [
 ]
 
 const {
-  data: usersList,
-  execute: fetchUsers,
-} = await customUseApi(createUrl('/user', {
+  data: accountsList,
+  execute: fetchAccounts,
+} = await customUseApi(createUrl('/company/accounts', {
   // query: {
   //   q: searchQuery,
   //   status: selectedStatus,
@@ -63,9 +63,11 @@ const {
   //   orderBy,
   // },
 }))
-console.log(usersList.value)
-const users = computed(() => usersList.value)
-const totalUsers = computed(() => usersList.value.length)
+// console.log(result.data.value)
+// console.log(result.error.value)
+// console.log(result.response.value)
+const accounts = computed(() => accountsList.value)
+const totalAccounts = computed(() => accountsList.value.length)
 
 // 👉 search filters
 const roles = [
@@ -137,7 +139,7 @@ const resolveUserRoleVariant = role => {
   
 }
 
-const resolveUserStatusVariant = stat => {
+const resolveAccountstatusVariant = stat => {
   const statLowerCase = stat.toLowerCase()
   if (statLowerCase === 'pending')
     return 'warning'
@@ -152,17 +154,17 @@ const resolveUserStatusVariant = stat => {
 const isAddNewUserDrawerVisible = ref(false)
 
 const addNewUser = async userData => {
-  await $api('/apps/users', {
+  await $api('/apps/accounts', {
     method: 'POST',
     body: userData,
   })
 
   // Refetch User
-  fetchUsers()
+  fetchAccounts()
 }
 
 const deleteUser = async id => {
-  await $api(`/apps/users/${ id }`, { method: 'DELETE' })
+  await $api(`/apps/accounts/${ id }`, { method: 'DELETE' })
 
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
@@ -170,7 +172,7 @@ const deleteUser = async id => {
     selectedRows.value.splice(index, 1)
 
   // Refetch User
-  fetchUsers()
+  fetchAccounts()
 }
 
 const widgetData = ref([
@@ -178,12 +180,12 @@ const widgetData = ref([
     title: 'Session',
     value: '21,459',
     change: 29,
-    desc: 'Total Users',
-    icon: 'tabler-users',
+    desc: 'Total Accounts',
+    icon: 'tabler-accounts',
     iconColor: 'primary',
   },
   {
-    title: 'Paid Users',
+    title: 'Paid Accounts',
     value: '4,567',
     change: 18,
     desc: 'Last Week Analytics',
@@ -191,7 +193,7 @@ const widgetData = ref([
     iconColor: 'error',
   },
   {
-    title: 'Active Users',
+    title: 'Active Accounts',
     value: '19,860',
     change: -14,
     desc: 'Last Week Analytics',
@@ -199,7 +201,7 @@ const widgetData = ref([
     iconColor: 'success',
   },
   {
-    title: 'Pending Users',
+    title: 'Pending Accounts',
     value: '237',
     change: 42,
     desc: 'Last Week Analytics',
@@ -367,9 +369,9 @@ const widgetData = ref([
         v-model:items-per-page="itemsPerPage"
         v-model:model-value="selectedRows"
         v-model:page="page"
-        :items="users"
+        :items="accounts"
         item-value="id"
-        :items-length="totalUsers"
+        :items-length="totalAccounts"
         :headers="headers"
         class="text-no-wrap"
         show-select
@@ -430,7 +432,7 @@ const widgetData = ref([
         <!-- Status -->
         <template #item.status="{ item }">
           <VChip
-            :color="resolveUserStatusVariant(item.status)"
+            :color="resolveAccountstatusVariant(item.status)"
             size="small"
             label
             class="text-capitalize"
@@ -488,7 +490,7 @@ const widgetData = ref([
           <TablePagination
             v-model:page="page"
             :items-per-page="itemsPerPage"
-            :total-items="totalUsers"
+            :total-items="totalAccounts"
           />
         </template>
       </VDataTableServer>

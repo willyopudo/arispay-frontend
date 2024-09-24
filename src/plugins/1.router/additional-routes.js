@@ -11,9 +11,9 @@ export const redirects = [
       // TODO: Get type from backend
       const userData = useCookie('userData')
       const userRole = userData.value?.role
-      if (userRole === 'ROLE_ADMIN')
+      if (userRole === 'ADMIN')
         return { name: 'dashboards-crm' }
-      if (userRole === 'ROLE_USER')
+      if (userRole === 'USER')
         return { name: 'access-control' }
       
       return { name: 'login', query: to.query }
