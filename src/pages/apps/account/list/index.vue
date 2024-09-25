@@ -51,7 +51,7 @@ const headers = [
 const {
   data: accountsList,
   execute: fetchAccounts,
-} = await customUseApi(createUrl('/company/accounts', {
+} = await customUseApi('/company/accounts', {
   // query: {
   //   q: searchQuery,
   //   status: selectedStatus,
@@ -62,7 +62,7 @@ const {
   //   sortBy,
   //   orderBy,
   // },
-}))
+})
 // console.log(result.data.value)
 // console.log(result.error.value)
 // console.log(result.response.value)

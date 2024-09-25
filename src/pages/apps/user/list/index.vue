@@ -51,7 +51,7 @@ const headers = [
 const {
   data: usersList,
   execute: fetchUsers,
-} = await customUseApi(createUrl('/user', {
+} = await customUseApi('/user', {
   // query: {
   //   q: searchQuery,
   //   status: selectedStatus,
@@ -62,7 +62,7 @@ const {
   //   sortBy,
   //   orderBy,
   // },
-}))
+})
 console.log(usersList.value)
 const users = computed(() => usersList.value)
 const totalUsers = computed(() => usersList.value.length)
