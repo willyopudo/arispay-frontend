@@ -1,5 +1,6 @@
 <script setup>
 import { VForm } from 'vuetify/components/VForm'
+import { useToast } from 'vue-toastification';
 
 const numberedSteps = [
   {
@@ -16,17 +17,19 @@ const numberedSteps = [
   },
 ]
 
+const toast = useToast();
+
 const currentStep = ref(0)
 const isPasswordVisible = ref(false)
 const isCPasswordVisible = ref(false)
 const isCurrentStepValid = ref(true)
-const refAccountForm = ref()
-const refPersonalForm = ref()
-const refSocialLinkForm = ref()
+const refUserForm = ref()
+const refCompanyForm = ref()
+const refCompanyAccountForm = ref()
 
-const accountForm = ref({
+const userForm = ref({
   username: '',
-  firtName: '',
+  firstName: '',
   lastName: '',
   email: '',
   password: '',
@@ -36,25 +39,32 @@ const accountForm = ref({
   postalCode: '',
   town: '',
   currentPlan: '',
-  avatar: ''
+  avatar: '',
+  role: 'ROLE_COMPANY_ADMIN'
 })
 
-const personalForm = ref({
-  firstName: '',
-  lastName: '',
+const companyForm = ref({
+  name: '',
+  code: '',
   country: undefined,
-  language: undefined,
+  shortCode: undefined,
+  businessRegNum: '',
+  email: '',
+  phoneNumber: '',
+  category: '',
+  identifierType: ''
 })
 
-const socialForm = ref({
-  twitter: '',
-  facebook: '',
-  googlePlus: '',
-  linkedIn: '',
+const companyAccountForm = ref({
+  accountNumber: '',
+  accountName: '',
+  bankCode: '',
+  bankName: '',
+  balance: ''
 })
 
-const validateAccountForm = () => {
-  refAccountForm.value?.validate().then(valid => {
+const validateUserForm = () => {
+  refUserForm.value?.validate().then(valid => {
     if (valid.valid) {
       currentStep.value++
       isCurrentStepValid.value = true
@@ -64,8 +74,8 @@ const validateAccountForm = () => {
   })
 }
 
-const validatePersonalForm = () => {
-  refPersonalForm.value?.validate().then(valid => {
+const validateCompanyForm = () => {
+  refCompanyForm.value?.validate().then(valid => {
     if (valid.valid) {
       currentStep.value++
       isCurrentStepValid.value = true
@@ -75,15 +85,44 @@ const validatePersonalForm = () => {
   })
 }
 
-const validateSocialLinkForm = () => {
-  refSocialLinkForm.value?.validate().then(valid => {
+const register = async () => {
+  try {
+    const res = await $api('/auth/register', {
+      method: 'POST',
+      body:{
+        "userDto": userForm.value,
+        "companyDto": companyForm.value,
+        "companyAccountDto": companyAccountForm.value
+      },
+      onResponseError({ response }) {
+        console.log(response._data)
+        errors.value = response._data.errors
+      },
+    })
+    //console.log(res)
+    toast.success('Company Admin Created Successfully')
+
+    await nextTick(() => {
+      router.replace(route.query.to ? String(route.query.to) : '/login')
+    })
+  } catch (err) {
+    console.error(err)
+    toast.error('Error creating company admin', err)
+  }
+}
+
+const validateCompanyAccountForm = () => {
+  refCompanyAccountForm.value?.validate().then(valid => {
     if (valid.valid) {
       isCurrentStepValid.value = true
       console.log({
-        ...accountForm.value,
-        ...personalForm.value,
-        ...socialForm.value,
+        "userDto": userForm.value,
+        "companyDto": companyForm.value,
+        "companyAccountDto": companyAccountForm.value,
       })
+
+      register();
+
     } else {
       isCurrentStepValid.value = false
     }
@@ -113,8 +152,8 @@ const validateSocialLinkForm = () => {
       >
         <VWindowItem>
           <VForm
-            ref="refAccountForm"
-            @submit.prevent="validateAccountForm"
+            ref="refUserForm"
+            @submit.prevent="validateUserForm"
           >
             <VRow>
               <VCol cols="12">
@@ -131,7 +170,7 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="accountForm.username"
+                  v-model="userForm.username"
                   placeholder="CarterLeonardo"
                   :rules="[requiredValidator]"
                   label="Username"
@@ -143,7 +182,31 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="accountForm.email"
+                  v-model="userForm.firstName"
+                  placeholder="Carter"
+                  :rules="[requiredValidator]"
+                  label="First Name"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="userForm.lastName"
+                  placeholder="Carter"
+                  :rules="[requiredValidator]"
+                  label="Last Name"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="userForm.email"
                   placeholder="carterleonardo@gmail.com"
                   :rules="[requiredValidator, emailValidator]"
                   label="Email"
@@ -155,7 +218,7 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="accountForm.password"
+                  v-model="userForm.password"
                   label="Password"
                   placeholder="············"
                   :rules="[requiredValidator, passwordValidator]"
@@ -170,15 +233,77 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="accountForm.cPassword"
+                  v-model="userForm.cPassword"
                   label="Confirm Password"
                   placeholder="············"
-                  :rules="[requiredValidator, confirmedValidator(accountForm.cPassword, accountForm.password)]"
+                  :rules="[requiredValidator, confirmedValidator(userForm.cPassword, userForm.password)]"
                   :type="isCPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isCPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isCPasswordVisible = !isCPasswordVisible"
                 />
               </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="userForm.phoneNumber"
+                  placeholder="254712345678"
+                  :rules="[requiredValidator]"
+                  label="Phone Number"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="userForm.address"
+                  placeholder="254712345678"
+                  :rules="[requiredValidator]"
+                  label="Address"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="userForm.postalCode"
+                  placeholder="51330"
+                  :rules="[requiredValidator]"
+                  label="Postal Code"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="userForm.town"
+                  placeholder="51330"
+                  :rules="[requiredValidator]"
+                  label="Town"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppSelect
+                  v-model="userForm.currentPlan"
+                  label="Plan"
+                  :rules="[requiredValidator]"
+                  placeholder="Select Plan"
+                  :items="['enterprise', 'basic', 'lite', 'professional']"
+                />
+              </VCol>
+
 
               <VCol cols="12">
                 <div class="d-flex flex-wrap gap-4 justify-sm-space-between justify-center mt-8">
@@ -211,8 +336,8 @@ const validateSocialLinkForm = () => {
 
         <VWindowItem>
           <VForm
-            ref="refPersonalForm"
-            @submit.prevent="validatePersonalForm"
+            ref="refCompanyForm"
+            @submit.prevent="validateCompanyForm"
           >
             <VRow>
               <VCol cols="12">
@@ -229,10 +354,10 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="personalForm.firstName"
-                  label="First Name"
+                  v-model="companyForm.name"
+                  label="Company Name"
                   :rules="[requiredValidator]"
-                  placeholder="Leonard"
+                  placeholder="Leonard Enterprises"
                 />
               </VCol>
 
@@ -241,10 +366,45 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="personalForm.lastName"
-                  label="Last Name"
+                  v-model="companyForm.shortCode"
+                  label="MPESA Short Code"
+                  placeholder="542542"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="companyForm.businessRegNum"
+                  label="Business Registration Number"
                   :rules="[requiredValidator]"
-                  placeholder="Carter"
+                  placeholder="BUS/NRB/002"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="companyForm.email"
+                  label="Business Email"
+                  :rules="[requiredValidator, emailValidator]"
+                  placeholder="kamauent@gmail.com"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppTextField
+                  v-model="companyForm.phoneNumber"
+                  label="Phone Number"
+                  :rules="[requiredValidator]"
+                  placeholder="254735728738"
                 />
               </VCol>
 
@@ -253,11 +413,11 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppSelect
-                  v-model="personalForm.country"
-                  label="Country"
+                  v-model="companyForm.category"
+                  label="Category"
                   :rules="[requiredValidator]"
-                  placeholder="Select Country"
-                  :items="['UK', 'USA', 'Canada', 'Australia', 'Germany']"
+                  placeholder="Select Category"
+                  :items="['FARMING', 'MANUFACTURING', 'OIL AND GAS', 'TECHNOLOGY', 'SCHOOL', 'HOSPITAL', 'CHURCH']"
                 />
               </VCol>
 
@@ -266,11 +426,11 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppSelect
-                  v-model="personalForm.language"
-                  label="Language"
+                  v-model="companyForm.identifierType"
+                  label="Identifier"
                   :rules="[requiredValidator]"
-                  placeholder="Select Language"
-                  :items="['English', 'Spanish', 'French', 'Russian', 'German']"
+                  placeholder="Select Identifier"
+                  :items="['INDIVIDUAL', 'COMPANY']"
                 />
               </VCol>
 
@@ -305,8 +465,8 @@ const validateSocialLinkForm = () => {
 
         <VWindowItem>
           <VForm
-            ref="refSocialLinkForm"
-            @submit.prevent="validateSocialLinkForm"
+            ref="refCompanyAccountForm"
+            @submit.prevent="validateCompanyAccountForm"
           >
             <VRow>
               <VCol cols="12">
@@ -323,10 +483,10 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="socialForm.twitter"
-                  placeholder="https://twitter.com/abc"
-                  :rules="[requiredValidator, urlValidator]"
-                  label="Twitter"
+                  v-model="companyAccountForm.accountName"
+                  placeholder="Leonard Ent."
+                  :rules="[requiredValidator]"
+                  label="Account Name"
                 />
               </VCol>
 
@@ -335,10 +495,23 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="socialForm.facebook"
-                  placeholder="https://facebook.com/abc"
-                  :rules="[requiredValidator, urlValidator]"
-                  label="Facebook"
+                  v-model="companyAccountForm.accountNumber"
+                  placeholder="03500064547"
+                  :rules="[requiredValidator]"
+                  label="Account Number"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AppSelect
+                  v-model="companyAccountForm.bankCode"
+                  label="Bank Code"
+                  :rules="[requiredValidator]"
+                  placeholder="Select Bank Code"
+                  :items="['070-FAMILY BANK', '002-STANDARD CHARTERED BANK']"
                 />
               </VCol>
 
@@ -347,10 +520,10 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="socialForm.googlePlus"
-                  placeholder="https://plus.google.com/abc"
-                  :rules="[requiredValidator, urlValidator]"
-                  label="Google+"
+                  v-model="companyAccountForm.bankName"
+                  placeholder=""
+                  :rules="[requiredValidator]"
+                  label="Bank Name"
                 />
               </VCol>
 
@@ -359,10 +532,10 @@ const validateSocialLinkForm = () => {
                 md="6"
               >
                 <AppTextField
-                  v-model="socialForm.linkedIn"
-                  placeholder="https://likedin.com/abc"
-                  :rules="[requiredValidator, urlValidator]"
-                  label="LinkedIn"
+                  v-model="companyAccountForm.balance"
+                  placeholder=""
+                  :rules="[requiredValidator]"
+                  label="Account Balance"
                 />
               </VCol>
 
