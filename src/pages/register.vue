@@ -85,10 +85,10 @@ const isPasswordVisible = ref(false)
       >
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Adventure starts here 🚀
+            Finance management begins here 🚀
           </h4>
           <p class="mb-0">
-            Make your app management easy and fun!
+            Make your finance management easy and accurate!
           </p>
         </VCardText>
 

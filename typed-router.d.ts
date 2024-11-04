@@ -22,6 +22,8 @@ declare module 'vue-router/auto-routes' {
     'access-control': RouteRecordInfo<'access-control', '/access-control', Record<never, never>, Record<never, never>>,
     'apps-account-list': RouteRecordInfo<'apps-account-list', '/apps/account/list', Record<never, never>, Record<never, never>>,
     'apps-account-view-id': RouteRecordInfo<'apps-account-view-id', '/apps/account/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    'apps-accounts-list': RouteRecordInfo<'apps-accounts-list', '/apps/accounts/list', Record<never, never>, Record<never, never>>,
+    'apps-accounts-view-id': RouteRecordInfo<'apps-accounts-view-id', '/apps/accounts/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'apps-calendar': RouteRecordInfo<'apps-calendar', '/apps/calendar', Record<never, never>, Record<never, never>>,
     'apps-chat': RouteRecordInfo<'apps-chat', '/apps/chat', Record<never, never>, Record<never, never>>,
     'apps-ecommerce-customer-details-id': RouteRecordInfo<'apps-ecommerce-customer-details-id', '/apps/ecommerce/customer/details/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
