@@ -14,5 +14,5 @@ export default [
     icon: { icon: 'tabler-users' },
     to: 'apps-user-list',
   },
-  
+
 ]

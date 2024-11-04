@@ -16,7 +16,7 @@ export const redirects = [
       if (userRole === 'USER')
         return { name: 'access-control' }
       
-      return { name: 'login', query: to.query }
+      return { name: 'front-pages-landing-page', query: to.query }
     },
   },
   {

@@ -28,32 +28,10 @@ const pagesList = [
   },
   {
     name: 'Login/Register',
-    to: { name: 'pages-authentication-login-v2' },
+    to: { name: 'login' },
   },
 ]
 
-const demoList = [
-  {
-    title: 'Vertical Layout',
-    to: 'https://demos.pixinvent.com/vuexy-vuejs-admin-template/demo-1/dashboards/analytics',
-  },
-  {
-    title: 'Horizontal Layout',
-    to: 'https://demos.pixinvent.com/vuexy-vuejs-admin-template/demo-5/dashboards/analytics',
-  },
-  {
-    title: 'Bordered Layout',
-    to: 'https://demos.pixinvent.com/vuexy-vuejs-admin-template/demo-2/dashboards/analytics',
-  },
-  {
-    title: 'Semi Dark Layout',
-    to: 'https://demos.pixinvent.com/vuexy-vuejs-admin-template/demo-3/dashboards/analytics',
-  },
-  {
-    title: 'Dark Layout',
-    to: 'https://demos.pixinvent.com/vuexy-vuejs-admin-template/demo-4/dashboards/analytics',
-  },
-]
 </script>
 
 <template>
@@ -84,7 +62,7 @@ const demoList = [
                 class="mb-6"
                 :class="$vuetify.theme.current.dark ? 'text-body-1' : 'text-white-variant'"
               >
-                Most Powerful & Comprehensive 🤩 Vuejs Admin Template with Elegant Material Design & Unique Layouts.
+                Most Powerful & Comprehensive 🤩 transaction aggregation and management dashboard with Elegant Design & Unique Features.
               </div>
               <VForm class="subscribe-form d-flex align-center">
                 <AppTextField
@@ -99,38 +77,12 @@ const demoList = [
           </VCol>
 
           <!-- 👉 Demos -->
-          <VCol
-            md="2"
-            sm="4"
-            xs="6"
-          >
-            <div class="footer-links">
-              <h6 class="footer-title text-h6 mb-6">
-                Demos
-              </h6>
-              <ul style="list-style: none;">
-                <li
-                  v-for="(item, index) in demoList"
-                  :key="index"
-                  class="mb-4"
-                >
-                  <a
-                    :href="item.to"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    :class="$vuetify.theme.current.dark ? 'text-body-1' : 'text-white-variant'"
-                  >
-                    {{ item.title }}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </VCol>
+          
 
           <!-- 👉 Pages  -->
           <VCol
-            md="2"
-            sm="4"
+            md="3"
+            sm="3"
             xs="6"
           >
             <div class="footer-links">
@@ -168,7 +120,7 @@ const demoList = [
           <!-- 👉 Download App -->
           <VCol
             cols="12"
-            md="3"
+            md="4"
             sm="4"
           >
             <div>

@@ -14,7 +14,7 @@ import ctaDashborad from '@images/front-pages/landing-page/cta-dashboard.png'
             Ready to Get Started?
           </div>
           <h5 class="text-h5 text-medium-emphasis mb-8">
-            Start your project with a 14-day free trial
+            Start managing your transactions with a 30-day free trial
           </h5>
           <VBtn
             color="primary"
