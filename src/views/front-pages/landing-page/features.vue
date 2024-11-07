@@ -8,33 +8,33 @@ import user from '@images/svg/user.svg'
 
 const featuresData = [
   {
-    title: 'Quality Code',
-    desc: 'Code structure that all developers will easily understand and fall in love with.',
+    title: 'Bill Number Validation',
+    desc: 'Simply instruct your bank to validate your bill payments via arisPay',
     icon: laptop,
   },
   {
-    title: 'Continuous Updates',
-    desc: 'Free updates for the next 12 months, including new demos and features.',
+    title: 'Payment Notification',
+    desc: 'Get real time payment notifications within your arisPay Dashboard',
     icon: rocket,
   },
   {
-    title: 'Starter Kit',
-    desc: 'Start your project quickly without having to remove unnecessary features.',
+    title: 'Transaction Status Query',
+    desc: 'Confirm status of any transaction for swift reconciliation purposes',
     icon: paper,
   },
   {
-    title: 'API Ready',
-    desc: 'Just change the endpoint and see your own data loaded within seconds.',
+    title: 'Account Statements',
+    desc: 'Request statements for any of your accounts within specific time periods',
     icon: check,
   },
   {
-    title: 'Excellent Support',
-    desc: 'An easy-to-follow doc with lots of references and code examples.',
+    title: 'Bulk Payments',
+    desc: 'Initiate bulk transactions easily and securely backed with strict consent work flow',
     icon: user,
   },
   {
-    title: 'Well Documented',
-    desc: 'An easy-to-follow doc with lots of references and code examples.',
+    title: 'MPESA Aggregation',
+    desc: 'No bank account no problem, we also help you have visibility on all your MPESA tills and Paybills',
     icon: keyboard,
   },
 ]
@@ -58,10 +58,10 @@ const featuresData = [
               Everything you need
             </div>
           </div>
-          to start your next project
+          to manage financial performance of your business
         </div>
         <p class="text-body-1 mb-0">
-          Not just a set of tools, the package includes ready-to-deploy conceptual application.
+          Including full onboarding assitance to get all your bank accounts integrated.
         </p>
       </div>
       <VRow>

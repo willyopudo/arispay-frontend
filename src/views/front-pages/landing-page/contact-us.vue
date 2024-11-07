@@ -53,8 +53,8 @@ const message = ref('')
                   <div class="d-flex justify-space-between flex-wrap gap-y-4">
                     <div
                       v-for="(item, index) in [
-                        { title: 'Email', icon: 'tabler-mail', color: 'primary', value: 'example@gmail.com' },
-                        { title: 'Phone', icon: 'tabler-phone-call', color: 'success', value: '+1234 568 963' },
+                        { title: 'Email', icon: 'tabler-mail', color: 'primary', value: 'support@arispay.co.ke' },
+                        { title: 'Phone', icon: 'tabler-phone-call', color: 'success', value: '+25470 123 456' },
                       ]"
                       :key="index"
                       class="d-flex gap-x-3 align-center"

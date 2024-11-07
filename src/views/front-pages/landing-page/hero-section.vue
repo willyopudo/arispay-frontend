@@ -38,15 +38,15 @@ const translateMouse = computed(() => {
         <VContainer>
           <div class="hero-text-box text-center px-6">
             <h1 class="hero-title mb-4">
-              One dashboard to manage all your business
+              One dashboard to manage all your bank transactions
             </h1>
             <h6 class="mb-6 text-h6">
-              Production-ready & easy to use Admin Template
-              for Reliability and Customizability.
+              Ready & easy to use platform
+              for payments Management and Reconciliation.
             </h6>
             <div class="position-relative">
               <h6 class="position-absolute hero-btn-item d-md-flex d-none text-h6 text-medium-emphasis">
-                Join Community
+                Begin Journey
                 <VImg
                   :src="joinArrow"
                   class="flip-in-rtl"

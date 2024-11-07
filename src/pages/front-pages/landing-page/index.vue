@@ -54,9 +54,9 @@ useIntersectionObserver([
     </div>
 
     <!-- 👉 Customer Review -->
-    <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
+    <!-- <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
       <CustomersReview />
-    </div>
+    </div> -->
 
     <!-- 👉 Our Team -->
     <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
@@ -69,7 +69,7 @@ useIntersectionObserver([
     </div>
 
     <!-- 👉 Product stats -->
-    <ProductStats />
+    <!-- <ProductStats /> -->
 
     <!-- 👉 FAQ Section -->
     <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">

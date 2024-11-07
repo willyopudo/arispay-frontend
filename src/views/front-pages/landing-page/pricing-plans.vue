@@ -84,15 +84,15 @@ const pricingPlans = [
           <h4 class="d-flex align-center text-h4 mb-1 flex-wrap justify-center">
             <div class="position-relative me-2">
               <div class="section-title">
-                Tailored design plans
+                Tailored consumption based plans
               </div>
             </div>
             designed for you
           </h4>
           <div class="text-center text-body-1">
-            <p class="mb-0">
+            <!-- <p class="mb-0">
               All plans include 40+ advanced tools and features to boost your product.
-            </p>
+            </p> -->
             <p class="mb-0">
               Choose the best plan to fit your needs.
             </p>
