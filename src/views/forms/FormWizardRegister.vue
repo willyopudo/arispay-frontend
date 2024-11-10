@@ -18,6 +18,8 @@ const numberedSteps = [
 ]
 
 const toast = useToast();
+const route = useRoute()
+const router = useRouter()
 
 const currentStep = ref(0)
 const isPasswordVisible = ref(false)

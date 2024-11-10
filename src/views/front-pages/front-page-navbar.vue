@@ -146,7 +146,6 @@ const isCurrentRoute = to => {
             variant="elevated"
             color="primary"
             href="/login"
-            target="_blank"
             rel="noopener noreferrer"
           >
             Sign In
@@ -159,7 +158,6 @@ const isCurrentRoute = to => {
             variant="elevated"
             color="primary"
             href="/login"
-            target="_blank"
             rel="noopener noreferrer"
           >
             <VIcon icon="tabler-login" />
