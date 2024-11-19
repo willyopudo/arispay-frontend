@@ -19,6 +19,9 @@ const numberedSteps = [
 
 const toast = useToast();
 
+const route = useRoute();
+const router = useRouter();
+
 const currentStep = ref(0)
 const isPasswordVisible = ref(false)
 const isCPasswordVisible = ref(false)
@@ -95,8 +98,11 @@ const register = async () => {
         "companyAccountDto": companyAccountForm.value
       },
       onResponseError({ response }) {
+        toast.error(`Error creating company admin: ${response._data.detail}`);
+        console.log(response._data.detail)
         console.log(response._data)
         errors.value = response._data.errors
+        
       },
     })
     //console.log(res)
@@ -106,8 +112,8 @@ const register = async () => {
       router.replace(route.query.to ? String(route.query.to) : '/login')
     })
   } catch (err) {
-    console.error(err)
-    toast.error('Error creating company admin', err)
+    console.log("Error: "+ err)
+    // toast.error('Error creating company admin', err)
   }
 }
 
