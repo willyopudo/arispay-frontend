@@ -59,6 +59,35 @@ const onSubmit = () => {
   })
 }
 
+const register = async () => {
+  try {
+    const res = await $api('/user', {
+      method: 'POST',
+      body:{
+        "userDto": userForm.value,
+        "companyDto": companyForm.value,
+        "companyAccountDto": companyAccountForm.value
+      },
+      onResponseError({ response }) {
+        toast.error(`Error creating company admin: ${response._data.detail}`);
+        console.log(response._data.detail)
+        console.log(response._data)
+        errors.value = response._data.errors
+        
+      },
+    })
+    //console.log(res)
+    toast.success('Company Admin Created Successfully')
+
+    await nextTick(() => {
+      router.replace(route.query.to ? String(route.query.to) : '/login')
+    })
+  } catch (err) {
+    console.log("Error: "+ err)
+    // toast.error('Error creating company admin', err)
+  }
+}
+
 const handleDrawerModelValueUpdate = val => {
   emit('update:isDrawerOpen', val)
 }
@@ -91,13 +120,22 @@ const handleDrawerModelValueUpdate = val => {
             @submit.prevent="onSubmit"
           >
             <VRow>
-              <!-- 👉 Full name -->
+              <!-- 👉 First name -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="fullName"
+                  v-model="firstName"
                   :rules="[requiredValidator]"
-                  label="Full Name"
-                  placeholder="John Doe"
+                  label="First Name"
+                  placeholder="John"
+                />
+              </VCol>
+              <!-- 👉 Last name -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="lastName"
+                  :rules="[requiredValidator]"
+                  label="Last Name"
+                  placeholder="Doe"
                 />
               </VCol>
 
@@ -121,53 +159,51 @@ const handleDrawerModelValueUpdate = val => {
                 />
               </VCol>
 
-              <!-- 👉 company -->
+              <!-- 👉 Phone Number -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="company"
-                  :rules="[requiredValidator]"
-                  label="Company"
-                  placeholder="PixInvent"
-                />
-              </VCol>
-
-              <!-- 👉 Country -->
-              <VCol cols="12">
-                <AppSelect
-                  v-model="country"
-                  label="Select Country"
-                  placeholder="Select Country"
-                  :rules="[requiredValidator]"
-                  :items="['USA', 'UK', 'India', 'Australia']"
-                />
-              </VCol>
-
-              <!-- 👉 Contact -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="contact"
+                  v-model="phoneNumber"
                   type="number"
                   :rules="[requiredValidator]"
-                  label="Contact"
-                  placeholder="+1-541-754-3010"
+                  label="Phone Number"
+                  placeholder="+254-711-222-333"
                 />
               </VCol>
 
-              <!-- 👉 Role -->
+              <!-- 👉Physical Address -->
               <VCol cols="12">
-                <AppSelect
-                  v-model="role"
-                  label="Select Role"
-                  placeholder="Select Role"
+                <AppTextField
+                  v-model="address"
                   :rules="[requiredValidator]"
-                  :items="['Admin', 'Author', 'Editor', 'Maintainer', 'Subscriber']"
+                  label="Physical Address"
+                  placeholder="Kahawa Sukari"
+                />
+              </VCol>
+
+              <!-- 👉Postal Address -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="zipCode"
+                  :rules="[requiredValidator]"
+                  label="Postal Address"
+                  placeholder="5306-00200"
+                />
+              </VCol>
+
+              <!-- 👉Town -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="town"
+                  :rules="[requiredValidator]"
+                  label="Town"
+                  placeholder="Ruiru"
                 />
               </VCol>
 
               <!-- 👉 Plan -->
               <VCol cols="12">
                 <AppSelect
-                  v-model="plan"
+                  v-model="currentPlan"
                   label="Select Plan"
                   placeholder="Select Plan"
                   :rules="[requiredValidator]"

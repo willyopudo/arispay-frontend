@@ -135,7 +135,17 @@ const resolveUserRoleVariant = role => {
       color: 'success',
       icon: 'tabler-user',
     }
+  if (roleLowerCase === 'role_company_user')
+    return {
+      color: 'success',
+      icon: 'tabler-user',
+    }
   if (roleLowerCase === 'role_admin')
+    return {
+      color: 'error',
+      icon: 'tabler-device-desktop',
+    }
+  if (roleLowerCase === 'role_company_admin')
     return {
       color: 'error',
       icon: 'tabler-device-desktop',

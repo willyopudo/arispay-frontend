@@ -1,7 +1,6 @@
 <!-- ❗Errors in the form are set on line 60 -->
 <script setup>
 import { VForm } from 'vuetify/components/VForm'
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
@@ -78,7 +77,7 @@ const login = async () => {
       router.replace(route.query.to ? String(route.query.to) : '/')
     })
   } catch (err) {
-    console.error(err)
+    console.error(err) 
   }
 }
 
