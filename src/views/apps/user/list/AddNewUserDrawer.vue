@@ -1,5 +1,7 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { useToast } from 'vue-toastification';
+import { useCookies } from 'vue3-cookies';
 
 const props = defineProps({
   isDrawerOpen: {
@@ -13,16 +15,40 @@ const emit = defineEmits([
   'userData',
 ])
 
+const { cookies } = useCookies();
+
+const toast = useToast();
+
+const route = useRoute();
+const router = useRouter();
+
 const isFormValid = ref(false)
+
+const userForm = ref({
+  username: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  phoneNumber: '',
+  address: '',
+  postalCode: '',
+  town: '',
+  currentPlan: '',
+  avatar: '',
+  role: 'ROLE_COMPANY_ADMIN'
+})
+
 const refForm = ref()
-const fullName = ref('')
-const userName = ref('')
+const firstName = ref('')
+const lastName = ref('')
+const username = ref('')
 const email = ref('')
-const company = ref('')
-const country = ref()
-const contact = ref('')
+const phoneNumber = ref('')
+const address = ref('')
+const zipCode = ref()
+const town = ref('')
 const role = ref()
-const plan = ref()
+const currentPlan = ref()
 const status = ref()
 
 // 👉 drawer close
@@ -37,18 +63,29 @@ const closeNavigationDrawer = () => {
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
+      register();
+      const userData = useCookie('userData').value;
       emit('userData', {
-        id: 0,
-        fullName: fullName.value,
-        company: company.value,
-        role: role.value,
-        country: country.value,
-        contact: contact.value,
+        id: null,
+        username: username.value,
+        firstName: firstName.value,
+        lastName: lastName.value,
         email: email.value,
-        currentPlan: plan.value,
+        userCompanies: [
+          {
+            id: null,
+            companyId: userData.companyId.value,
+            isDefault: false
+          }
+        ],
+        phoneNumber: phoneNumber.value,
+        address: address.value,
+        zipCode: zipCode.value,
+        town: town.value,
+        role: "ROLE_COMPANY_USER",
         status: status.value,
-        avatar: '',
-        billing: 'Auto Debit',
+        currentPlan: currentPlan.value,
+        avatar: "",
       })
       emit('update:isDrawerOpen', false)
       nextTick(() => {
@@ -61,30 +98,50 @@ const onSubmit = () => {
 
 const register = async () => {
   try {
-    const res = await $api('/user', {
-      method: 'POST',
-      body:{
-        "userDto": userForm.value,
-        "companyDto": companyForm.value,
-        "companyAccountDto": companyAccountForm.value
-      },
-      onResponseError({ response }) {
-        toast.error(`Error creating company admin: ${response._data.detail}`);
-        console.log(response._data.detail)
-        console.log(response._data)
-        errors.value = response._data.errors
-        
-      },
-    })
-    //console.log(res)
-    toast.success('Company Admin Created Successfully')
+    const userData = cookies.get('userData');
+    console.log('User data: ' + JSON.stringify(userData));
+  const req = {
+
+id: null,
+"username": username.value,
+"firstName": firstName.value,
+"lastName": lastName.value,
+"email": email.value,
+"userCompanies": [
+  {
+    id: null,
+    "companyId": userData.companyId,
+    "isDefault": false
+  }
+],
+"phoneNumber": phoneNumber.value,
+"address": address.value,
+"zipCode": zipCode.value,
+"town": town.value,
+"role": "ROLE_COMPANY_USER",
+"status": status.value,
+"currentPlan": currentPlan.value,
+"avatar": ""
+
+}
+console.log("Request payload:", JSON.stringify(req, null, 2));
+    const {
+  data: savedUser,
+  execute: saveCompanyUser,
+} = await customUseApi('/user', {
+method: 'POST',
+body: JSON.stringify(req),
+headers: {"Content-Type": 'application/json'}
+})
+    console.log(savedUser)
+    toast.success('Company User Created Successfully')
 
     await nextTick(() => {
-      router.replace(route.query.to ? String(route.query.to) : '/login')
+      router.replace(route.query.to ? String(route.query.to) : '/apps/user/list')
     })
   } catch (err) {
     console.log("Error: "+ err)
-    // toast.error('Error creating company admin', err)
+    toast.error('Error creating company user', err)
   }
 }
 
@@ -142,7 +199,7 @@ const handleDrawerModelValueUpdate = val => {
               <!-- 👉 Username -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="userName"
+                  v-model="username"
                   :rules="[requiredValidator]"
                   label="Username"
                   placeholder="Johndoe"
