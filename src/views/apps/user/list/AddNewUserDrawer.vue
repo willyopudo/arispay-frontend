@@ -111,7 +111,7 @@ id: null,
   {
     id: null,
     "companyId": userData.companyId,
-    "isDefault": false
+    "isDefault": true
   }
 ],
 "phoneNumber": phoneNumber.value,
