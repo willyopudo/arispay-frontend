@@ -74,7 +74,7 @@ const login = async () => {
     useCookie('userData').value = userDetails
     // useCookie('accessToken').value = accessToken
     await nextTick(() => {
-      router.replace(route.query.to ? String(route.query.to) : '/')
+      router.replace(route.query.to ? String(route.query.to) : '/dashboards/crm')
     })
   } catch (err) {
     console.error(err) 
