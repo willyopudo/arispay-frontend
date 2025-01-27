@@ -5,7 +5,7 @@ export default [
     icon: { icon: 'tabler-building' },
     children: [
       { title: 'Accounts', to: 'apps-account-list' },
-      { title: 'Clients', to: 'apps-user-list' },
+      { title: 'Clients', to: 'apps-company-client-list' },
       //{ title: 'Clients', to: 'front-pages-landing-page' },
     ],
   },

@@ -8,16 +8,16 @@ export default [
   {
     title: 'Rejected TRansactions',
     icon: { icon: 'tabler-coin-off' },
-    to: 'forms-form-wizard-numbered'
+    to: 'apps-account-list'
   },
   {
     title: 'Bulk Payments',
     icon: { icon: 'tabler-credit-card-pay' },
-    to: 'forms-form-wizard-numbered'
+    to: 'apps-account-list'
   },
   {
     title: 'Transaction Query',
     icon: { icon: 'tabler-cash-register' },
-    to: 'forms-form-wizard-numbered'
+    to: 'apps-account-list'
   },
 ]

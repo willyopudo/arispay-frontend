@@ -1,20 +1,10 @@
 <script setup>
-import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
+import AddNewClientDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
 
-async function fileExists(url) {
-  try {
-    const response = await fetch(url, { method: 'GET' });
-    return response.ok;
-  } catch (error) {
-    return false;
-  }
-}
-const defaultAvatar = "/images/avatars/default-avatar.png";
-const app_base_url = import.meta.env.VITE_APP_BASE_URL;
 
 // 👉 Store
 const searchQuery = ref('')
-const selectedRole = ref()
+const selectedIdentifierType = ref()
 const selectedPlan = ref()
 const selectedStatus = ref()
 
@@ -33,24 +23,28 @@ const updateOptions = options => {
 // Headers
 const headers = [
   {
-    title: 'User',
-    key: 'user',
+    title: 'Client ID',
+    key: 'client_id',
   },
   {
-    title: 'Role',
-    key: 'role',
+    title: 'Client Name',
+    key: 'client_name',
   },
   {
-    title: 'Subscription Plan',
-    key: 'plan',
+    title: 'Identifier Type',
+    key: 'identifier_type',
   },
-  // {
-  //   title: 'Billing',
-  //   key: 'billing',
-  // },
+  {
+    title: 'Company',
+    key: 'company',
+  },
   {
     title: 'Status',
     key: 'status',
+  },
+  {
+    title: 'Created Date',
+    key: 'created_date',
   },
   {
     title: 'Actions',
@@ -60,9 +54,9 @@ const headers = [
 ]
 
 const {
-  data: usersList,
-  execute: fetchUsers,
-} = await customUseApi('/users', {
+  data: clientList,
+  execute: fetchClients,
+} = await customUseApi('/clients', {
   // query: {
   //   q: searchQuery,
   //   status: selectedStatus,
@@ -74,44 +68,11 @@ const {
   //   orderBy,
   // },
 })
-//console.log(usersList.value)
-const users = computed(() => usersList.value)
-const totalUsers = computed(() => usersList.value.length)
+console.log(clientList.value)
+const clients = computed(() => clientList.value)
+const totalClients = computed(() => clientList.value.length)
 
 // 👉 search filters
-const roles = [
-  {
-    title: 'Admin',
-    value: 'ROLE_ADMIN',
-  },
-  {
-    title: 'Company User',
-    value: 'ROLE_USER',
-  },
-  {
-    title: 'Super Admin',
-    value: 'superadmin',
-  }
-]
-
-const plans = [
-  {
-    title: 'Basic',
-    value: 'basic',
-  },
-  {
-    title: 'Standard',
-    value: 'standard',
-  },
-  {
-    title: 'Enterprise',
-    value: 'enterprise',
-  },
-  {
-    title: 'Special',
-    value: 'special',
-  },
-]
 
 const status = [
   {
@@ -128,66 +89,59 @@ const status = [
   },
 ]
 
-const resolveUserRoleVariant = role => {
-  const roleLowerCase = role.toLowerCase()
-  if (roleLowerCase === 'role_user')
-    return {
-      color: 'success',
-      icon: 'tabler-user',
-    }
-  if (roleLowerCase === 'role_company_user')
-    return {
-      color: 'success',
-      icon: 'tabler-user',
-    }
-  if (roleLowerCase === 'role_admin')
-    return {
-      color: 'error',
-      icon: 'tabler-device-desktop',
-    }
-  if (roleLowerCase === 'role_company_admin')
-    return {
-      color: 'error',
-      icon: 'tabler-device-desktop',
-    }
-  if (roleLowerCase === 'superadmin')
-    return {
-      color: 'info',
-      icon: 'tabler-chart-pie',
-    }
-  if (roleLowerCase === 'role_company_admin')
-    return {
-      color: 'warning',
-      icon: 'tabler-chart-pie',
-    }
-}
+const identifierTypes = [
+  {
+    title: 'ID NUMBER',
+    value: 'id_number',
+  },
+  {
+    title: 'MSSIDN',
+    value: 'mssidn',
+  },
+  {
+    title: 'ACCOUNT_NUMBER',
+    value: 'account_number',
+  },
+  {
+    title: 'BILL_NUMBER',
+    value: 'bill_number',
+  },
+  {
+    title: 'REG_NUMBER',
+    value: 'reg_number',
+  },
+  {
+    title: 'INVOICE_NUMBER',
+    value: 'invoice_number',
+  },
+]
 
-const resolveUserStatusVariant = stat => {
-  const statLowerCase = stat.toLowerCase()
-  if (statLowerCase === 'pending')
+
+const resolveClientStatusVariant = stat => {
+  if (stat === 0)
     return 'warning'
-  if (statLowerCase === 'active')
+  if (stat === 1)
     return 'success'
-  if (statLowerCase === 'inactive')
+  if (stat === 2)
     return 'secondary'
   
   return 'primary'
 }
 
-const isAddNewUserDrawerVisible = ref(false)
+const isAddNewClientDrawerVisible = ref(false)
 
-const addNewUser = async userData => {
-  await $api('/apps/users', {
+const addNewClient = async clientData => {
+  await $api('/clients', {
     method: 'POST',
-    body: userData,
+    body: clientData,
   })
 
   // Refetch User
-  fetchUsers()
+  fetchClients()
 }
 
-const deleteUser = async id => {
-  await $api(`/apps/users/${ id }`, { method: 'DELETE' })
+const deletClient = async id => {
+  await $api(`/clients/${ id }`, { method: 'DELETE' })
 
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
@@ -195,100 +149,12 @@ const deleteUser = async id => {
     selectedRows.value.splice(index, 1)
 
   // Refetch User
-  fetchUsers()
+  fetchClients()
 }
-
-const widgetData = ref([
-  {
-    title: 'Session',
-    value: '21,459',
-    change: 29,
-    desc: 'Total Users',
-    icon: 'tabler-users',
-    iconColor: 'primary',
-  },
-  {
-    title: 'Paid Users',
-    value: '4,567',
-    change: 18,
-    desc: 'Last Week Analytics',
-    icon: 'tabler-user-plus',
-    iconColor: 'error',
-  },
-  {
-    title: 'Active Users',
-    value: '19,860',
-    change: -14,
-    desc: 'Last Week Analytics',
-    icon: 'tabler-user-check',
-    iconColor: 'success',
-  },
-  {
-    title: 'Pending Users',
-    value: '237',
-    change: 42,
-    desc: 'Last Week Analytics',
-    icon: 'tabler-user-search',
-    iconColor: 'warning',
-  },
-])
 </script>
 
 <template>
   <section>
-    <!-- 👉 Widgets -->
-    <div class="d-flex mb-6">
-      <VRow>
-        <template
-          v-for="(data, id) in widgetData"
-          :key="id"
-        >
-          <VCol
-            cols="12"
-            md="3"
-            sm="6"
-          >
-            <VCard>
-              <VCardText>
-                <div class="d-flex justify-space-between">
-                  <div class="d-flex flex-column gap-y-1">
-                    <div class="text-body-1 text-high-emphasis">
-                      {{ data.title }}
-                    </div>
-                    <div class="d-flex gap-x-2 align-center">
-                      <h4 class="text-h4">
-                        {{ data.value }}
-                      </h4>
-                      <div
-                        class="text-base"
-                        :class="data.change > 0 ? 'text-success' : 'text-error'"
-                      >
-                        ({{ prefixWithPlus(data.change) }}%)
-                      </div>
-                    </div>
-                    <div class="text-sm">
-                      {{ data.desc }}
-                    </div>
-                  </div>
-                  <VAvatar
-                    :color="data.iconColor"
-                    variant="tonal"
-                    rounded
-                    size="42"
-                  >
-                    <VIcon
-                      :icon="data.icon"
-                      size="26"
-                    />
-                  </VAvatar>
-                </div>
-              </VCardText>
-            </VCard>
-          </VCol>
-        </template>
-      </VRow>
-    </div>
-
     <VCard class="mb-6">
       <VCardItem class="pb-4">
         <VCardTitle>Filters</VCardTitle>
@@ -296,21 +162,21 @@ const widgetData = ref([
 
       <VCardText>
         <VRow>
-          <!-- 👉 Select Role -->
+          <!-- 👉 Select Identifier Type -->
           <VCol
             cols="12"
             sm="4"
           >
             <AppSelect
-              v-model="selectedRole"
-              placeholder="Select Role"
-              :items="roles"
+              v-model="selectedIdentifierType"
+              placeholder="Select Identifier Type"
+              :items="identifierTypes"
               clearable
               clear-icon="tabler-x"
             />
           </VCol>
           <!-- 👉 Select Plan -->
-          <VCol
+          <!-- <VCol
             cols="12"
             sm="4"
           >
@@ -321,7 +187,7 @@ const widgetData = ref([
               clearable
               clear-icon="tabler-x"
             />
-          </VCol>
+          </VCol> -->
           <!-- 👉 Select Status -->
           <VCol
             cols="12"
@@ -362,7 +228,7 @@ const widgetData = ref([
           <div style="inline-size: 15.625rem;">
             <AppTextField
               v-model="searchQuery"
-              placeholder="Search User"
+              placeholder="Search Client"
             />
           </div>
 
@@ -378,9 +244,9 @@ const widgetData = ref([
           <!-- 👉 Add user button -->
           <VBtn
             prepend-icon="tabler-plus"
-            @click="isAddNewUserDrawerVisible = true"
+            @click="isAddNewClientDrawerVisible = true"
           >
-            Add New User
+            Add New Client
           </VBtn>
         </div>
       </VCardText>
@@ -392,81 +258,78 @@ const widgetData = ref([
         v-model:items-per-page="itemsPerPage"
         v-model:model-value="selectedRows"
         v-model:page="page"
-        :items="users"
+        :items="clients"
         item-value="id"
-        :items-length="totalUsers"
+        :items-length="totalClients"
         :headers="headers"
         class="text-no-wrap"
         show-select
         @update:options="updateOptions"
       >
         <!-- User -->
-        <template #item.user="{ item }">
+        <template #item.client_id="{ item }">
           <div class="d-flex align-center gap-x-4">
-            <VAvatar
-              size="34"
-              :variant="!item.avatar ? 'tonal' : undefined"
-              :color="!item.avatar ? resolveUserRoleVariant(item.role).color : undefined"
-            >
-              <VImg
-                v-if="item.avatar"
-                :src="item.avatar"
-              />
-              <span v-else>{{ avatarText(item.fullName) }}</span>
-            </VAvatar>
             <div class="d-flex flex-column">
               <h6 class="text-base">
                 <RouterLink
                   :to="{ name: 'apps-user-view-id', params: { id: item.id } }"
                   class="font-weight-medium text-link"
                 >
-                  {{ item.fullName }}
+                  {{ item.clientId }}
                 </RouterLink>
               </h6>
               <div class="text-sm">
-                {{ item.email }}
+                {{ item.id }}
               </div>
             </div>
           </div>
         </template>
 
         <!-- 👉 Role -->
-        <template #item.role="{ item }">
+        <template #item.client_name="{ item }">
           <div class="d-flex align-center gap-x-2">
-            <VIcon
-              :size="22"
-              :icon="resolveUserRoleVariant(item.role).icon"
-              :color="resolveUserRoleVariant(item.role).color"
-            />
-
             <div class="text-capitalize text-high-emphasis text-body-1">
-              {{ item.role }}
+              {{ item.clientName }}
             </div>
           </div>
         </template>
 
         <!-- Plan -->
-        <template #item.plan="{ item }">
+        <template #item.identifier_type="{ item }">
           <div class="text-body-1 text-high-emphasis text-capitalize">
-            {{ item.currentPlan }}
+            {{ item.identifierType }}
+          </div>
+        </template>
+
+        <!-- Plan -->
+        <template #item.company="{ item }">
+          <div class="text-body-1 text-high-emphasis text-capitalize">
+            {{ item.companyName }}
+          </div>
+        </template>
+
+        <!-- Plan -->
+        <template #item.created_date="{ item }">
+          <div class="text-body-1 text-high-emphasis text-capitalize">
+            {{ item.createdDate }}
           </div>
         </template>
 
         <!-- Status -->
         <template #item.status="{ item }">
           <VChip
-            :color="resolveUserStatusVariant(item.status)"
+            :color="resolveClientStatusVariant(item.status)"
             size="small"
             label
             class="text-capitalize"
           >
-            {{ item.status }}
+            {{ item.status == '0' ? 'IN_ACTIVE' : 'ACTIVE' }}
           </VChip>
         </template>
 
         <!-- Actions -->
         <template #item.actions="{ item }">
-          <IconBtn @click="deleteUser(item.id)">
+          <IconBtn @click="deleteClient(item.id)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
 
@@ -497,7 +360,7 @@ const widgetData = ref([
                   <VListItemTitle>Edit</VListItemTitle>
                 </VListItem>
 
-                <VListItem @click="deleteUser(item.id)">
+                <VListItem @click="deleteClient(item.id)">
                   <template #prepend>
                     <VIcon icon="tabler-trash" />
                   </template>
@@ -513,15 +376,16 @@ const widgetData = ref([
           <TablePagination
             v-model:page="page"
             :items-per-page="itemsPerPage"
-            :total-items="totalUsers"
+            :total-items="totalClients"
           />
         </template>
       </VDataTableServer>
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New User -->
-    <AddNewUserDrawer
-      v-model:isDrawerOpen="isAddNewUserDrawerVisible"
+    <AddNewClientDrawer
+      v-model:isDrawerOpen="isAddNewClientDrawerVisible"
+      @user-data="addNewClient"
     />
   </section>
 </template>
