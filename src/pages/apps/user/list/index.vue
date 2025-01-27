@@ -507,7 +507,6 @@ const widgetData = ref([
     <!-- 👉 Add New User -->
     <AddNewUserDrawer
       v-model:isDrawerOpen="isAddNewUserDrawerVisible"
-      @user-data="addNewUser"
     />
   </section>
 </template>

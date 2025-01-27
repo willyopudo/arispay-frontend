@@ -133,8 +133,13 @@ method: 'POST',
 body: JSON.stringify(req),
 headers: {"Content-Type": 'application/json'}
 })
-    console.log(savedUser)
-    toast.success('Company User Created Successfully')
+    if (savedUser._value !== null) {
+      console.log('Log: ' + JSON.stringify(savedUser))
+      toast.success('Company user created successfully')
+    }
+    else {     
+      toast.error('Error creating company user', err)
+    }
 
     await nextTick(() => {
       router.replace(route.query.to ? String(route.query.to) : '/apps/user/list')
