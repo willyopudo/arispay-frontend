@@ -1,17 +1,6 @@
 <script setup>
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
 
-async function fileExists(url) {
-  try {
-    const response = await fetch(url, { method: 'GET' });
-    return response.ok;
-  } catch (error) {
-    return false;
-  }
-}
-const defaultAvatar = "/images/avatars/default-avatar.png";
-const app_base_url = import.meta.env.VITE_APP_BASE_URL;
-
 // 👉 Store
 const searchQuery = ref('')
 const selectedRole = ref()
@@ -62,7 +51,7 @@ const headers = [
 const {
   data: usersList,
   execute: fetchUsers,
-} = await customUseApi('/users', {
+} = await customUseApi('/user', {
   // query: {
   //   q: searchQuery,
   //   status: selectedStatus,
@@ -74,7 +63,7 @@ const {
   //   orderBy,
   // },
 })
-//console.log(usersList.value)
+console.log(usersList.value)
 const users = computed(() => usersList.value)
 const totalUsers = computed(() => usersList.value.length)
 
@@ -155,11 +144,7 @@ const resolveUserRoleVariant = role => {
       color: 'info',
       icon: 'tabler-chart-pie',
     }
-  if (roleLowerCase === 'role_company_admin')
-    return {
-      color: 'warning',
-      icon: 'tabler-chart-pie',
-    }
+  
 }
 
 const resolveUserStatusVariant = stat => {
