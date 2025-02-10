@@ -14,6 +14,18 @@ const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
 
+//dialogs
+const isUserInfoEditDialogVisible = ref(false)
+// State for modal and selected user
+const selectedUser = ref(null);
+
+// Open modal with user details
+const openModal = (user) => {
+  selectedUser.value = user;
+  isUserInfoEditDialogVisible.value = true;
+};
+
+
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
@@ -185,34 +197,34 @@ const deleteUser = async id => {
 
 const widgetData = ref([
   {
-    title: 'Session',
-    value: '21,459',
-    change: 29,
+    title: 'Users',
+    value: '2,100',
+    change: 2.1,
     desc: 'Total Users',
     icon: 'tabler-users',
     iconColor: 'primary',
   },
   {
-    title: 'Paid Users',
+    title: 'Active Users',
     value: '4,567',
     change: 18,
-    desc: 'Last Week Analytics',
-    icon: 'tabler-user-plus',
-    iconColor: 'error',
-  },
-  {
-    title: 'Active Users',
-    value: '19,860',
-    change: -14,
-    desc: 'Last Week Analytics',
+    desc: 'Active Users',
     icon: 'tabler-user-check',
     iconColor: 'success',
+  },
+  {
+    title: 'Inactive Users',
+    value: '19,860',
+    change: -14,
+    desc: 'Not ACtive Users',
+    icon: 'tabler-user-plus',
+    iconColor: 'error',
   },
   {
     title: 'Pending Users',
     value: '237',
     change: 42,
-    desc: 'Last Week Analytics',
+    desc: 'Pending Users',
     icon: 'tabler-user-search',
     iconColor: 'warning',
   },
@@ -397,7 +409,7 @@ const widgetData = ref([
                 v-if="item.avatar"
                 :src="item.avatar"
               />
-              <span v-else>{{ avatarText(item.fullName) }}</span>
+              <span v-else>{{ avatarText(item.firstName) }}</span>
             </VAvatar>
             <div class="d-flex flex-column">
               <h6 class="text-base">
@@ -405,11 +417,11 @@ const widgetData = ref([
                   :to="{ name: 'apps-user-view-id', params: { id: item.id } }"
                   class="font-weight-medium text-link"
                 >
-                  {{ item.fullName }}
+                {{ item.firstName }} {{ item.lastName }}
                 </RouterLink>
               </h6>
               <div class="text-sm">
-                {{ item.email }}
+                {{ item.email }} 
               </div>
             </div>
           </div>
@@ -451,46 +463,24 @@ const widgetData = ref([
 
         <!-- Actions -->
         <template #item.actions="{ item }">
-          <IconBtn @click="deleteUser(item.id)">
-            <VIcon icon="tabler-trash" />
-          </IconBtn>
 
-          <IconBtn>
+          <IconBtn @click="openModal(item)">
             <VIcon icon="tabler-eye" />
           </IconBtn>
 
-          <VBtn
-            icon
-            variant="text"
-            color="medium-emphasis"
-          >
-            <VIcon icon="tabler-dots-vertical" />
-            <VMenu activator="parent">
-              <VList>
-                <VListItem :to="{ name: 'apps-user-view-id', params: { id: item.id } }">
-                  <template #prepend>
-                    <VIcon icon="tabler-eye" />
-                  </template>
+          <!-- 👉 Edit user info dialog -->
+        <!-- <UserInfoEditDialog 
+          v-model:isDialogVisible="isUserInfoEditDialogVisible"
+          :user-data="users.find(obj => obj.id === item.id)"
+        /> -->
 
-                  <VListItemTitle>View</VListItemTitle>
-                </VListItem>
+          <IconBtn>
+            <VIcon icon="tabler-pencil" />
+          </IconBtn>
 
-                <VListItem link>
-                  <template #prepend>
-                    <VIcon icon="tabler-pencil" />
-                  </template>
-                  <VListItemTitle>Edit</VListItemTitle>
-                </VListItem>
-
-                <VListItem @click="deleteUser(item.id)">
-                  <template #prepend>
-                    <VIcon icon="tabler-trash" />
-                  </template>
-                  <VListItemTitle>Delete</VListItemTitle>
-                </VListItem>
-              </VList>
-            </VMenu>
-          </VBtn>
+          <IconBtn @click="deleteUser(item.id)">
+            <VIcon icon="tabler-trash" />
+          </IconBtn>
         </template>
 
         <!-- pagination -->
@@ -502,6 +492,7 @@ const widgetData = ref([
           />
         </template>
       </VDataTableServer>
+      <UserInfoEditDialog v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" />
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New User -->

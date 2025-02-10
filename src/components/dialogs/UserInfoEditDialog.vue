@@ -5,20 +5,17 @@ const props = defineProps({
     required: false,
     default: () => ({
       id: 0,
-      fullName: '',
-      company: '',
+      firstName: '',
+      lasttName: '',
+      // company: '',
       role: '',
       username: '',
-      country: '',
-      contact: '',
+      phoneNumber: '',
       email: '',
       currentPlan: '',
       status: '',
       avatar: '',
-      taskDone: null,
-      projectDone: null,
-      taxId: '',
-      language: '',
+      address: '',
     }),
   },
   isDialogVisible: {
@@ -33,6 +30,7 @@ const emit = defineEmits([
 ])
 
 const userData = ref(structuredClone(toRaw(props.userData)))
+console.log(userData.value)
 const isUseAsBillingAddress = ref(false)
 
 watch(() => props, () => {
@@ -85,7 +83,7 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="userData.fullName.split(' ')[0]"
+                v-model="userData.firstName"
                 label="First Name"
                 placeholder="John"
               />
@@ -97,7 +95,7 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="userData.fullName.split(' ')[1]"
+                v-model="userData.lastName"
                 label="Last Name"
                 placeholder="Doe"
               />
@@ -143,8 +141,8 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="userData.taxId"
-                label="Tax ID"
+                v-model="userData.address"
+                label="Address"
                 placeholder="123456789"
               />
             </VCol>
@@ -155,14 +153,14 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="userData.contact"
+                v-model="userData.phoneNumber"
                 label="Phone Number"
                 placeholder="+1 9876543210"
               />
             </VCol>
 
             <!-- 👉 Language -->
-            <VCol
+            <!-- <VCol
               cols="12"
               md="6"
             >
@@ -175,10 +173,10 @@ const dialogModelValueUpdate = val => {
                 placeholder="English"
                 :items="['English', 'Spanish', 'French']"
               />
-            </VCol>
+            </VCol> -->
 
             <!-- 👉 Country -->
-            <VCol
+            <!-- <VCol
               cols="12"
               md="6"
             >
@@ -188,7 +186,7 @@ const dialogModelValueUpdate = val => {
                 placeholder="United States"
                 :items="['United States', 'United Kingdom', 'France']"
               />
-            </VCol>
+            </VCol> -->
 
             <!-- 👉 Switch -->
             <VCol cols="12">
