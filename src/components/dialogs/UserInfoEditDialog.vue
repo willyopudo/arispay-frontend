@@ -6,7 +6,7 @@ const props = defineProps({
     default: () => ({
       id: 0,
       firstName: '',
-      lasttName: '',
+      lastName: '',
       // company: '',
       role: '',
       username: '',
