@@ -18,11 +18,13 @@ const selectedRows = ref([])
 const isUserInfoEditDialogVisible = ref(false)
 // State for modal and selected user
 const selectedUser = ref(null);
+const todo = ref(null);
 
 // Open modal with user details
-const openModal = (user) => {
+const openModal = (user, action) => {
   selectedUser.value = user;
   isUserInfoEditDialogVisible.value = true;
+  todo.value = action;
 };
 
 
@@ -464,7 +466,7 @@ const widgetData = ref([
         <!-- Actions -->
         <template #item.actions="{ item }">
 
-          <IconBtn @click="openModal(item)">
+          <IconBtn @click="openModal(item, 'view')">
             <VIcon icon="tabler-eye" />
           </IconBtn>
 
@@ -474,7 +476,7 @@ const widgetData = ref([
           :user-data="users.find(obj => obj.id === item.id)"
         /> -->
 
-          <IconBtn>
+          <IconBtn  @click="openModal(item, 'edit')">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
 
@@ -492,7 +494,7 @@ const widgetData = ref([
           />
         </template>
       </VDataTableServer>
-      <UserInfoEditDialog v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" />
+      <UserInfoEditDialog v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New User -->
