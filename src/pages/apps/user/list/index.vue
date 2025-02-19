@@ -185,6 +185,18 @@ const addNewUser = async userData => {
   fetchUsers()
 }
 
+const updateUser = async userData => {
+  console.log(JSON.stringify(userData))
+  await customUseApi(`/user/${userData.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(userData),
+    headers: {"Content-Type": 'application/json'}
+  })
+
+  // Refetch User
+  fetchUsers()
+}
+
 const deleteUser = async id => {
   await $api(`/apps/users/${ id }`, { method: 'DELETE' })
 
@@ -231,6 +243,10 @@ const widgetData = ref([
     iconColor: 'warning',
   },
 ])
+const handleDataFromUserInfoEDitDialog = (data) => {
+  updateUser(data)
+}
+
 </script>
 
 <template>
@@ -494,7 +510,7 @@ const widgetData = ref([
           />
         </template>
       </VDataTableServer>
-      <UserInfoEditDialog v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
+      <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New User -->
