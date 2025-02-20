@@ -66,10 +66,6 @@ const headers = [
   },
 ]
 
-const {
-  data: usersList,
-  execute: fetchUsers,
-} = await customUseApi('/user', {
 fetchUsers()
 // const {
 //   data: usersList,
@@ -86,14 +82,9 @@ fetchUsers()
   //   sortBy,
   //   orderBy,
   // },
-})
-console.log(usersList.value)
-const users = computed(() => usersList.value)
-const totalUsers = computed(() => usersList.value.length)
 //})
-//console.log(usersList.value)
-users = computed(() => usersList.value)
-totalUsers = computed(() => usersList.value.length)
+//users = computed(() => usersList.value)
+//totalUsers = computed(() => usersList.value.length)
 
 // 👉 search filters
 const roles = [
