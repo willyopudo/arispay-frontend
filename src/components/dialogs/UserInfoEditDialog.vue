@@ -5,24 +5,26 @@ const props = defineProps({
     required: false,
     default: () => ({
       id: 0,
-      fullName: '',
-      company: '',
+      firstName: '',
+      lastName: '',
+      // company: '',
       role: '',
       username: '',
-      country: '',
-      contact: '',
+      phoneNumber: '',
       email: '',
       currentPlan: '',
       status: '',
       avatar: '',
-      taskDone: null,
-      projectDone: null,
-      taxId: '',
-      language: '',
+      address: '',
+      companyName: '',
     }),
   },
   isDialogVisible: {
     type: Boolean,
+    required: true,
+  },
+  action: {
+    type: String,
     required: true,
   },
 })
@@ -33,7 +35,10 @@ const emit = defineEmits([
 ])
 
 const userData = ref(structuredClone(toRaw(props.userData)))
+//console.log(userData.value)
 const isUseAsBillingAddress = ref(false)
+
+
 
 watch(() => props, () => {
   userData.value = structuredClone(toRaw(props.userData))
@@ -52,6 +57,21 @@ const onFormReset = () => {
 const dialogModelValueUpdate = val => {
   emit('update:isDialogVisible', val)
 }
+
+const titleCase = (str) => {
+  return str.replace(/\w\S*/g, (txt) => {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
+
+const currentPlan = computed({
+  get() {
+    return titleCase(userData.value.currentPlan);
+  },
+  set(value) {
+    userData.value.currentPlan = value;
+  }
+});
 </script>
 
 <template>
@@ -67,7 +87,7 @@ const dialogModelValueUpdate = val => {
       <VCardText>
         <!-- 👉 Title -->
         <h4 class="text-h4 text-center mb-2">
-          Edit User Information
+          {{ action === 'edit' ? 'Edit' : 'View' }} User Information
         </h4>
         <p class="text-body-1 text-center mb-6">
           Updating user details will receive a privacy audit.
@@ -85,7 +105,7 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="userData.fullName.split(' ')[0]"
+                v-model="userData.firstName"
                 label="First Name"
                 placeholder="John"
               />
@@ -97,7 +117,7 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="userData.fullName.split(' ')[1]"
+                v-model="userData.lastName"
                 label="Last Name"
                 placeholder="Doe"
               />
@@ -134,6 +154,7 @@ const dialogModelValueUpdate = val => {
                 label="Status"
                 placeholder="Active"
                 :items="['Active', 'Inactive', 'Pending']"
+                :disabled="action === 'view'"
               />
             </VCol>
 
@@ -143,8 +164,8 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="userData.taxId"
-                label="Tax ID"
+                v-model="userData.address"
+                label="Address"
                 placeholder="123456789"
               />
             </VCol>
@@ -155,39 +176,38 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="userData.contact"
+                v-model="userData.phoneNumber"
                 label="Phone Number"
                 placeholder="+1 9876543210"
               />
             </VCol>
 
-            <!-- 👉 Language -->
+            <!-- 👉 Current Plan -->
             <VCol
               cols="12"
               md="6"
             >
               <AppSelect
-                v-model="userData.language"
-                closable-chips
-                chips
-                multiple
-                label="Language"
-                placeholder="English"
-                :items="['English', 'Spanish', 'French']"
+                v-model="currentPlan"
+                label="Current Plan"
+                placeholder="Basic"
+                :items="['Basic', 'Standard', 'Enterprise','Special']"
+                :disabled="action === 'view'"
               />
             </VCol>
 
-            <!-- 👉 Country -->
+            <!-- 👉 Role -->
             <VCol
               cols="12"
               md="6"
             >
               <AppSelect
-                v-model="userData.country"
-                label="Country"
+                v-model="userData.role"
+                label="Role"
                 placeholder="United States"
-                :items="['United States', 'United Kingdom', 'France']"
-              />
+                :items="[ { title: 'Company Admin', value: 'ROLE_COMPANY_ADMIN', }, { title: 'Company User', value: 'ROLE_COMPANY_USER', }, { title: 'Super Admin', value: 'ROLE_ADMIN', }, { title: 'Normal User', value: 'ROLE_USER', } ] "
+                :disabled="action === 'view'"
+                />
             </VCol>
 
             <!-- 👉 Switch -->
@@ -195,7 +215,7 @@ const dialogModelValueUpdate = val => {
               <VSwitch
                 v-model="isUseAsBillingAddress"
                 density="compact"
-                label="Use as a billing address?"
+                :label="userData.userCompanies.length != 0 ? userData.userCompanies[0].companyName : 'Undefined'"
               />
             </VCol>
 
@@ -204,7 +224,8 @@ const dialogModelValueUpdate = val => {
               cols="12"
               class="d-flex flex-wrap justify-center gap-4"
             >
-              <VBtn type="submit">
+              <VBtn type="submit"
+                v-if="action === 'edit'">
                 Submit
               </VBtn>
 

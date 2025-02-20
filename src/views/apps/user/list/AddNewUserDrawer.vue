@@ -1,5 +1,7 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { useToast } from 'vue-toastification';
+import { useCookies } from 'vue3-cookies';
 
 const props = defineProps({
   isDrawerOpen: {
@@ -13,16 +15,40 @@ const emit = defineEmits([
   'userData',
 ])
 
+const { cookies } = useCookies();
+
+const toast = useToast();
+
+const route = useRoute();
+const router = useRouter();
+
 const isFormValid = ref(false)
+
+const userForm = ref({
+  username: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  phoneNumber: '',
+  address: '',
+  postalCode: '',
+  town: '',
+  currentPlan: '',
+  avatar: '',
+  role: 'ROLE_COMPANY_ADMIN'
+})
+
 const refForm = ref()
-const fullName = ref('')
-const userName = ref('')
+const firstName = ref('')
+const lastName = ref('')
+const username = ref('')
 const email = ref('')
-const company = ref('')
-const country = ref()
-const contact = ref('')
+const phoneNumber = ref('')
+const address = ref('')
+const zipCode = ref()
+const town = ref('')
 const role = ref()
-const plan = ref()
+const currentPlan = ref()
 const status = ref()
 
 // 👉 drawer close
@@ -37,18 +63,29 @@ const closeNavigationDrawer = () => {
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
+      register();
+      const userData = useCookie('userData').value;
       emit('userData', {
-        id: 0,
-        fullName: fullName.value,
-        company: company.value,
-        role: role.value,
-        country: country.value,
-        contact: contact.value,
+        id: null,
+        username: username.value,
+        firstName: firstName.value,
+        lastName: lastName.value,
         email: email.value,
-        currentPlan: plan.value,
+        userCompanies: [
+          {
+            id: null,
+            companyId: userData.companyId.value,
+            isDefault: false
+          }
+        ],
+        phoneNumber: phoneNumber.value,
+        address: address.value,
+        zipCode: zipCode.value,
+        town: town.value,
+        role: "ROLE_COMPANY_USER",
         status: status.value,
-        avatar: '',
-        billing: 'Auto Debit',
+        currentPlan: currentPlan.value,
+        avatar: "",
       })
       emit('update:isDrawerOpen', false)
       nextTick(() => {
@@ -57,6 +94,60 @@ const onSubmit = () => {
       })
     }
   })
+}
+
+const register = async () => {
+  try {
+    const userData = cookies.get('userData');
+    console.log('User data: ' + JSON.stringify(userData));
+  const req = {
+
+id: null,
+"username": username.value,
+"firstName": firstName.value,
+"lastName": lastName.value,
+"email": email.value,
+"userCompanies": [
+  {
+    id: null,
+    "companyId": userData.companyId,
+    "isDefault": true
+  }
+],
+"phoneNumber": phoneNumber.value,
+"address": address.value,
+"zipCode": zipCode.value,
+"town": town.value,
+"role": "ROLE_COMPANY_USER",
+"status": status.value,
+"currentPlan": currentPlan.value,
+"avatar": ""
+
+}
+console.log("Request payload:", JSON.stringify(req, null, 2));
+    const {
+  data: savedUser,
+  execute: saveCompanyUser,
+} = await customUseApi('/user', {
+method: 'POST',
+body: JSON.stringify(req),
+headers: {"Content-Type": 'application/json'}
+})
+    if (savedUser._value !== null) {
+      console.log('Log: ' + JSON.stringify(savedUser))
+      toast.success('Company user created successfully')
+    }
+    else {     
+      toast.error('Error creating company user', err)
+    }
+
+    await nextTick(() => {
+      router.replace(route.query.to ? String(route.query.to) : '/apps/user/list')
+    })
+  } catch (err) {
+    console.log("Error: "+ err)
+    toast.error('Error creating company user', err)
+  }
 }
 
 const handleDrawerModelValueUpdate = val => {
@@ -91,20 +182,29 @@ const handleDrawerModelValueUpdate = val => {
             @submit.prevent="onSubmit"
           >
             <VRow>
-              <!-- 👉 Full name -->
+              <!-- 👉 First name -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="fullName"
+                  v-model="firstName"
                   :rules="[requiredValidator]"
-                  label="Full Name"
-                  placeholder="John Doe"
+                  label="First Name"
+                  placeholder="John"
+                />
+              </VCol>
+              <!-- 👉 Last name -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="lastName"
+                  :rules="[requiredValidator]"
+                  label="Last Name"
+                  placeholder="Doe"
                 />
               </VCol>
 
               <!-- 👉 Username -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="userName"
+                  v-model="username"
                   :rules="[requiredValidator]"
                   label="Username"
                   placeholder="Johndoe"
@@ -121,53 +221,51 @@ const handleDrawerModelValueUpdate = val => {
                 />
               </VCol>
 
-              <!-- 👉 company -->
+              <!-- 👉 Phone Number -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="company"
-                  :rules="[requiredValidator]"
-                  label="Company"
-                  placeholder="PixInvent"
-                />
-              </VCol>
-
-              <!-- 👉 Country -->
-              <VCol cols="12">
-                <AppSelect
-                  v-model="country"
-                  label="Select Country"
-                  placeholder="Select Country"
-                  :rules="[requiredValidator]"
-                  :items="['USA', 'UK', 'India', 'Australia']"
-                />
-              </VCol>
-
-              <!-- 👉 Contact -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="contact"
+                  v-model="phoneNumber"
                   type="number"
                   :rules="[requiredValidator]"
-                  label="Contact"
-                  placeholder="+1-541-754-3010"
+                  label="Phone Number"
+                  placeholder="+254-711-222-333"
                 />
               </VCol>
 
-              <!-- 👉 Role -->
+              <!-- 👉Physical Address -->
               <VCol cols="12">
-                <AppSelect
-                  v-model="role"
-                  label="Select Role"
-                  placeholder="Select Role"
+                <AppTextField
+                  v-model="address"
                   :rules="[requiredValidator]"
-                  :items="['Admin', 'Author', 'Editor', 'Maintainer', 'Subscriber']"
+                  label="Physical Address"
+                  placeholder="Kahawa Sukari"
+                />
+              </VCol>
+
+              <!-- 👉Postal Address -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="zipCode"
+                  :rules="[requiredValidator]"
+                  label="Postal Address"
+                  placeholder="5306-00200"
+                />
+              </VCol>
+
+              <!-- 👉Town -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="town"
+                  :rules="[requiredValidator]"
+                  label="Town"
+                  placeholder="Ruiru"
                 />
               </VCol>
 
               <!-- 👉 Plan -->
               <VCol cols="12">
                 <AppSelect
-                  v-model="plan"
+                  v-model="currentPlan"
                   label="Select Plan"
                   placeholder="Select Plan"
                   :rules="[requiredValidator]"

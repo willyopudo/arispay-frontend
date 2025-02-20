@@ -1,17 +1,6 @@
 <script setup>
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
 
-async function fileExists(url) {
-  try {
-    const response = await fetch(url, { method: 'GET' });
-    return response.ok;
-  } catch (error) {
-    return false;
-  }
-}
-const defaultAvatar = "/images/avatars/default-avatar.png";
-const app_base_url = import.meta.env.VITE_APP_BASE_URL;
-
 // 👉 Store
 const searchQuery = ref('')
 const selectedRole = ref()
@@ -24,6 +13,20 @@ const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
+
+//dialogs
+const isUserInfoEditDialogVisible = ref(false)
+// State for modal and selected user
+const selectedUser = ref(null);
+const todo = ref(null);
+
+// Open modal with user details
+const openModal = (user, action) => {
+  selectedUser.value = user;
+  isUserInfoEditDialogVisible.value = true;
+  todo.value = action;
+};
+
 
 //Users stats
 const users = ref({})
@@ -62,6 +65,11 @@ const headers = [
     sortable: false,
   },
 ]
+
+const {
+  data: usersList,
+  execute: fetchUsers,
+} = await customUseApi('/user', {
 fetchUsers()
 // const {
 //   data: usersList,
@@ -78,6 +86,10 @@ fetchUsers()
   //   sortBy,
   //   orderBy,
   // },
+})
+console.log(usersList.value)
+const users = computed(() => usersList.value)
+const totalUsers = computed(() => usersList.value.length)
 //})
 //console.log(usersList.value)
 users = computed(() => usersList.value)
@@ -140,7 +152,17 @@ const resolveUserRoleVariant = role => {
       color: 'success',
       icon: 'tabler-user',
     }
+  if (roleLowerCase === 'role_company_user')
+    return {
+      color: 'success',
+      icon: 'tabler-user',
+    }
   if (roleLowerCase === 'role_admin')
+    return {
+      color: 'error',
+      icon: 'tabler-device-desktop',
+    }
+  if (roleLowerCase === 'role_company_admin')
     return {
       color: 'error',
       icon: 'tabler-device-desktop',
@@ -150,11 +172,7 @@ const resolveUserRoleVariant = role => {
       color: 'info',
       icon: 'tabler-chart-pie',
     }
-  if (roleLowerCase === 'role_company_admin')
-    return {
-      color: 'warning',
-      icon: 'tabler-chart-pie',
-    }
+  
 }
 
 const resolveUserStatusVariant = stat => {
@@ -195,6 +213,18 @@ const addNewUser = async userData => {
   fetchUsers()
 }
 
+const updateUser = async userData => {
+  console.log(JSON.stringify(userData))
+  await customUseApi(`/user/${userData.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(userData),
+    headers: {"Content-Type": 'application/json'}
+  })
+
+  // Refetch User
+  fetchUsers()
+}
+
 const deleteUser = async id => {
   await $api(`/apps/users/${ id }`, { method: 'DELETE' })
 
@@ -209,38 +239,42 @@ const deleteUser = async id => {
 
 const widgetData = ref([
   {
-    title: 'Session',
-    value: '21,459',
-    change: 29,
+    title: 'Users',
+    value: '2,100',
+    change: 2.1,
     desc: 'Total Users',
     icon: 'tabler-users',
     iconColor: 'primary',
   },
   {
-    title: 'Paid Users',
+    title: 'Active Users',
     value: '4,567',
     change: 18,
-    desc: 'Last Week Analytics',
-    icon: 'tabler-user-plus',
-    iconColor: 'error',
-  },
-  {
-    title: 'Active Users',
-    value: '19,860',
-    change: -14,
-    desc: 'Last Week Analytics',
+    desc: 'Active Users',
     icon: 'tabler-user-check',
     iconColor: 'success',
+  },
+  {
+    title: 'Inactive Users',
+    value: '19,860',
+    change: -14,
+    desc: 'Not ACtive Users',
+    icon: 'tabler-user-plus',
+    iconColor: 'error',
   },
   {
     title: 'Pending Users',
     value: '237',
     change: 42,
-    desc: 'Last Week Analytics',
+    desc: 'Pending Users',
     icon: 'tabler-user-search',
     iconColor: 'warning',
   },
 ])
+const handleDataFromUserInfoEDitDialog = (data) => {
+  updateUser(data)
+}
+
 </script>
 
 <template>
@@ -421,7 +455,7 @@ const widgetData = ref([
                 v-if="item.avatar"
                 :src="item.avatar"
               />
-              <span v-else>{{ avatarText(item.fullName) }}</span>
+              <span v-else>{{ avatarText(item.firstName) }}</span>
             </VAvatar>
             <div class="d-flex flex-column">
               <h6 class="text-base">
@@ -429,11 +463,11 @@ const widgetData = ref([
                   :to="{ name: 'apps-user-view-id', params: { id: item.id } }"
                   class="font-weight-medium text-link"
                 >
-                  {{ item.fullName }}
+                {{ item.firstName }} {{ item.lastName }}
                 </RouterLink>
               </h6>
               <div class="text-sm">
-                {{ item.email }}
+                {{ item.email }} 
               </div>
             </div>
           </div>
@@ -475,46 +509,24 @@ const widgetData = ref([
 
         <!-- Actions -->
         <template #item.actions="{ item }">
-          <IconBtn @click="deleteUser(item.id)">
-            <VIcon icon="tabler-trash" />
-          </IconBtn>
 
-          <IconBtn>
+          <IconBtn @click="openModal(item, 'view')">
             <VIcon icon="tabler-eye" />
           </IconBtn>
 
-          <VBtn
-            icon
-            variant="text"
-            color="medium-emphasis"
-          >
-            <VIcon icon="tabler-dots-vertical" />
-            <VMenu activator="parent">
-              <VList>
-                <VListItem :to="{ name: 'apps-user-view-id', params: { id: item.id } }">
-                  <template #prepend>
-                    <VIcon icon="tabler-eye" />
-                  </template>
+          <!-- 👉 Edit user info dialog -->
+        <!-- <UserInfoEditDialog 
+          v-model:isDialogVisible="isUserInfoEditDialogVisible"
+          :user-data="users.find(obj => obj.id === item.id)"
+        /> -->
 
-                  <VListItemTitle>View</VListItemTitle>
-                </VListItem>
+          <IconBtn  @click="openModal(item, 'edit')">
+            <VIcon icon="tabler-pencil" />
+          </IconBtn>
 
-                <VListItem link>
-                  <template #prepend>
-                    <VIcon icon="tabler-pencil" />
-                  </template>
-                  <VListItemTitle>Edit</VListItemTitle>
-                </VListItem>
-
-                <VListItem @click="deleteUser(item.id)">
-                  <template #prepend>
-                    <VIcon icon="tabler-trash" />
-                  </template>
-                  <VListItemTitle>Delete</VListItemTitle>
-                </VListItem>
-              </VList>
-            </VMenu>
-          </VBtn>
+          <IconBtn @click="deleteUser(item.id)">
+            <VIcon icon="tabler-trash" />
+          </IconBtn>
         </template>
 
         <!-- pagination -->
@@ -526,6 +538,7 @@ const widgetData = ref([
           />
         </template>
       </VDataTableServer>
+      <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New User -->
