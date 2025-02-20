@@ -55,7 +55,7 @@ const customUseApi = async (endpoint, options = {}) => {
   let { data, error, response } = await useFetch(url, { ...options, headers }).get().json()
 
   if (response.value?.status === 401) {
-    console.log('Access token expired, attempting to refresh...')
+    console.info('Access token expired, attempting to refresh...')
 
     try {
       // Refresh the token

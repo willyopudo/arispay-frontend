@@ -25,6 +25,10 @@ const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
 
+//Users stats
+const users = ref({})
+const totalUsers = ref(1)
+
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
@@ -58,11 +62,12 @@ const headers = [
     sortable: false,
   },
 ]
-
-const {
-  data: usersList,
-  execute: fetchUsers,
-} = await customUseApi('/users', {
+fetchUsers()
+// const {
+//   data: usersList,
+//   error,
+//   response
+// } = await customUseApi('/users', {
   // query: {
   //   q: searchQuery,
   //   status: selectedStatus,
@@ -73,10 +78,10 @@ const {
   //   sortBy,
   //   orderBy,
   // },
-})
+//})
 //console.log(usersList.value)
-const users = computed(() => usersList.value)
-const totalUsers = computed(() => usersList.value.length)
+users = computed(() => usersList.value)
+totalUsers = computed(() => usersList.value.length)
 
 // 👉 search filters
 const roles = [
@@ -165,6 +170,20 @@ const resolveUserStatusVariant = stat => {
 }
 
 const isAddNewUserDrawerVisible = ref(false)
+
+async function fetchUsers(){
+  const {
+    data: usersList,
+    error,
+    response
+  } = await customUseApi('/users', {
+
+  })
+  console.log(error)
+  console.log(response)
+  users = computed(() => usersList.value)
+  totalUsers = computed(() => usersList.value.length)
+}
 
 const addNewUser = async userData => {
   await $api('/apps/users', {
