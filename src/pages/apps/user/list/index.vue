@@ -1,5 +1,6 @@
 <script setup>
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
+import Swal from "sweetalert2";
 
 // 👉 Store
 const searchQuery = ref('')
@@ -29,8 +30,8 @@ const openModal = (user, action) => {
 
 
 //Users stats
-const users = ref({})
-const totalUsers = ref(1)
+const fetchedUsers = ref(null)
+const totalFetchedUsers = ref(0)
 
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
@@ -66,7 +67,7 @@ const headers = [
   },
 ]
 
-fetchUsers()
+await fetchUsers()
 // const {
 //   data: usersList,
 //   error,
@@ -181,18 +182,42 @@ const resolveUserStatusVariant = stat => {
 const isAddNewUserDrawerVisible = ref(false)
 
 async function fetchUsers(){
-  const {
-    data: usersList,
-    error,
-    response
-  } = await customUseApi('/users', {
+  try {
+    const {
+      data: usersList,
+      error,
+      response
+    } = await customUseApi('/user', {
 
-  })
-  console.log(error)
-  console.log(response)
-  users = computed(() => usersList.value)
-  totalUsers = computed(() => usersList.value.length)
+    })
+    if (error.value) {
+      console.error('Error fetching users:', error.value)
+      return
+    }
+    
+    fetchedUsers.value = usersList.value
+    totalFetchedUsers.value = usersList.value.length
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
+    Toast.fire({
+      icon: "success",
+      title: "Users fetched successfully",
+    });
+  } catch (error) {
+    console.error(error)
+  }
 }
+const users = computed(() => fetchedUsers.value);
+const totalUsers = computed(() => totalFetchedUsers.value);
 
 const addNewUser = async userData => {
   await $api('/apps/users', {
