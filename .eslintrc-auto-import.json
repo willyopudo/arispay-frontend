@@ -354,6 +354,7 @@
     "watchTriggerable": true,
     "watchWithFilter": true,
     "whenever": true,
-    "customUseApi": true
+    "customUseApi": true,
+    "useSweetAlert": true
   }
 }

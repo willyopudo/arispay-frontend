@@ -1,6 +1,6 @@
 <script setup>
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
-import Swal from "sweetalert2";
+//import Swal from "sweetalert2";
 
 // 👉 Store
 const searchQuery = ref('')
@@ -68,24 +68,6 @@ const headers = [
 ]
 
 await fetchUsers()
-// const {
-//   data: usersList,
-//   error,
-//   response
-// } = await customUseApi('/users', {
-  // query: {
-  //   q: searchQuery,
-  //   status: selectedStatus,
-  //   plan: selectedPlan,
-  //   role: selectedRole,
-  //   itemsPerPage,
-  //   page,
-  //   sortBy,
-  //   orderBy,
-  // },
-//})
-//users = computed(() => usersList.value)
-//totalUsers = computed(() => usersList.value.length)
 
 // 👉 search filters
 const roles = [
@@ -191,27 +173,14 @@ async function fetchUsers(){
 
     })
     if (error.value) {
-      console.error('Error fetching users:', error.value)
+      useSweetAlert.errorMessage('Error fetching users:', error.value)
       return
     }
     
     fetchedUsers.value = usersList.value
     totalFetchedUsers.value = usersList.value.length
-    const Toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-      }
-    });
-    Toast.fire({
-      icon: "success",
-      title: "Users fetched successfully",
-    });
+    useSweetAlert.toast("Users fetched successfully");
+
   } catch (error) {
     console.error(error)
   }
@@ -242,15 +211,41 @@ const updateUser = async userData => {
 }
 
 const deleteUser = async id => {
-  await $api(`/apps/users/${ id }`, { method: 'DELETE' })
+  const canDelete = await useSweetAlert.confirm()
+  if (!canDelete) return
+  try {
+    const {
+      data,
+      error,
+      response
+    } = await customUseApi(`/user/${id}`, {
+    method: 'DELETE',
+  
+    })
+    console.log(error)
+    if (error.value && response.value.status > 499) {
+      useSweetAlert.errorMessage('An error occured', error.value)
+      return
+    }
+    if(response.value.status === 200){
+      useSweetAlert.successMessage('User deleted successfully')
 
+      // Refetch User
+      setTimeout(fetchUsers, 3000);
+    }
+    else if(response.value.status === 404)
+      useSweetAlert.errorMessage('User not found')
+    else
+      useSweetAlert.errorMessage('An error occured while deleting user')
+
+  } catch (error) {
+    console.error(error)
+    useSweetAlert.errorMessage('An error occured while deleting user')
+  }
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
   if (index !== -1)
     selectedRows.value.splice(index, 1)
-
-  // Refetch User
-  fetchUsers()
 }
 
 const widgetData = ref([
