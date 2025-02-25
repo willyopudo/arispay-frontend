@@ -54,7 +54,7 @@ const customUseApi = async (endpoint, options = {}) => {
   const url = `${baseUrl}${endpoint}`;
 
   // Initial API request
-  let { data, error, response } = await useFetch(url, { ...options, headers })
+  let { data, error, response } = await useFetch(url, { ...options, headers, throw: false })
     // .get()
     .json();
 
@@ -91,8 +91,9 @@ const customUseApi = async (endpoint, options = {}) => {
         const retryResult = await useFetch(retryUrl, {
           ...options,
           headers: newHeaders,
+          throw: false
         })
-          .get()
+          //.get()
           .json();
 
         // Return the retry result

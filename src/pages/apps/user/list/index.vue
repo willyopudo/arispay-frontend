@@ -9,7 +9,7 @@ const selectedPlan = ref()
 const selectedStatus = ref()
 
 // Data table options
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(5)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
@@ -34,6 +34,8 @@ const fetchedUsers = ref(null)
 const totalFetchedUsers = ref(0)
 
 const updateOptions = options => {
+  page.value = options.page
+  itemsPerPage.value = options.itemsPerPage
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
 }
@@ -169,23 +171,23 @@ async function fetchUsers(){
       data: usersList,
       error,
       response
-    } = await customUseApi('/user', {
+    } = await axiosApiCall('/user', {
 
     })
-    if (error.value) {
-      useSweetAlert.errorMessage('Error fetching users:', error.value)
+    if (error) {
+      useSweetAlert.errorMessage('Error fetching users: ' + error.message)
       return
     }
     
-    fetchedUsers.value = usersList.value
-    totalFetchedUsers.value = usersList.value.length
+    fetchedUsers.value = usersList
+    totalFetchedUsers.value = usersList?.length
     useSweetAlert.toast("Users fetched successfully");
 
   } catch (error) {
     console.error(error)
   }
 }
-const users = computed(() => fetchedUsers.value);
+const users = computed(() => fetchedUsers.value || []);
 const totalUsers = computed(() => totalFetchedUsers.value);
 
 const addNewUser = async userData => {
@@ -217,26 +219,21 @@ const deleteUser = async id => {
     const {
       data,
       error,
-      response
-    } = await customUseApi(`/user/${id}`, {
+      resp: status
+    } = await axiosApiCall(`/user/${id}`, {
     method: 'DELETE',
   
     })
-    console.log(error)
-    if (error.value && response.value.status > 499) {
-      useSweetAlert.errorMessage('An error occured', error.value)
+    
+    if (error && error.response) {
+      useSweetAlert.errorMessage('An error occured: ' + error.response.data.message)
       return
     }
-    if(response.value.status === 200){
-      useSweetAlert.successMessage('User deleted successfully')
+    
+    useSweetAlert.successMessage('User deleted successfully')
 
-      // Refetch User
-      setTimeout(fetchUsers, 3000);
-    }
-    else if(response.value.status === 404)
-      useSweetAlert.errorMessage('User not found')
-    else
-      useSweetAlert.errorMessage('An error occured while deleting user')
+    // Refetch User
+    setTimeout(fetchUsers, 3000);
 
   } catch (error) {
     console.error(error)
@@ -399,6 +396,7 @@ const handleDataFromUserInfoEDitDialog = (data) => {
           <AppSelect
             :model-value="itemsPerPage"
             :items="[
+              { value: 5, title: '5' },
               { value: 10, title: '10' },
               { value: 25, title: '25' },
               { value: 50, title: '50' },

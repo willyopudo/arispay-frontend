@@ -9,9 +9,6 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import VueCookies from "vue3-cookies";
 
-//Sweet alert
-import VueSweetalert2 from 'vue-sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
 
 // Create vue app
 const app = createApp(App);
@@ -20,6 +17,5 @@ const app = createApp(App);
 registerPlugins(app);
 app.use(Toast);
 app.use(VueCookies);
-app.use(VueSweetalert2); // ✅ Register globally
 // Mount vue app
 app.mount("#app");

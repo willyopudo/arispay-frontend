@@ -355,6 +355,7 @@
     "watchWithFilter": true,
     "whenever": true,
     "customUseApi": true,
-    "useSweetAlert": true
+    "useSweetAlert": true,
+    "axiosApiCall": true
   }
 }
