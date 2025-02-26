@@ -38,6 +38,8 @@ const updateOptions = options => {
   itemsPerPage.value = options.itemsPerPage
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
+
+  fetchUsers()
 }
 
 // Headers
@@ -172,15 +174,26 @@ async function fetchUsers(){
       error,
       response
     } = await axiosApiCall('/user', {
+      params: {
+        page: page.value,
+        itemsPerPage: itemsPerPage.value,
+        sortBy: sortBy.value,
+        orderBy: orderBy.value,
 
+        //Todo: Add search query
+        // search: searchQuery.value,
+        // role: selectedRole.value,
+        // plan: selectedPlan.value,
+        // status: selectedStatus.value,
+      }
     })
     if (error) {
       useSweetAlert.errorMessage('Error fetching users: ' + error.message)
       return
     }
     
-    fetchedUsers.value = usersList
-    totalFetchedUsers.value = usersList?.length
+    fetchedUsers.value = usersList.content
+    totalFetchedUsers.value = usersList.totalElements
     useSweetAlert.toast("Users fetched successfully");
 
   } catch (error) {

@@ -61,7 +61,7 @@ export const axiosApiCall = async (endpoint, options = {}) => {
         url: endpoint,
         data: options.data,
         headers: headers,
-        params : {},
+        params : options.params,
       });
       data = response.data;
       resp = response.status;
@@ -105,7 +105,7 @@ export const axiosApiCall = async (endpoint, options = {}) => {
                 url: endpoint,
                 data: options.data,
                 headers: newHeaders,
-                params : {},
+                params : options.params,
               });            
     
             // Return the retry result
