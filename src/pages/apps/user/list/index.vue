@@ -1,5 +1,6 @@
 <script setup>
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
+//import Swal from "sweetalert2";
 
 // 👉 Store
 const searchQuery = ref('')
@@ -8,7 +9,7 @@ const selectedPlan = ref()
 const selectedStatus = ref()
 
 // Data table options
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(5)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
@@ -28,9 +29,17 @@ const openModal = (user, action) => {
 };
 
 
+//Users stats
+const fetchedUsers = ref(null)
+const totalFetchedUsers = ref(0)
+
 const updateOptions = options => {
+  page.value = options.page
+  itemsPerPage.value = options.itemsPerPage
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
+
+  fetchUsers()
 }
 
 // Headers
@@ -62,24 +71,7 @@ const headers = [
   },
 ]
 
-const {
-  data: usersList,
-  execute: fetchUsers,
-} = await customUseApi('/user', {
-  // query: {
-  //   q: searchQuery,
-  //   status: selectedStatus,
-  //   plan: selectedPlan,
-  //   role: selectedRole,
-  //   itemsPerPage,
-  //   page,
-  //   sortBy,
-  //   orderBy,
-  // },
-})
-console.log(usersList.value)
-const users = computed(() => usersList.value)
-const totalUsers = computed(() => usersList.value.length)
+await fetchUsers()
 
 // 👉 search filters
 const roles = [
@@ -175,6 +167,42 @@ const resolveUserStatusVariant = stat => {
 
 const isAddNewUserDrawerVisible = ref(false)
 
+async function fetchUsers(){
+  try {
+    const {
+      data: usersList,
+      error,
+      response
+    } = await axiosApiCall('/user', {
+      params: {
+        page: page.value,
+        itemsPerPage: itemsPerPage.value,
+        sortBy: sortBy.value,
+        orderBy: orderBy.value,
+
+        //Todo: Add search query
+        // search: searchQuery.value,
+        // role: selectedRole.value,
+        // plan: selectedPlan.value,
+        // status: selectedStatus.value,
+      }
+    })
+    if (error) {
+      useSweetAlert.errorMessage('Error fetching users: ' + error.message)
+      return
+    }
+    
+    fetchedUsers.value = usersList.content
+    totalFetchedUsers.value = usersList.totalElements
+    useSweetAlert.toast("Users fetched successfully");
+
+  } catch (error) {
+    console.error(error)
+  }
+}
+const users = computed(() => fetchedUsers.value || []);
+const totalUsers = computed(() => totalFetchedUsers.value);
+
 const addNewUser = async userData => {
   await $api('/apps/users', {
     method: 'POST',
@@ -185,16 +213,49 @@ const addNewUser = async userData => {
   fetchUsers()
 }
 
-const deleteUser = async id => {
-  await $api(`/apps/users/${ id }`, { method: 'DELETE' })
+const updateUser = async userData => {
+  console.log(JSON.stringify(userData))
+  await customUseApi(`/user/${userData.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(userData),
+    headers: {"Content-Type": 'application/json'}
+  })
 
+  // Refetch User
+  fetchUsers()
+}
+
+const deleteUser = async id => {
+  const canDelete = await useSweetAlert.confirm()
+  if (!canDelete) return
+  try {
+    const {
+      data,
+      error,
+      resp: status
+    } = await axiosApiCall(`/user/${id}`, {
+    method: 'DELETE',
+  
+    })
+    
+    if (error && error.response) {
+      useSweetAlert.errorMessage('An error occured: ' + error.response.data.message)
+      return
+    }
+    
+    useSweetAlert.successMessage('User deleted successfully')
+
+    // Refetch User
+    setTimeout(fetchUsers, 3000);
+
+  } catch (error) {
+    console.error(error)
+    useSweetAlert.errorMessage('An error occured while deleting user')
+  }
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
   if (index !== -1)
     selectedRows.value.splice(index, 1)
-
-  // Refetch User
-  fetchUsers()
 }
 
 const widgetData = ref([
@@ -231,6 +292,10 @@ const widgetData = ref([
     iconColor: 'warning',
   },
 ])
+const handleDataFromUserInfoEDitDialog = (data) => {
+  updateUser(data)
+}
+
 </script>
 
 <template>
@@ -344,6 +409,7 @@ const widgetData = ref([
           <AppSelect
             :model-value="itemsPerPage"
             :items="[
+              { value: 5, title: '5' },
               { value: 10, title: '10' },
               { value: 25, title: '25' },
               { value: 50, title: '50' },
@@ -494,7 +560,7 @@ const widgetData = ref([
           />
         </template>
       </VDataTableServer>
-      <UserInfoEditDialog v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
+      <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New User -->

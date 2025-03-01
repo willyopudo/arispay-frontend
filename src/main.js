@@ -9,6 +9,7 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import VueCookies from "vue3-cookies";
 
+
 // Create vue app
 const app = createApp(App);
 

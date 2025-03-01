@@ -29,15 +29,13 @@ const props = defineProps({
   },
 })
 
-console.log(props.action);
-
 const emit = defineEmits([
   'submit',
   'update:isDialogVisible',
 ])
 
 const userData = ref(structuredClone(toRaw(props.userData)))
-console.log(userData.value)
+//console.log(userData.value)
 const isUseAsBillingAddress = ref(false)
 
 
@@ -48,7 +46,6 @@ watch(() => props, () => {
 
 const onFormSubmit = () => {
   emit('update:isDialogVisible', false)
-  console.log(userData.value)
   emit('submit', userData.value)
 }
 
@@ -218,7 +215,7 @@ const currentPlan = computed({
               <VSwitch
                 v-model="isUseAsBillingAddress"
                 density="compact"
-                :label="userData.userCompanies[0].companyName"
+                :label="userData.userCompanies.length != 0 ? userData.userCompanies[0].companyName : 'Undefined'"
               />
             </VCol>
 
