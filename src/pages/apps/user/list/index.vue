@@ -1,6 +1,5 @@
 <script setup>
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
-//import Swal from "sweetalert2";
 
 // 👉 Store
 const searchQuery = ref('')
@@ -9,7 +8,7 @@ const selectedPlan = ref()
 const selectedStatus = ref()
 
 // Data table options
-const itemsPerPage = ref(5)
+const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
@@ -71,21 +70,21 @@ const headers = [
   },
 ]
 
-await fetchUsers()
+// await fetchUsers()
 
 // 👉 search filters
 const roles = [
   {
-    title: 'Admin',
-    value: 'ROLE_ADMIN',
+    title: 'Company Admin',
+    value: 'ROLE_COMPANY_ADMIN',
   },
   {
     title: 'Company User',
-    value: 'ROLE_USER',
+    value: 'ROLE_COMPANY_USER',
   },
   {
     title: 'Super Admin',
-    value: 'superadmin',
+    value: 'ROLE_ADMIN',
   }
 ]
 
@@ -179,12 +178,11 @@ async function fetchUsers(){
         itemsPerPage: itemsPerPage.value,
         sortBy: sortBy.value,
         orderBy: orderBy.value,
-
         //Todo: Add search query
         // search: searchQuery.value,
-        // role: selectedRole.value,
-        // plan: selectedPlan.value,
-        // status: selectedStatus.value,
+        role: selectedRole.value,
+        plan: selectedPlan.value,
+        status: selectedStatus.value,
       }
     })
     if (error) {
