@@ -385,18 +385,23 @@ const handleDataFromUserInfoEDitDialog = (data) => {
             />
           </VCol>
           <!-- 👉 Select Status -->
-          <VCol
-            cols="12"
-            sm="4"
-          >
-            <AppSelect
-              v-model="selectedStatus"
-              placeholder="Select Status"
-              :items="status"
-              clearable
-              clear-icon="tabler-x"
-            />
-          </VCol>
+          <VCol cols="12" sm="4">
+  <div class="d-flex align-center">
+    <AppSelect
+      v-model="selectedStatus"
+      placeholder="Select Status"
+      :items="status"
+      clearable
+      clear-icon="tabler-x"
+      class="flex-grow-1 mr-2"
+    />
+    <VBtn class="ml-4" @click="fetchUsers">
+      Filter
+      <VIcon end icon="tabler-filter" />
+    </VBtn>
+  </div>
+</VCol>
+          
         </VRow>
       </VCardText>
 
