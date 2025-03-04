@@ -1,6 +1,5 @@
 <script setup>
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
-//import Swal from "sweetalert2";
 
 // 👉 Store
 const searchQuery = ref('')
@@ -9,7 +8,7 @@ const selectedPlan = ref()
 const selectedStatus = ref()
 
 // Data table options
-const itemsPerPage = ref(5)
+const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
@@ -71,21 +70,21 @@ const headers = [
   },
 ]
 
-await fetchUsers()
+// await fetchUsers()
 
 // 👉 search filters
 const roles = [
   {
-    title: 'Admin',
-    value: 'ROLE_ADMIN',
+    title: 'Company Admin',
+    value: 'ROLE_COMPANY_ADMIN',
   },
   {
     title: 'Company User',
-    value: 'ROLE_USER',
+    value: 'ROLE_COMPANY_USER',
   },
   {
     title: 'Super Admin',
-    value: 'superadmin',
+    value: 'ROLE_ADMIN',
   }
 ]
 
@@ -179,12 +178,11 @@ async function fetchUsers(){
         itemsPerPage: itemsPerPage.value,
         sortBy: sortBy.value,
         orderBy: orderBy.value,
-
         //Todo: Add search query
         // search: searchQuery.value,
-        // role: selectedRole.value,
-        // plan: selectedPlan.value,
-        // status: selectedStatus.value,
+        role: selectedRole.value,
+        plan: selectedPlan.value,
+        status: selectedStatus.value,
       }
     })
     if (error) {
@@ -387,18 +385,23 @@ const handleDataFromUserInfoEDitDialog = (data) => {
             />
           </VCol>
           <!-- 👉 Select Status -->
-          <VCol
-            cols="12"
-            sm="4"
-          >
-            <AppSelect
-              v-model="selectedStatus"
-              placeholder="Select Status"
-              :items="status"
-              clearable
-              clear-icon="tabler-x"
-            />
-          </VCol>
+          <VCol cols="12" sm="4">
+  <div class="d-flex align-center">
+    <AppSelect
+      v-model="selectedStatus"
+      placeholder="Select Status"
+      :items="status"
+      clearable
+      clear-icon="tabler-x"
+      class="flex-grow-1 mr-2"
+    />
+    <VBtn class="ml-4" @click="fetchUsers">
+      Filter
+      <VIcon end icon="tabler-filter" />
+    </VBtn>
+  </div>
+</VCol>
+          
         </VRow>
       </VCardText>
 
