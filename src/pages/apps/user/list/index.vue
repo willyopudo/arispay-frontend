@@ -178,8 +178,7 @@ async function fetchUsers(){
         itemsPerPage: itemsPerPage.value,
         sortBy: sortBy.value,
         orderBy: orderBy.value,
-        //Todo: Add search query
-        // search: searchQuery.value,
+        search: searchQuery.value,
         role: selectedRole.value,
         plan: selectedPlan.value,
         status: selectedStatus.value,
@@ -294,6 +293,12 @@ const handleDataFromUserInfoEDitDialog = (data) => {
   updateUser(data)
 }
 
+// Watch for changes in searchQuery and fetch users if length is more than 3
+watch(searchQuery, (newQuery) => {
+  if (newQuery.length > 2|| newQuery.length === 0) {
+    fetchUsers()
+  }
+});
 </script>
 
 <template>
