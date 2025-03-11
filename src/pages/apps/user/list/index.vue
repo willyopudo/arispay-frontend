@@ -189,8 +189,8 @@ async function fetchUsers(){
       return
     }
     
-    fetchedUsers.value = usersList.content
-    totalFetchedUsers.value = usersList.totalElements
+    fetchedUsers.value = usersList.value0.content
+    totalFetchedUsers.value = usersList.value0.totalElements
     useSweetAlert.toast("Users fetched successfully");
 
   } catch (error) {
