@@ -9,6 +9,7 @@ import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustrati
 import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+//import 
 import { themeConfig } from '@themeConfig'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
@@ -25,6 +26,16 @@ const isPasswordVisible = ref(false)
 const route = useRoute()
 const router = useRouter()
 const ability = useAbility()
+
+//Alert
+const errorMessage = ref("")
+
+const showAlert = computed({
+  get: () => errorMessage.value !== "",
+  set: (value) => {
+    if (!value) errorMessage.value = ""
+  }
+})
 
 const errors = ref({
   email: undefined,
@@ -52,6 +63,7 @@ const login = async () => {
       },
       onResponseError({ response }) {
         console.log(response._data)
+        errorMessage.value = response._data.message
         errors.value = response._data.errors
       },
     })
@@ -78,6 +90,7 @@ const login = async () => {
     })
   } catch (err) {
     console.error(err) 
+    //errorMessage.value = err
   }
 }
 
@@ -152,6 +165,20 @@ const onSubmit = () => {
             ref="refVForm"
             @submit.prevent="onSubmit"
           >
+            <VRow v-if="showAlert">
+              <VCol cols="12">
+                <VAlert
+                  v-model="showAlert"
+                  closable
+                  close-label="Close Alert"
+                  color="error"
+                  icon="tabler-alert-circle"
+                >
+                  {{ errorMessage }}
+                </VAlert>
+              </VCol>
+              
+            </VRow>
             <VRow>
               <!-- email -->
               <VCol cols="12">
@@ -162,7 +189,7 @@ const onSubmit = () => {
                   type="email"
                   autofocus
                   :rules="[requiredValidator]"
-                  :error-messages="errors.email"
+                  
                 />
               </VCol>
 
@@ -174,7 +201,7 @@ const onSubmit = () => {
                   placeholder="············"
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  :error-messages="errors.password"
+                  
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
