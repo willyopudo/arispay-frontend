@@ -32,6 +32,13 @@ const openModal = (user, action) => {
 const fetchedUsers = ref(null)
 const totalFetchedUsers = ref(0)
 
+const userSummary = ref({
+  totalUsers: 0,
+  activeUsers: 0,
+  inactiveUsers: 0,
+  pendingUsers: 0,
+})
+
 const updateOptions = options => {
   page.value = options.page
   itemsPerPage.value = options.itemsPerPage
@@ -191,6 +198,13 @@ async function fetchUsers(){
     
     fetchedUsers.value = usersList.value0.content
     totalFetchedUsers.value = usersList.value0.totalElements
+    userSummary.value = usersList.value1
+
+    widgetData.value[0].value = userSummary.value.totalUsers
+    widgetData.value[1].value = userSummary.value.activeUsers
+    widgetData.value[2].value = userSummary.value.inactiveUsers
+    widgetData.value[3].value = userSummary.value.pendingUsers
+
     useSweetAlert.toast("Users fetched successfully");
 
   } catch (error) {
@@ -258,7 +272,7 @@ const deleteUser = async id => {
 const widgetData = ref([
   {
     title: 'Users',
-    value: '2,100',
+    value: userSummary.value.totalUsers,
     change: 2.1,
     desc: 'Total Users',
     icon: 'tabler-users',
@@ -266,7 +280,7 @@ const widgetData = ref([
   },
   {
     title: 'Active Users',
-    value: '4,567',
+    value: userSummary.value.activeUsers,
     change: 18,
     desc: 'Active Users',
     icon: 'tabler-user-check',
@@ -274,7 +288,7 @@ const widgetData = ref([
   },
   {
     title: 'Inactive Users',
-    value: '19,860',
+    value: userSummary.value.inactiveUsers,
     change: -14,
     desc: 'Not ACtive Users',
     icon: 'tabler-user-plus',
@@ -282,7 +296,7 @@ const widgetData = ref([
   },
   {
     title: 'Pending Users',
-    value: '237',
+    value: userSummary.value.pendingUsers,
     change: 42,
     desc: 'Pending Users',
     icon: 'tabler-user-search',
