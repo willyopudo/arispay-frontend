@@ -109,6 +109,7 @@ export const axiosApiCall = async (endpoint, options = {}) => {
               });            
     
             // Return the retry result
+            console.log("Retry result:", retryResult);
             data = retryResult.data;
             resp = retryResult.status;
           }
@@ -117,8 +118,9 @@ export const axiosApiCall = async (endpoint, options = {}) => {
           error = refreshError;
         }
       }
-      error = err;
+      else
+        error = err;
     }
-
+    
     return { data, error,  resp}; // Return the response payload
 };
