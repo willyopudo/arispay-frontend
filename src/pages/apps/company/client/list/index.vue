@@ -15,10 +15,23 @@ const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
 
+//Clients stats
+const fetchedClients = ref(null)
+const totalFetchedClients = ref(0)
+
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
+  fetchClients()
 }
+
+const clientSummary = ref({
+  totalClients: 0,
+  activeClients: 0,
+  inactiveClients: 0,
+  pendingClients: 0,
+})
+
 
 // Headers
 const headers = [
@@ -53,24 +66,65 @@ const headers = [
   },
 ]
 
-const {
-  data: clientList,
-  execute: fetchClients,
-} = await customUseApi('/clients', {
-  // query: {
-  //   q: searchQuery,
-  //   status: selectedStatus,
-  //   plan: selectedPlan,
-  //   role: selectedRole,
-  //   itemsPerPage,
-  //   page,
-  //   sortBy,
-  //   orderBy,
-  // },
-})
-console.log(clientList.value)
-const clients = computed(() => clientList.value)
-const totalClients = computed(() => clientList.value.length)
+async function fetchClients(){
+  try {
+    const {
+      data: clientsList,
+      error,
+      response
+    } = await axiosApiCall('/client', {
+      params: {
+        page: page.value,
+        itemsPerPage: itemsPerPage.value,
+        sortBy: sortBy.value,
+        orderBy: orderBy.value,
+        search: searchQuery.value,
+        // role: selectedRole.value,
+        // plan: selectedPlan.value,
+        // status: selectedStatus.value,
+      }
+    })
+    if (error) {
+      useSweetAlert.errorMessage('Error fetching clients: ' + error.message)
+      return
+    }
+    
+
+    fetchedClients.value = clientsList.content
+    // console.log(fetchedClients.value)
+    totalFetchedClients.value = clientsList.totalElements
+    // clientSummary.value = clientsList.value1
+
+    // widgetData.value[0].value = clientSummary.value.totalClients
+    // widgetData.value[1].value = clientSummary.value.activeClients
+    // widgetData.value[2].value = clientSummary.value.inactiveClients
+    // widgetData.value[3].value = clientSummary.value.pendingClients
+
+    useSweetAlert.toast("Clients fetched successfully");
+
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// const {
+//   data: clientList,
+//   execute: fetchClients,
+// } = await customUseApi('/clients', {
+//   // query: {
+//   //   q: searchQuery,
+//   //   status: selectedStatus,
+//   //   plan: selectedPlan,
+//   //   role: selectedRole,
+//   //   itemsPerPage,
+//   //   page,
+//   //   sortBy,
+//   //   orderBy,
+//   // },
+// })
+console.log(fetchedClients)
+const clients = computed(() => fetchedClients.value || [])
+const totalClients = computed(() => fetchedClients.value?.length)
 
 // 👉 search filters
 
