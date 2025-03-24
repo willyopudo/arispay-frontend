@@ -52,24 +52,31 @@ const credentials = ref({
 const rememberMe = ref(false)
 
 const login = async () => {
+
+  //Use axios
   try {
-    const res = await $api('/auth/login', {
-      method: 'POST',
-      body: {
+    const {
+      data: loginData,
+      error,
+      response
+    } = await axiosApiCall('/auth/login', {  
+      data: {
         client_id: credentials.value.email,
         client_secret: credentials.value.password,
         grant_type: "client_credentials",
         scope: "web"
       },
-      onResponseError({ response }) {
-        console.log(response._data)
-        errorMessage.value = response._data.message
-        errors.value = response._data.errors
-      },
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
-    //console.log(res)
-
-    const { access_token, refresh_token, userDetails } = res
+    if (error) {
+      useSweetAlert.errorMessage('Error during user login: ' + error.message)
+      return
+    }
+    
+    const { access_token, refresh_token, userDetails } = loginData
     userDetails.avatar = `${import.meta.env.BASE_URL ?? '/'}images/avatars/` + userDetails.avatar
     const userAbilityRules = [
         {
@@ -88,10 +95,51 @@ const login = async () => {
     await nextTick(() => {
       router.replace(route.query.to ? String(route.query.to) : '/dashboards/crm')
     })
-  } catch (err) {
-    console.error(err) 
-    //errorMessage.value = err
+
+  } catch (error) {
+    console.error(error)
   }
+  //Login using ofetch
+  // try {
+  //   const res = await $api('/auth/login', {
+  //     method: 'POST',
+  //     body: {
+  //       client_id: credentials.value.email,
+  //       client_secret: credentials.value.password,
+  //       grant_type: "client_credentials",
+  //       scope: "web"
+  //     },
+  //     onResponseError({ response }) {
+  //       console.log(response._data)
+  //       errorMessage.value = response._data.message
+  //       errors.value = response._data.errors
+  //     },
+  //   })
+  //   //console.log(res)
+
+  //   const { access_token, refresh_token, userDetails } = res
+  //   userDetails.avatar = `${import.meta.env.BASE_URL ?? '/'}images/avatars/` + userDetails.avatar
+  //   const userAbilityRules = [
+  //       {
+  //         action: 'manage',
+  //         subject: 'all',
+  //       },
+  //     ]
+  //   //useCookie('roles').value = roles
+  //   useCookie('accessToken').value = access_token
+  //   useCookie('refreshToken').value = refresh_token
+
+  //   useCookie('userAbilityRules').value = userAbilityRules
+  //   ability.update(userAbilityRules)
+  //   useCookie('userData').value = userDetails
+  //   // useCookie('accessToken').value = accessToken
+  //   await nextTick(() => {
+  //     router.replace(route.query.to ? String(route.query.to) : '/dashboards/crm')
+  //   })
+  // } catch (err) {
+  //   console.error(err) 
+  //   //errorMessage.value = err
+  // }
 }
 
 const onSubmit = () => {
