@@ -1,5 +1,5 @@
 <script setup>
-import AddNewClientDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
+import AddNewClientDrawer from '@/views/apps/user/list/AddNewClientDrawer.vue'
 
 
 // 👉 Store
@@ -9,7 +9,7 @@ const selectedPlan = ref()
 const selectedStatus = ref()
 
 // Data table options
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(5)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
@@ -79,7 +79,8 @@ async function fetchClients(){
         sortBy: sortBy.value,
         orderBy: orderBy.value,
         search: searchQuery.value,
-        // role: selectedRole.value,
+        identifierType: selectedIdentifierType.value,
+        status: selectedStatus.value
         // plan: selectedPlan.value,
         // status: selectedStatus.value,
       }
@@ -107,24 +108,10 @@ async function fetchClients(){
   }
 }
 
-// const {
-//   data: clientList,
-//   execute: fetchClients,
-// } = await customUseApi('/clients', {
-//   // query: {
-//   //   q: searchQuery,
-//   //   status: selectedStatus,
-//   //   plan: selectedPlan,
-//   //   role: selectedRole,
-//   //   itemsPerPage,
-//   //   page,
-//   //   sortBy,
-//   //   orderBy,
-//   // },
-// })
+
 console.log(fetchedClients)
 const clients = computed(() => fetchedClients.value || [])
-const totalClients = computed(() => fetchedClients.value?.length)
+const totalClients = computed(() => totalFetchedClients.value)
 
 // 👉 search filters
 
@@ -145,28 +132,28 @@ const status = [
 
 const identifierTypes = [
   {
-    title: 'ID NUMBER',
-    value: 'id_number',
+    title: 'ID Number',
+    value: 'ID_NUMBER',
   },
   {
-    title: 'MSSIDN',
-    value: 'mssidn',
+    title: 'Phone Number',
+    value: 'MSSIDN',
   },
   {
-    title: 'ACCOUNT_NUMBER',
-    value: 'account_number',
+    title: 'Account Number',
+    value: 'ACCOUNT_NUMBER',
   },
   {
-    title: 'BILL_NUMBER',
-    value: 'bill_number',
+    title: 'Bill Number',
+    value: 'BILL_NUMBER',
   },
   {
-    title: 'REG_NUMBER',
-    value: 'reg_number',
+    title: 'Registration Number',
+    value: 'REG_NUMBER',
   },
   {
-    title: 'INVOICE_NUMBER',
-    value: 'invoice_number',
+    title: 'Invoice Number',
+    value: 'INVOICE_NUMBER',
   },
 ]
 
@@ -185,16 +172,33 @@ const resolveClientStatusVariant = stat => {
 const isAddNewClientDrawerVisible = ref(false)
 
 const addNewClient = async clientData => {
-  await $api('/clients', {
-    method: 'POST',
-    body: clientData,
-  })
-
-  // Refetch User
-  fetchClients()
+  
+  try {
+    const {
+      data: cData,
+      error,
+      response
+    } = await axiosApiCall('/client', {  
+      data: clientData,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (error) {
+      useSweetAlert.errorMessage('Error during client creation: ' + error.message)
+      return
+    }
+    
+    fetchClients()
+    useSweetAlert.toast("Client created successfully");
+ 
+  } catch (error) {
+    console.error(error)
+  }
 }
 
-const deletClient = async id => {
+const deleteClient = async id => {
   await $api(`/clients/${ id }`, { method: 'DELETE' })
 
   // Delete from selectedRows
@@ -255,6 +259,16 @@ const deletClient = async id => {
               clear-icon="tabler-x"
             />
           </VCol>
+          <VCol
+            cols="12"
+            sm="4"
+          >
+          <VBtn class="ml-4" @click="fetchClients">
+      Filter
+      <VIcon end icon="tabler-filter" />
+    </VBtn>
+        </VCol>
+          
         </VRow>
       </VCardText>
 
@@ -265,6 +279,7 @@ const deletClient = async id => {
           <AppSelect
             :model-value="itemsPerPage"
             :items="[
+              { value: 5, title: '5' },
               { value: 10, title: '10' },
               { value: 25, title: '25' },
               { value: 50, title: '50' },
@@ -439,7 +454,7 @@ const deletClient = async id => {
     <!-- 👉 Add New User -->
     <AddNewClientDrawer
       v-model:isDrawerOpen="isAddNewClientDrawerVisible"
-      @user-data="addNewClient"
+      @client-data="addNewClient"
     />
   </section>
 </template>
