@@ -153,7 +153,7 @@ const currentPlan = computed({
                 v-model="userData.status"
                 label="Status"
                 placeholder="Active"
-                :items="['Active', 'Inactive', 'Pending']"
+                :items="[{ title: 'Active', value: 'active', }, { title: 'Inactive', value: 'inactive', }, { title: 'Pending', value: 'pending', }]"
                 :disabled="action === 'view'"
               />
             </VCol>
@@ -191,7 +191,7 @@ const currentPlan = computed({
                 v-model="currentPlan"
                 label="Current Plan"
                 placeholder="Basic"
-                :items="['Basic', 'Standard', 'Enterprise','Special']"
+                :items="[{ title: 'Basic', value: 'basic', }, { title: 'Standard', value: 'standard', }, { title: 'Enterprise', value: 'enterprise', },{ title: 'Special', value: 'special', }]"
                 :disabled="action === 'view'"
               />
             </VCol>
@@ -205,7 +205,7 @@ const currentPlan = computed({
                 v-model="userData.role"
                 label="Role"
                 placeholder="United States"
-                :items="[ { title: 'Company Admin', value: 'ROLE_COMPANY_ADMIN', }, { title: 'Company User', value: 'ROLE_COMPANY_USER', }, { title: 'Super Admin', value: 'ROLE_ADMIN', }, { title: 'Normal User', value: 'ROLE_USER', } ] "
+                :items="[ { title: 'Company Admin', value: 'ROLE_COMPANY_ADMIN', }, { title: 'Company User', value: 'ROLE_COMPANY_USER', }, { title: 'Super Admin', value: 'ROLE_ADMIN', },  ] "
                 :disabled="action === 'view'"
                 />
             </VCol>
