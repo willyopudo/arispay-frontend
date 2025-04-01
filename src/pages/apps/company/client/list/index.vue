@@ -5,7 +5,6 @@ import AddNewClientDrawer from '@/views/apps/user/list/AddNewClientDrawer.vue'
 // 👉 Store
 const searchQuery = ref('')
 const selectedIdentifierType = ref()
-const selectedPlan = ref()
 const selectedStatus = ref()
 
 // Data table options
@@ -14,6 +13,12 @@ const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
+
+//dialogs
+const isClientInfoEditDialogVisible = ref(false)
+// State for modal and selected client
+const selectedClient = ref(null);
+const todo = ref(null);
 
 //Clients stats
 const fetchedClients = ref(null)
@@ -37,19 +42,20 @@ const clientSummary = ref({
 const headers = [
   {
     title: 'Client ID',
-    key: 'client_id',
+    key: 'clientId',
   },
   {
     title: 'Client Name',
-    key: 'client_name',
+    key: 'clientName',
   },
   {
     title: 'Identifier Type',
-    key: 'identifier_type',
+    key: 'identifierType',
   },
   {
     title: 'Company',
     key: 'company',
+    sortable: false,
   },
   {
     title: 'Status',
@@ -57,7 +63,7 @@ const headers = [
   },
   {
     title: 'Created Date',
-    key: 'created_date',
+    key: 'createdDate',
   },
   {
     title: 'Actions',
@@ -81,8 +87,6 @@ async function fetchClients(){
         search: searchQuery.value,
         identifierType: selectedIdentifierType.value,
         status: selectedStatus.value
-        // plan: selectedPlan.value,
-        // status: selectedStatus.value,
       }
     })
     if (error) {
@@ -92,14 +96,7 @@ async function fetchClients(){
     
 
     fetchedClients.value = clientsList.content
-    // console.log(fetchedClients.value)
     totalFetchedClients.value = clientsList.totalElements
-    // clientSummary.value = clientsList.value1
-
-    // widgetData.value[0].value = clientSummary.value.totalClients
-    // widgetData.value[1].value = clientSummary.value.activeClients
-    // widgetData.value[2].value = clientSummary.value.inactiveClients
-    // widgetData.value[3].value = clientSummary.value.pendingClients
 
     useSweetAlert.toast("Clients fetched successfully");
 
@@ -109,7 +106,6 @@ async function fetchClients(){
 }
 
 
-console.log(fetchedClients)
 const clients = computed(() => fetchedClients.value || [])
 const totalClients = computed(() => totalFetchedClients.value)
 
@@ -159,11 +155,12 @@ const identifierTypes = [
 
 
 const resolveClientStatusVariant = stat => {
-  if (stat === 0)
+  const statLowerCase = stat.toLowerCase()
+  if (statLowerCase === 'pending')
     return 'warning'
-  if (stat === 1)
+  if (statLowerCase === 'active')
     return 'success'
-  if (stat === 2)
+  if (statLowerCase === 'inactive')
     return 'secondary'
   
   return 'primary'
@@ -199,16 +196,83 @@ const addNewClient = async clientData => {
 }
 
 const deleteClient = async id => {
-  await $api(`/clients/${ id }`, { method: 'DELETE' })
+  const canDelete = await useSweetAlert.confirm()
+  if (!canDelete) return
+  try {
+    const {
+      data,
+      error,
+      resp: status
+    } = await axiosApiCall(`/client/${id}`, {
+    method: 'DELETE',
+  
+    })
+    
+    if (error && error.response) {
+      useSweetAlert.errorMessage('An error occured: ' + error.response.data.message)
+      return
+    }
+    
+    useSweetAlert.successMessage('Client deleted successfully')
 
+    // Refetch User
+    setTimeout(fetchClients, 3000);
+
+  } catch (error) {
+    console.error(error)
+    useSweetAlert.errorMessage('An error occured while deleting client')
+  }
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
   if (index !== -1)
     selectedRows.value.splice(index, 1)
-
-  // Refetch User
-  fetchClients()
 }
+
+// Open modal with user details
+const openModal = (client, action) => {
+  selectedClient.value = client;
+  isClientInfoEditDialogVisible.value = true;
+  todo.value = action;
+};
+
+const handleDataFromClientInfoEDitDialog = (data) => {
+  updateClient(data)
+}
+
+const updateClient = async clientData => {
+  //Use axiosApiCall to update client
+  try {
+    const {
+      data: cData,
+      error,
+      response
+    } = await axiosApiCall(`/client/${clientData.id}`, {  
+      data: clientData,
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (error) {
+      useSweetAlert.errorMessage('Error during client update: ' + error.message)
+      return
+    }
+    
+     // Refetch Client
+    fetchClients()
+    useSweetAlert.toast("Client updated successfully");
+ 
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// Watch for changes in searchQuery and fetch clients if length is more than 3
+watch(searchQuery, (newQuery) => {
+  if (newQuery.length > 2|| newQuery.length === 0) {
+    fetchClients()
+  }
+});
 </script>
 
 <template>
@@ -336,7 +400,7 @@ const deleteClient = async id => {
         @update:options="updateOptions"
       >
         <!-- User -->
-        <template #item.client_id="{ item }">
+        <template #item.clientId="{ item }">
           <div class="d-flex align-center gap-x-4">
             <div class="d-flex flex-column">
               <h6 class="text-base">
@@ -348,7 +412,7 @@ const deleteClient = async id => {
                 </RouterLink>
               </h6>
               <div class="text-sm">
-                {{ item.id }}
+                {{ item.clientEmail }} 
               </div>
             </div>
           </div>
@@ -370,14 +434,14 @@ const deleteClient = async id => {
           </div>
         </template>
 
-        <!-- Plan -->
+        <!-- Company -->
         <template #item.company="{ item }">
           <div class="text-body-1 text-high-emphasis text-capitalize">
             {{ item.companyName }}
           </div>
         </template>
 
-        <!-- Plan -->
+        <!-- Date -->
         <template #item.created_date="{ item }">
           <div class="text-body-1 text-high-emphasis text-capitalize">
             {{ item.createdDate }}
@@ -392,52 +456,30 @@ const deleteClient = async id => {
             label
             class="text-capitalize"
           >
-            {{ item.status == '0' ? 'IN_ACTIVE' : 'ACTIVE' }}
+            {{ item.status }}
           </VChip>
         </template>
 
         <!-- Actions -->
         <template #item.actions="{ item }">
-          <IconBtn @click="deleteClient(item.id)">
-            <VIcon icon="tabler-trash" />
-          </IconBtn>
 
-          <IconBtn>
+          <IconBtn @click="openModal(item, 'view')">
             <VIcon icon="tabler-eye" />
           </IconBtn>
 
-          <VBtn
-            icon
-            variant="text"
-            color="medium-emphasis"
-          >
-            <VIcon icon="tabler-dots-vertical" />
-            <VMenu activator="parent">
-              <VList>
-                <VListItem :to="{ name: 'apps-user-view-id', params: { id: item.id } }">
-                  <template #prepend>
-                    <VIcon icon="tabler-eye" />
-                  </template>
+          <!-- 👉 Edit user info dialog -->
+          <!-- <UserInfoEditDialog 
+          v-model:isDialogVisible="isUserInfoEditDialogVisible"
+          :user-data="users.find(obj => obj.id === item.id)"
+          /> -->
 
-                  <VListItemTitle>View</VListItemTitle>
-                </VListItem>
+          <IconBtn  @click="openModal(item, 'edit')">
+            <VIcon icon="tabler-pencil" />
+          </IconBtn>
 
-                <VListItem link>
-                  <template #prepend>
-                    <VIcon icon="tabler-pencil" />
-                  </template>
-                  <VListItemTitle>Edit</VListItemTitle>
-                </VListItem>
-
-                <VListItem @click="deleteClient(item.id)">
-                  <template #prepend>
-                    <VIcon icon="tabler-trash" />
-                  </template>
-                  <VListItemTitle>Delete</VListItemTitle>
-                </VListItem>
-              </VList>
-            </VMenu>
-          </VBtn>
+          <IconBtn @click="deleteClient(item.id)">
+            <VIcon icon="tabler-trash" />
+          </IconBtn>
         </template>
 
         <!-- pagination -->
@@ -449,9 +491,10 @@ const deleteClient = async id => {
           />
         </template>
       </VDataTableServer>
+      <ClientInfoEditDialog @submit="handleDataFromClientInfoEDitDialog" v-if="isClientInfoEditDialogVisible" v-model:isDialogVisible="isClientInfoEditDialogVisible" :client-data="selectedClient" :action="todo" :identifierTypes="identifierTypes"/>
       <!-- SECTION -->
     </VCard>
-    <!-- 👉 Add New User -->
+    <!-- 👉 Add New Client -->
     <AddNewClientDrawer
       v-model:isDrawerOpen="isAddNewClientDrawerVisible"
       @client-data="addNewClient"

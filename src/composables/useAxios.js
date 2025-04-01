@@ -4,7 +4,6 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
 const baseAppUrl = import.meta.env.VITE_APP_BASE_URL;
 const accessToken = useCookie("accessToken").value;
 
-
 // ✅ Create Axios Instance
 const apiClient = axios.create({
   baseURL: baseUrl, // Change to your API URL
@@ -52,7 +51,7 @@ export const axiosApiCall = async (endpoint, options = {}) => {
     // Add Authorization header if accessToken is present
     const headers = {
         ...options.headers,
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: accessToken != null ? `Bearer ${accessToken}` : null,
     };
 
     try {
