@@ -83,60 +83,6 @@ const onSubmit = () => {
   })
 }
 
-const register = async () => {
-  try {
-    const userData = cookies.get('userData');
-    console.log('User data: ' + JSON.stringify(userData));
-  const req = {
-
-id: null,
-"username": username.value,
-"firstName": firstName.value,
-"lastName": lastName.value,
-"email": email.value,
-"userCompanies": [
-  {
-    id: null,
-    "companyId": userData.companyId,
-    "isDefault": true
-  }
-],
-"phoneNumber": phoneNumber.value,
-"address": address.value,
-"zipCode": zipCode.value,
-"town": town.value,
-"role": "ROLE_COMPANY_USER",
-"status": status.value,
-"currentPlan": currentPlan.value,
-"avatar": ""
-
-}
-console.log("Request payload:", JSON.stringify(req, null, 2));
-    const {
-  data: savedUser,
-  execute: saveCompanyUser,
-} = await customUseApi('/user', {
-method: 'POST',
-body: JSON.stringify(req),
-headers: {"Content-Type": 'application/json'}
-})
-    if (savedUser._value !== null) {
-      console.log('Log: ' + JSON.stringify(savedUser))
-      toast.success('Company user created successfully')
-    }
-    else {     
-      toast.error('Error creating company user', err)
-    }
-
-    await nextTick(() => {
-      router.replace(route.query.to ? String(route.query.to) : '/apps/user/list')
-    })
-  } catch (err) {
-    console.log("Error: "+ err)
-    toast.error('Error creating company user', err)
-  }
-}
-
 const handleDrawerModelValueUpdate = val => {
   emit('update:isDrawerOpen', val)
 }
@@ -233,7 +179,7 @@ const handleDrawerModelValueUpdate = val => {
                   label="Select Status"
                   placeholder="Select Status"
                   :rules="[requiredValidator]"
-                  :items="[{ title: 'Active', value: '1' }, { title: 'Inactive', value: '2' }, { title: 'Pending', value: '0' }]"
+                  :items="[{ title: 'Active', value: 'active', }, { title: 'Inactive', value: 'inactive', }, { title: 'Pending', value: 'pending', }]"
                 />
               </VCol>
 
