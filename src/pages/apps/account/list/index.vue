@@ -14,9 +14,13 @@ const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
 
+const fetchedAccounts = ref(null)
+const totalFetchedAccounts = ref(0)
+
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
+  fetchCompanyAccounts()
 }
 
 // Headers
@@ -48,26 +52,42 @@ const headers = [
   },
 ]
 
-const {
-  data: accountsList,
-  execute: fetchAccounts,
-} = await customUseApi('/company/accounts', {
-  // query: {
-  //   q: searchQuery,
-  //   status: selectedStatus,
-  //   plan: selectedPlan,
-  //   role: selectedRole,
-  //   itemsPerPage,
-  //   page,
-  //   sortBy,
-  //   orderBy,
-  // },
-})
+async function fetchCompanyAccounts(){
+  try {
+    const {
+      data: accountsList,
+      error,
+      response
+    } = await axiosApiCall('/company/accounts', {
+      params: {
+        page: page.value,
+        itemsPerPage: itemsPerPage.value,
+        sortBy: sortBy.value,
+        orderBy: orderBy.value,
+        search: searchQuery.value,
+        status: selectedStatus.value
+      }
+    })
+    if (error) {
+      useSweetAlert.errorMessage('Error fetching accounts: ' + error.message)
+      return
+    }
+    
+
+    fetchedAccounts.value = accountsList.content
+    totalFetchedAccounts.value = accountsList.totalElements
+
+    useSweetAlert.toast("Accounts fetched successfully");
+
+  } catch (error) {
+    console.error(error)
+  }
+}
 // console.log(result.data.value)
 // console.log(result.error.value)
 // console.log(result.response.value)
-const accounts = computed(() => accountsList.value)
-const totalAccounts = computed(() => accountsList.value.length)
+const accounts = computed(() => fetchedAccounts.value)
+const totalAccounts = computed(() => totalFetchedAccounts.value)
 
 // 👉 search filters
 const roles = [
@@ -322,6 +342,7 @@ const widgetData = ref([
           <AppSelect
             :model-value="itemsPerPage"
             :items="[
+              { value: 5, title: '5' },
               { value: 10, title: '10' },
               { value: 25, title: '25' },
               { value: 50, title: '50' },
@@ -378,61 +399,62 @@ const widgetData = ref([
         @update:options="updateOptions"
       >
         <!-- User -->
-        <template #item.user="{ item }">
+        <template #item.id="{ item }">
           <div class="d-flex align-center gap-x-4">
-            <VAvatar
-              size="34"
-              :variant="!item.avatar ? 'tonal' : undefined"
-              :color="!item.avatar ? resolveUserRoleVariant(item.role).color : undefined"
-            >
-              <VImg
-                v-if="item.avatar"
-                :src="item.avatar"
-              />
-              <span v-else>{{ avatarText(item.fullName) }}</span>
-            </VAvatar>
             <div class="d-flex flex-column">
               <h6 class="text-base">
                 <RouterLink
                   :to="{ name: 'apps-user-view-id', params: { id: item.id } }"
                   class="font-weight-medium text-link"
                 >
-                  {{ item.fullName }}
+                  {{ item.id }}
                 </RouterLink>
               </h6>
-              <div class="text-sm">
-                {{ item.email }}
-              </div>
             </div>
           </div>
         </template>
 
         <!-- 👉 Role -->
-        <template #item.role="{ item }">
+        <template #item.accountNumber="{ item }">
           <div class="d-flex align-center gap-x-2">
-            <VIcon
-              :size="22"
-              :icon="resolveUserRoleVariant(item.role).icon"
-              :color="resolveUserRoleVariant(item.role).color"
-            />
-
             <div class="text-capitalize text-high-emphasis text-body-1">
-              {{ item.role }}
+              {{ item.accountNumber }}
             </div>
           </div>
         </template>
 
         <!-- Plan -->
-        <template #item.plan="{ item }">
+        <template #item.accountName="{ item }">
           <div class="text-body-1 text-high-emphasis text-capitalize">
-            {{ item.currentPlan }}
+            {{ item.accountName }}
+          </div>
+        </template>
+
+        <!-- Company -->
+        <template #item.bankCode="{ item }">
+          <div class="text-body-1 text-high-emphasis text-capitalize">
+            {{ item.bankCode }}
+          </div>
+        </template>
+
+        <!-- Date -->
+        <template #item.bankName="{ item }">
+          <div class="text-body-1 text-high-emphasis text-capitalize">
+            {{ item.bankName }}
+          </div>
+        </template>
+
+        <!-- Date -->
+        <template #item.balance="{ item }">
+          <div class="text-body-1 text-high-emphasis text-capitalize">
+            {{ item.balance }}
           </div>
         </template>
 
         <!-- Status -->
         <template #item.status="{ item }">
           <VChip
-            :color="resolveAccountstatusVariant(item.status)"
+            :color="resolveClientStatusVariant(item.status)"
             size="small"
             label
             class="text-capitalize"
