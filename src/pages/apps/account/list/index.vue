@@ -1,5 +1,5 @@
 <script setup>
-import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
+import AddNewUserDrawer from '@/views/apps/user/list/AddNewCompanyAccountDrawer.vue'
 
 // 👉 Store
 const searchQuery = ref('')
@@ -14,33 +14,58 @@ const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
 
+//dialogs
+const isUserInfoEditDialogVisible = ref(false)
+// State for modal and selected user
+const selectedUser = ref(null);
+const todo = ref(null);
+
+// Open modal with user details
+const openModal = (user, action) => {
+  selectedUser.value = user;
+  isUserInfoEditDialogVisible.value = true;
+  todo.value = action;
+};
+
+
+//Users stats
 const fetchedAccounts = ref(null)
 const totalFetchedAccounts = ref(0)
 
+const userSummary = ref({
+  totalUsers: 0,
+  activeUsers: 0,
+  inactiveUsers: 0,
+  pendingUsers: 0,
+})
+
 const updateOptions = options => {
+  page.value = options.page
+  itemsPerPage.value = options.itemsPerPage
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
+
   fetchCompanyAccounts()
 }
 
 // Headers
 const headers = [
   {
-    title: 'User',
-    key: 'user',
+    title: 'Account',
+    key: 'account',
   },
   {
-    title: 'Role',
-    key: 'role',
+    title: 'Company',
+    key: 'companyName',
   },
   {
-    title: 'Subscription Plan',
-    key: 'plan',
+    title: 'Bank',
+    key: 'bank',
   },
-  // {
-  //   title: 'Billing',
-  //   key: 'billing',
-  // },
+  {
+    title: 'Balance',
+    key: 'balance',
+  },
   {
     title: 'Status',
     key: 'status',
@@ -52,56 +77,21 @@ const headers = [
   },
 ]
 
-async function fetchCompanyAccounts(){
-  try {
-    const {
-      data: accountsList,
-      error,
-      response
-    } = await axiosApiCall('/company/accounts', {
-      params: {
-        page: page.value,
-        itemsPerPage: itemsPerPage.value,
-        sortBy: sortBy.value,
-        orderBy: orderBy.value,
-        search: searchQuery.value,
-        status: selectedStatus.value
-      }
-    })
-    if (error) {
-      useSweetAlert.errorMessage('Error fetching accounts: ' + error.message)
-      return
-    }
-    
-
-    fetchedAccounts.value = accountsList.content
-    totalFetchedAccounts.value = accountsList.totalElements
-
-    useSweetAlert.toast("Accounts fetched successfully");
-
-  } catch (error) {
-    console.error(error)
-  }
-}
-// console.log(result.data.value)
-// console.log(result.error.value)
-// console.log(result.response.value)
-const accounts = computed(() => fetchedAccounts.value)
-const totalAccounts = computed(() => totalFetchedAccounts.value)
+// await fetchUsers()
 
 // 👉 search filters
 const roles = [
   {
-    title: 'Admin',
-    value: 'ROLE_ADMIN',
+    title: 'Company Admin',
+    value: 'ROLE_COMPANY_ADMIN',
   },
   {
     title: 'Company User',
-    value: 'ROLE_USER',
+    value: 'ROLE_COMPANY_USER',
   },
   {
     title: 'Super Admin',
-    value: 'superadmin',
+    value: 'ROLE_ADMIN',
   }
 ]
 
@@ -146,7 +136,17 @@ const resolveUserRoleVariant = role => {
       color: 'success',
       icon: 'tabler-user',
     }
+  if (roleLowerCase === 'role_company_user')
+    return {
+      color: 'success',
+      icon: 'tabler-user',
+    }
   if (roleLowerCase === 'role_admin')
+    return {
+      color: 'error',
+      icon: 'tabler-device-desktop',
+    }
+  if (roleLowerCase === 'role_company_admin')
     return {
       color: 'error',
       icon: 'tabler-device-desktop',
@@ -159,7 +159,7 @@ const resolveUserRoleVariant = role => {
   
 }
 
-const resolveAccountstatusVariant = stat => {
+const resolveUserStatusVariant = stat => {
   const statLowerCase = stat.toLowerCase()
   if (statLowerCase === 'pending')
     return 'warning'
@@ -173,62 +173,146 @@ const resolveAccountstatusVariant = stat => {
 
 const isAddNewUserDrawerVisible = ref(false)
 
+async function fetchCompanyAccounts(){
+  try {
+    const {
+      data: accountsList,
+      error,
+      response
+    } = await axiosApiCall('/company/accounts', {
+      params: {
+        page: page.value,
+        itemsPerPage: itemsPerPage.value,
+        sortBy: sortBy.value,
+        orderBy: orderBy.value,
+        // search: searchQuery.value,
+        // role: selectedRole.value,
+        // plan: selectedPlan.value,
+        status: selectedStatus.value,
+      }
+    })
+    if (error) {
+      useSweetAlert.errorMessage('Error fetching company accounts: ' + error.message)
+      return
+    }
+    
+    fetchedAccounts.value = accountsList.content
+    totalFetchedAccounts.value = accountsList.totalElements
+    userSummary.value = usersList.value1
+
+    widgetData.value[0].value = userSummary.value.totalUsers
+    widgetData.value[1].value = userSummary.value.activeUsers
+    widgetData.value[2].value = userSummary.value.inactiveUsers
+    widgetData.value[3].value = userSummary.value.pendingUsers
+
+    useSweetAlert.toast("Company accounts fetched successfully");
+
+  } catch (error) {
+    console.error(error)
+  }
+}
+const accounts = computed(() => fetchedAccounts.value || []);
+const totalAccounts = computed(() => totalFetchedAccounts.value);
+
 const addNewUser = async userData => {
-  await $api('/apps/accounts', {
+  await $api('/apps/users', {
     method: 'POST',
     body: userData,
   })
 
   // Refetch User
-  fetchAccounts()
+  fetchUsers()
+}
+
+const updateUser = async userData => {
+  console.log(JSON.stringify(userData))
+  await customUseApi(`/user/${userData.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(userData),
+    headers: {"Content-Type": 'application/json'}
+  })
+
+  // Refetch User
+  fetchUsers()
 }
 
 const deleteUser = async id => {
-  await $api(`/apps/accounts/${ id }`, { method: 'DELETE' })
+  const canDelete = await useSweetAlert.confirm()
+  if (!canDelete) return
+  try {
+    const {
+      data,
+      error,
+      resp: status
+    } = await axiosApiCall(`/user/${id}`, {
+    method: 'DELETE',
+  
+    })
+    
+    if (error && error.response) {
+      useSweetAlert.errorMessage('An error occured: ' + error.response.data.message)
+      return
+    }
+    
+    useSweetAlert.successMessage('User deleted successfully')
 
+    // Refetch User
+    setTimeout(fetchUsers, 3000);
+
+  } catch (error) {
+    console.error(error)
+    useSweetAlert.errorMessage('An error occured while deleting user')
+  }
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
   if (index !== -1)
     selectedRows.value.splice(index, 1)
-
-  // Refetch User
-  fetchAccounts()
 }
 
 const widgetData = ref([
   {
-    title: 'Session',
-    value: '21,459',
-    change: 29,
-    desc: 'Total Accounts',
-    icon: 'tabler-accounts',
+    title: 'Users',
+    value: userSummary.value.totalUsers,
+    change: 2.1,
+    desc: 'Total Users',
+    icon: 'tabler-users',
     iconColor: 'primary',
   },
   {
-    title: 'Paid Accounts',
-    value: '4,567',
+    title: 'Active Users',
+    value: userSummary.value.activeUsers,
     change: 18,
-    desc: 'Last Week Analytics',
-    icon: 'tabler-user-plus',
-    iconColor: 'error',
-  },
-  {
-    title: 'Active Accounts',
-    value: '19,860',
-    change: -14,
-    desc: 'Last Week Analytics',
+    desc: 'Active Users',
     icon: 'tabler-user-check',
     iconColor: 'success',
   },
   {
-    title: 'Pending Accounts',
-    value: '237',
+    title: 'Inactive Users',
+    value: userSummary.value.inactiveUsers,
+    change: -14,
+    desc: 'Not ACtive Users',
+    icon: 'tabler-user-plus',
+    iconColor: 'error',
+  },
+  {
+    title: 'Pending Users',
+    value: userSummary.value.pendingUsers,
     change: 42,
-    desc: 'Last Week Analytics',
+    desc: 'Pending Users',
     icon: 'tabler-user-search',
     iconColor: 'warning',
   },
 ])
+const handleDataFromUserInfoEDitDialog = (data) => {
+  updateUser(data)
+}
+
+// Watch for changes in searchQuery and fetch users if length is more than 3
+watch(searchQuery, (newQuery) => {
+  if (newQuery.length > 2|| newQuery.length === 0) {
+    fetchUsers()
+  }
+});
 </script>
 
 <template>
@@ -320,18 +404,23 @@ const widgetData = ref([
             />
           </VCol>
           <!-- 👉 Select Status -->
-          <VCol
-            cols="12"
-            sm="4"
-          >
-            <AppSelect
-              v-model="selectedStatus"
-              placeholder="Select Status"
-              :items="status"
-              clearable
-              clear-icon="tabler-x"
-            />
-          </VCol>
+          <VCol cols="12" sm="4">
+  <div class="d-flex align-center">
+    <AppSelect
+      v-model="selectedStatus"
+      placeholder="Select Status"
+      :items="status"
+      clearable
+      clear-icon="tabler-x"
+      class="flex-grow-1 mr-2"
+    />
+    <VBtn class="ml-4" @click="fetchCompanyAccounts">
+      Filter
+      <VIcon end icon="tabler-filter" />
+    </VBtn>
+  </div>
+</VCol>
+          
         </VRow>
       </VCardText>
 
@@ -378,7 +467,7 @@ const widgetData = ref([
             prepend-icon="tabler-plus"
             @click="isAddNewUserDrawerVisible = true"
           >
-            Add New User
+            Add New Account
           </VBtn>
         </div>
       </VCardText>
@@ -398,8 +487,8 @@ const widgetData = ref([
         show-select
         @update:options="updateOptions"
       >
-        <!-- User -->
-        <template #item.id="{ item }">
+        <!-- Account -->
+        <template #item.account="{ item }">
           <div class="d-flex align-center gap-x-4">
             <div class="d-flex flex-column">
               <h6 class="text-base">
@@ -407,54 +496,47 @@ const widgetData = ref([
                   :to="{ name: 'apps-user-view-id', params: { id: item.id } }"
                   class="font-weight-medium text-link"
                 >
-                  {{ item.id }}
+                {{ item.accountNumber }} 
                 </RouterLink>
               </h6>
+              <div class="text-sm">
+                {{ item.accountName }}
+              </div>
             </div>
           </div>
         </template>
 
-        <!-- 👉 Role -->
-        <template #item.accountNumber="{ item }">
+        <!-- 👉 Company -->
+        <template #item.company="{ item }">
           <div class="d-flex align-center gap-x-2">
             <div class="text-capitalize text-high-emphasis text-body-1">
-              {{ item.accountNumber }}
+              {{ item.companyName }}
             </div>
           </div>
         </template>
 
-        <!-- Plan -->
-        <template #item.accountName="{ item }">
+        
+
+        <!-- Bank -->
+        <template #item.bank="{ item }">
           <div class="text-body-1 text-high-emphasis text-capitalize">
-            {{ item.accountName }}
+            {{ item.bankCode }} {{ item.bankName }}
           </div>
         </template>
 
-        <!-- Company -->
-        <template #item.bankCode="{ item }">
-          <div class="text-body-1 text-high-emphasis text-capitalize">
-            {{ item.bankCode }}
-          </div>
-        </template>
-
-        <!-- Date -->
-        <template #item.bankName="{ item }">
-          <div class="text-body-1 text-high-emphasis text-capitalize">
-            {{ item.bankName }}
-          </div>
-        </template>
-
-        <!-- Date -->
+        <!-- 👉 Balance -->
         <template #item.balance="{ item }">
-          <div class="text-body-1 text-high-emphasis text-capitalize">
-            {{ item.balance }}
+          <div class="d-flex align-center justify-end w-100">
+            <div class="text-capitalize text-high-emphasis text-body-1">
+              {{ Number(item.balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}
+            </div>
           </div>
         </template>
 
         <!-- Status -->
         <template #item.status="{ item }">
           <VChip
-            :color="resolveClientStatusVariant(item.status)"
+            :color="resolveUserStatusVariant(item.status)"
             size="small"
             label
             class="text-capitalize"
@@ -465,46 +547,24 @@ const widgetData = ref([
 
         <!-- Actions -->
         <template #item.actions="{ item }">
-          <IconBtn @click="deleteUser(item.id)">
-            <VIcon icon="tabler-trash" />
-          </IconBtn>
 
-          <IconBtn>
+          <IconBtn @click="openModal(item, 'view')">
             <VIcon icon="tabler-eye" />
           </IconBtn>
 
-          <VBtn
-            icon
-            variant="text"
-            color="medium-emphasis"
-          >
-            <VIcon icon="tabler-dots-vertical" />
-            <VMenu activator="parent">
-              <VList>
-                <VListItem :to="{ name: 'apps-user-view-id', params: { id: item.id } }">
-                  <template #prepend>
-                    <VIcon icon="tabler-eye" />
-                  </template>
+          <!-- 👉 Edit user info dialog -->
+        <!-- <UserInfoEditDialog 
+          v-model:isDialogVisible="isUserInfoEditDialogVisible"
+          :user-data="users.find(obj => obj.id === item.id)"
+        /> -->
 
-                  <VListItemTitle>View</VListItemTitle>
-                </VListItem>
+          <IconBtn  @click="openModal(item, 'edit')">
+            <VIcon icon="tabler-pencil" />
+          </IconBtn>
 
-                <VListItem link>
-                  <template #prepend>
-                    <VIcon icon="tabler-pencil" />
-                  </template>
-                  <VListItemTitle>Edit</VListItemTitle>
-                </VListItem>
-
-                <VListItem @click="deleteUser(item.id)">
-                  <template #prepend>
-                    <VIcon icon="tabler-trash" />
-                  </template>
-                  <VListItemTitle>Delete</VListItemTitle>
-                </VListItem>
-              </VList>
-            </VMenu>
-          </VBtn>
+          <IconBtn @click="deleteUser(item.id)">
+            <VIcon icon="tabler-trash" />
+          </IconBtn>
         </template>
 
         <!-- pagination -->
@@ -516,6 +576,7 @@ const widgetData = ref([
           />
         </template>
       </VDataTableServer>
+      <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New User -->
