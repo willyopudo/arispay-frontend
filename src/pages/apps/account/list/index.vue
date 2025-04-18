@@ -1,5 +1,5 @@
 <script setup>
-import AddNewUserDrawer from '@/views/apps/user/list/AddNewCompanyAccountDrawer.vue'
+import AddNewCompanyAccountDrawer from '@/views/apps/user/list/AddNewCompanyAccountDrawer.vue'
 
 // 👉 Store
 const searchQuery = ref('')
@@ -31,6 +31,7 @@ const openModal = (user, action) => {
 //Users stats
 const fetchedAccounts = ref(null)
 const totalFetchedAccounts = ref(0)
+const bankList = ref([])
 
 const userSummary = ref({
   totalUsers: 0,
@@ -196,9 +197,10 @@ async function fetchCompanyAccounts(){
       return
     }
     
-    fetchedAccounts.value = accountsList.content
-    totalFetchedAccounts.value = accountsList.totalElements
-    userSummary.value = usersList.value1
+    fetchedAccounts.value = accountsList.value0.content
+    totalFetchedAccounts.value = accountsList.value0.totalElements
+    // userSummary.value = usersList.value1
+    bankList.value = accountsList.value1
 
     widgetData.value[0].value = userSummary.value.totalUsers
     widgetData.value[1].value = userSummary.value.activeUsers
@@ -214,14 +216,32 @@ async function fetchCompanyAccounts(){
 const accounts = computed(() => fetchedAccounts.value || []);
 const totalAccounts = computed(() => totalFetchedAccounts.value);
 
-const addNewUser = async userData => {
-  await $api('/apps/users', {
-    method: 'POST',
-    body: userData,
-  })
 
-  // Refetch User
-  fetchUsers()
+const AddNewCompanyAccount = async companyAccountData => {
+  
+  try {
+    const {
+      data: cData,
+      error,
+      response
+    } = await axiosApiCall('/company/accounts', {  
+      data: companyAccountData,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (error) {
+      useSweetAlert.errorMessage('Error during company account creation: ' + error.message)
+      return
+    }
+    
+    fetchCompanyAccounts()
+    useSweetAlert.toast("Company Account created successfully");
+ 
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 const updateUser = async userData => {
@@ -271,23 +291,23 @@ const deleteUser = async id => {
 
 const widgetData = ref([
   {
-    title: 'Users',
+    title: 'Accounts',
     value: userSummary.value.totalUsers,
     change: 2.1,
-    desc: 'Total Users',
+    desc: 'Total Accounts',
     icon: 'tabler-users',
     iconColor: 'primary',
   },
   {
-    title: 'Active Users',
+    title: 'Active Accounts',
     value: userSummary.value.activeUsers,
     change: 18,
-    desc: 'Active Users',
+    desc: 'Active Accounts',
     icon: 'tabler-user-check',
     iconColor: 'success',
   },
   {
-    title: 'Inactive Users',
+    title: 'Inactive Accounts',
     value: userSummary.value.inactiveUsers,
     change: -14,
     desc: 'Not ACtive Users',
@@ -295,7 +315,7 @@ const widgetData = ref([
     iconColor: 'error',
   },
   {
-    title: 'Pending Users',
+    title: 'Dormant Accounts',
     value: userSummary.value.pendingUsers,
     change: 42,
     desc: 'Pending Users',
@@ -579,10 +599,11 @@ watch(searchQuery, (newQuery) => {
       <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
       <!-- SECTION -->
     </VCard>
-    <!-- 👉 Add New User -->
-    <AddNewUserDrawer
+    <!-- 👉 Add New Company Account -->
+    <AddNewCompanyAccountDrawer
       v-model:isDrawerOpen="isAddNewUserDrawerVisible"
-      @user-data="addNewUser"
+      v-model:bankList="bankList"
+      @company-account-data="AddNewCompanyAccount"
     />
   </section>
 </template>
