@@ -1,10 +1,9 @@
 <script setup>
+import CompanyAccountInfoEditDialog from '@/components/dialogs/CompanyAccountInfoEditDialog.vue'
 import AddNewCompanyAccountDrawer from '@/views/apps/user/list/AddNewCompanyAccountDrawer.vue'
 
 // 👉 Store
 const searchQuery = ref('')
-const selectedRole = ref()
-const selectedPlan = ref()
 const selectedStatus = ref()
 
 // Data table options
@@ -15,15 +14,15 @@ const orderBy = ref()
 const selectedRows = ref([])
 
 //dialogs
-const isUserInfoEditDialogVisible = ref(false)
+const isCompanyAccountInfoEditDialogVisible = ref(false)
 // State for modal and selected user
-const selectedUser = ref(null);
+const selectedAccount = ref(null);
 const todo = ref(null);
 
 // Open modal with user details
-const openModal = (user, action) => {
-  selectedUser.value = user;
-  isUserInfoEditDialogVisible.value = true;
+const openModal = (companyAccount, action) => {
+  selectedAccount.value = companyAccount;
+  isCompanyAccountInfoEditDialogVisible.value = true;
   todo.value = action;
 };
 
@@ -62,6 +61,10 @@ const headers = [
   {
     title: 'Bank',
     key: 'bank',
+  },
+  {
+    title: 'Currency',
+    key: 'currency',
   },
   {
     title: 'Balance',
@@ -244,16 +247,16 @@ const AddNewCompanyAccount = async companyAccountData => {
   }
 }
 
-const updateUser = async userData => {
-  console.log(JSON.stringify(userData))
-  await customUseApi(`/user/${userData.id}`, {
+const updateCompanyAccount = async companyAccountData => {
+  console.log(JSON.stringify(companyAccountData))
+  await customUseApi(`/company/accounts/${companyAccountData.id}`, {
     method: 'PUT',
-    body: JSON.stringify(userData),
+    body: JSON.stringify(companyAccountData),
     headers: {"Content-Type": 'application/json'}
   })
 
   // Refetch User
-  fetchUsers()
+  fetchCompanyAccounts()
 }
 
 const deleteUser = async id => {
@@ -265,7 +268,7 @@ const deleteUser = async id => {
       error,
       resp: status
     } = await axiosApiCall(`/user/${id}`, {
-    method: 'DELETE',
+    methosersd: 'DELETE',
   
     })
     
@@ -323,8 +326,8 @@ const widgetData = ref([
     iconColor: 'warning',
   },
 ])
-const handleDataFromUserInfoEDitDialog = (data) => {
-  updateUser(data)
+const handleDataFromCompanyAccountInfoEDitDialog = (data) => {
+  updateCompanyAccount(data)
 }
 
 // Watch for changes in searchQuery and fetch users if length is more than 3
@@ -519,6 +522,13 @@ watch(searchQuery, (newQuery) => {
           </div>
         </template>
 
+        <!-- Currency -->
+        <template #item.currency="{ item }">
+          <div class="text-body-1 text-high-emphasis text-capitalize">
+            {{ item.currency }} 
+          </div>
+        </template>
+
         <!-- 👉 Balance -->
         <template #item.balance="{ item }">
           <div class="d-flex align-center justify-end w-100">
@@ -571,7 +581,7 @@ watch(searchQuery, (newQuery) => {
           />
         </template>
       </VDataTableServer>
-      <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
+      <CompanyAccountInfoEditDialog @submit="handleDataFromCompanyAccountInfoEDitDialog" v-if="isCompanyAccountInfoEditDialogVisible" v-model:isDialogVisible="isCompanyAccountInfoEditDialogVisible" :company-account-data="selectedAccount" :action="todo" />
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New Company Account -->
