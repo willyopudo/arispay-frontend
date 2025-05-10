@@ -1,23 +1,23 @@
 export default [
-  { heading: 'Transactional' },
+  { heading: "Transactional" },
   {
-    title: 'Transactions',
-    icon: { icon: 'tabler-transaction-dollar' },
-    to: 'forms-form-layouts',
+    title: "Transactions",
+    icon: { icon: "tabler-transaction-dollar" },
+    to: "apps-transaction-successful-transactions-list",
   },
   {
-    title: 'Rejected TRansactions',
-    icon: { icon: 'tabler-coin-off' },
-    to: 'apps-account-list'
+    title: "Rejected Transactions",
+    icon: { icon: "tabler-coin-off" },
+    to: "apps-transaction-rejected-transactions-list",
   },
   {
-    title: 'Bulk Payments',
-    icon: { icon: 'tabler-credit-card-pay' },
-    to: 'apps-account-list'
+    title: "Bulk Payments",
+    icon: { icon: "tabler-credit-card-pay" },
+    to: "apps-transaction-bulk-payments-list",
   },
   {
-    title: 'Transaction Query',
-    icon: { icon: 'tabler-cash-register' },
-    to: 'apps-account-list'
+    title: "Transaction Query",
+    icon: { icon: "tabler-cash-register" },
+    to: "apps-transaction-transaction-query-list",
   },
-]
+];
