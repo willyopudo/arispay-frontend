@@ -259,7 +259,7 @@ const updateCompanyAccount = async companyAccountData => {
   fetchCompanyAccounts()
 }
 
-const deleteUser = async id => {
+const deleteCompanyAccount = async id => {
   const canDelete = await useSweetAlert.confirm()
   if (!canDelete) return
   try {
@@ -267,8 +267,8 @@ const deleteUser = async id => {
       data,
       error,
       resp: status
-    } = await axiosApiCall(`/user/${id}`, {
-    methosersd: 'DELETE',
+    } = await axiosApiCall(`/company/accounts/${id}`, {
+    method: 'DELETE',
   
     })
     
@@ -277,14 +277,14 @@ const deleteUser = async id => {
       return
     }
     
-    useSweetAlert.successMessage('User deleted successfully')
+    useSweetAlert.successMessage('Company account deleted successfully')
 
     // Refetch User
-    setTimeout(fetchUsers, 3000);
+    setTimeout(fetchCompanyAccounts, 3000);
 
   } catch (error) {
     console.error(error)
-    useSweetAlert.errorMessage('An error occured while deleting user')
+    useSweetAlert.errorMessage('An error occured while deleting company account')
   }
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
@@ -567,7 +567,7 @@ watch(searchQuery, (newQuery) => {
             <VIcon icon="tabler-pencil" />
           </IconBtn>
 
-          <IconBtn @click="deleteUser(item.id)">
+          <IconBtn @click="deleteCompanyAccount(item.id)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>
@@ -581,7 +581,7 @@ watch(searchQuery, (newQuery) => {
           />
         </template>
       </VDataTableServer>
-      <CompanyAccountInfoEditDialog @submit="handleDataFromCompanyAccountInfoEDitDialog" v-if="isCompanyAccountInfoEditDialogVisible" v-model:isDialogVisible="isCompanyAccountInfoEditDialogVisible" :company-account-data="selectedAccount" :action="todo" />
+      <CompanyAccountInfoEditDialog @submit="handleDataFromCompanyAccountInfoEDitDialog" v-if="isCompanyAccountInfoEditDialogVisible" v-model:isDialogVisible="isCompanyAccountInfoEditDialogVisible" :company-account-data="selectedAccount" :action="todo" :banks="bankList"/>
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New Company Account -->

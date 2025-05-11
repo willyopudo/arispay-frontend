@@ -25,7 +25,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  identifierTypes: {
+  banks: {
     type: Array,
     required: false,
     default: () => [],
@@ -92,7 +92,7 @@ const dialogModelValueUpdate = val => {
           {{ action === 'edit' ? 'Edit' : 'View' }} Company Account Information
         </h4>
         <p class="text-body-1 text-center mb-6">
-          Updating client details will receive a privacy audit.
+          {{ action === 'edit' ? 'Updating company account details will receive a privacy audit.' : 'You can view the company account details.' }}
         </p>
 
         <!-- 👉 Form -->
@@ -153,10 +153,12 @@ const dialogModelValueUpdate = val => {
               cols="12"
               md="6"
             >
-              <AppTextField
+              <AppSelect
                 :value="companyAccountData.bankCode + ' ' + companyAccountData.bankName"
                 label="Bank"
+                :items="banks"
                 placeholder="+254 711 123 456"
+                :disabled="action === 'view'"
               />
             </VCol>
 
@@ -166,7 +168,7 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <AppTextField
-                v-model="companyAccountData.balance"
+                :value="Number(companyAccountData.balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})"
                 label="Balance"
                 placeholder="Type"
                 
@@ -177,13 +179,14 @@ const dialogModelValueUpdate = val => {
               cols="12"
               md="6"
             >
-              <AppTextField
+              <AppSelect
                 v-model="companyAccountData.currency"
                 label="Currency"
-                placeholder="Type"
+                placeholder="KES"
+                :items="['KES', 'USD', 'GBP', 'TZS']"
                 
               />
-            </VCol>               
+            </VCol>  
 
             <!-- 👉 Submit and Cancel -->
             <VCol
