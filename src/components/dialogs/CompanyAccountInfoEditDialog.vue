@@ -48,7 +48,9 @@ watch(() => props, () => {
 
 const onFormSubmit = () => {
   emit('update:isDialogVisible', false)
-  emit('submit', companyAccountData.value)
+  if (props.action === 'edit') {
+    emit('submit', companyAccountData.value)
+  }
 }
 
 const onFormReset = () => {

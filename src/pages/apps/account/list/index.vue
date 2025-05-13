@@ -326,7 +326,7 @@ const widgetData = ref([
     iconColor: 'warning',
   },
 ])
-const handleDataFromCompanyAccountInfoEDitDialog = (data) => {
+const handleDataFromCompanyAccountInfoEditDialog = (data) => {
   updateCompanyAccount(data)
 }
 
@@ -581,7 +581,7 @@ watch(searchQuery, (newQuery) => {
           />
         </template>
       </VDataTableServer>
-      <CompanyAccountInfoEditDialog @submit="handleDataFromCompanyAccountInfoEDitDialog" v-if="isCompanyAccountInfoEditDialogVisible" v-model:isDialogVisible="isCompanyAccountInfoEditDialogVisible" :company-account-data="selectedAccount" :action="todo" :banks="bankList"/>
+      <CompanyAccountInfoEditDialog @submit="handleDataFromCompanyAccountInfoEditDialog" v-if="isCompanyAccountInfoEditDialogVisible" v-model:isDialogVisible="isCompanyAccountInfoEditDialogVisible" :company-account-data="selectedAccount" :action="todo" :banks="bankList"/>
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New Company Account -->
