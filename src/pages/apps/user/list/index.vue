@@ -33,10 +33,10 @@ const fetchedUsers = ref(null)
 const totalFetchedUsers = ref(0)
 
 const userSummary = ref({
-  totalUsers: 0,
-  activeUsers: 0,
-  inactiveUsers: 0,
-  pendingUsers: 0,
+  total: 0,
+  active: 0,
+  inactive: 0,
+  pending: 0,
 })
 
 const updateOptions = options => {
@@ -200,10 +200,10 @@ async function fetchUsers(){
     totalFetchedUsers.value = usersList.value0.totalElements
     userSummary.value = usersList.value1
 
-    widgetData.value[0].value = userSummary.value.totalUsers
-    widgetData.value[1].value = userSummary.value.activeUsers
-    widgetData.value[2].value = userSummary.value.inactiveUsers
-    widgetData.value[3].value = userSummary.value.pendingUsers
+    widgetData.value[0].value = userSummary.value.total
+    widgetData.value[1].value = userSummary.value.active
+    widgetData.value[2].value = userSummary.value.inactive
+    widgetData.value[3].value = userSummary.value.pending
 
     useSweetAlert.toast("Users fetched successfully");
 
@@ -272,7 +272,7 @@ const deleteUser = async id => {
 const widgetData = ref([
   {
     title: 'Users',
-    value: userSummary.value.totalUsers,
+    value: userSummary.value.total,
     change: 2.1,
     desc: 'Total Users',
     icon: 'tabler-users',
@@ -280,7 +280,7 @@ const widgetData = ref([
   },
   {
     title: 'Active Users',
-    value: userSummary.value.activeUsers,
+    value: userSummary.value.active,
     change: 18,
     desc: 'Active Users',
     icon: 'tabler-user-check',
@@ -288,7 +288,7 @@ const widgetData = ref([
   },
   {
     title: 'Inactive Users',
-    value: userSummary.value.inactiveUsers,
+    value: userSummary.value.inactive,
     change: -14,
     desc: 'Not ACtive Users',
     icon: 'tabler-user-plus',
@@ -296,7 +296,7 @@ const widgetData = ref([
   },
   {
     title: 'Pending Users',
-    value: userSummary.value.pendingUsers,
+    value: userSummary.value.pending,
     change: 42,
     desc: 'Pending Users',
     icon: 'tabler-user-search',
@@ -582,7 +582,7 @@ watch(searchQuery, (newQuery) => {
           />
         </template>
       </VDataTableServer>
-      <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedUser" :action="todo" />
+      <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible" v-model:isDialogVisible="isUserInfoEditDialogVisible" :companyAccountData="selectedUser" :action="todo" />
       <!-- SECTION -->
     </VCard>
     <!-- 👉 Add New User -->

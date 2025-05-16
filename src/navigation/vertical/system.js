@@ -1,13 +1,13 @@
 export default [
-  { heading: 'System' },
+  { heading: "System" },
   {
-    title: 'Static Settings',
-    icon: { icon: 'tabler-settings' },
-    to: 'forms-form-layouts',
+    title: "Static Settings",
+    icon: { icon: "tabler-settings" },
+    to: "forms-form-layouts",
   },
   {
-    title: 'User Preferences',
-    icon: { icon: 'tabler-mood-cog' },
-    to: 'apps-account-list'
+    title: "User Preferences",
+    icon: { icon: "tabler-mood-cog" },
+    to: "forms-form-layouts",
   },
-]
+];
