@@ -2,7 +2,6 @@ import axios from "axios";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 const baseAppUrl = import.meta.env.VITE_APP_BASE_URL;
-const accessToken = useCookie("accessToken").value;
 
 // ✅ Create Axios Instance
 const apiClient = axios.create({
@@ -47,6 +46,7 @@ const refreshToken = async () => {
 
 // ✅ Reusable API Call Function
 export const axiosApiCall = async (endpoint, options = {}) => {
+    const accessToken = useCookie("accessToken").value;
     let data, error, resp = null;
     // Add Authorization header if accessToken is present
     const headers = {
