@@ -1,11 +1,12 @@
 <script setup>
-import AddNewCompanyAccountDrawer from '@/views/apps/user/list/AddNewCompanyAccountDrawer.vue'
-
 // 👉 Store
 const searchQuery = ref('')
 const selectedRole = ref()
 const selectedPlan = ref()
-const selectedStatus = ref()
+const selectedBank = ref()
+
+//Date range
+const dateRange = ref('')
 
 // Data table options
 const itemsPerPage = ref(10)
@@ -15,16 +16,15 @@ const orderBy = ref()
 const selectedRows = ref([])
 
 //dialogs
-const isUserInfoEditDialogVisible = ref(false)
+const isTransactionViewDialogVisible = ref(false)
 // State for modal and selected user
 const selectedTransaction = ref(null);
 const todo = ref(null);
 
 // Open modal with user details
-const openModal = (user, action) => {
-  selectedTransaction.value = user;
-  isUserInfoEditDialogVisible.value = true;
-  todo.value = action;
+const openModal = (transaction) => {
+  selectedTransaction.value = transaction;
+  isTransactionViewDialogVisible.value = true;
 };
 
 
@@ -159,7 +159,15 @@ const resolveCrDrVariant = stat => {
   return 'primary'
 }
 
-const isAddNewUserDrawerVisible = ref(false)
+//const isAddNewUserDrawerVisible = ref(false)
+
+const formattedDateRange = computed(() => {
+  if (!dateRange.value) return ''
+  return dateRange.value
+    .split(' to ')
+    .map(date => date.trim())
+    .join(',')
+})
 
 async function fetchSuccessTransactions() {
   try {
@@ -174,9 +182,8 @@ async function fetchSuccessTransactions() {
         sortBy: sortBy.value,
         orderBy: orderBy.value,
         search: searchQuery.value,
-        // role: selectedRole.value,
-        // plan: selectedPlan.value,
-        status: selectedStatus.value,
+        dateRange: formattedDateRange.value, // This will now send as "2025-06-01, 2025-06-03"
+        bank: selectedBank.value,
       }
     })
     if (error) {
@@ -184,10 +191,10 @@ async function fetchSuccessTransactions() {
       return
     }
 
-    fetchedTransactions.value = transactionsList.content
-    totalFetchedTransactions.value = transactionsList.totalElements
+    fetchedTransactions.value = transactionsList.value0.content
+    totalFetchedTransactions.value = transactionsList.value0.totalElements
     //transactionSummary.value = transactionsList.value2
-    //bankList.value = transactionsList.value1
+    bankList.value = transactionsList.value1
 
     // widgetData.value[0].value = transactionSummary.value.total
     // widgetData.value[1].value = transactionSummary.value.active
@@ -291,19 +298,33 @@ watch(searchQuery, (newQuery) => {
 
       <VCardText>
         <VRow>
-
-          <!-- 👉 Select Status -->
-          <VCol cols="12" sm="4">
-            <div class="d-flex align-center">
-              <AppSelect v-model="selectedStatus" placeholder="Select Status" :items="status" clearable
-                clear-icon="tabler-x" class="flex-grow-1 mr-2" />
-              <VBtn class="ml-4" @click="fetchSuccessTransactions">
-                Filter
-                <VIcon end icon="tabler-filter" />
-              </VBtn>
-            </div>
+          <!-- 👉 Select Bank -->
+          <VCol cols="12" md="4">
+            <AppSelect 
+              v-model="selectedBank" 
+              placeholder="Select Bank" 
+              :items="bankList" 
+              clearable
+              clear-icon="tabler-x" 
+            />
           </VCol>
 
+          <!-- 👉 Date Range Picker -->
+          <VCol cols="12" md="4">
+            <AppDateTimePicker
+              v-model="dateRange"         
+              placeholder="Select Date Range"
+              :config="{ mode: 'range', enableTime: true, dateFormat: 'Y-m-d H:i:ss', time_24hr: true }"
+            />
+          </VCol>
+
+          <!-- 👉 Filter Button -->
+          <VCol cols="12" md="4" class="d-flex align-center">
+            <VBtn @click="fetchSuccessTransactions">
+              Filter
+              <VIcon end icon="tabler-filter" />
+            </VBtn>
+          </VCol>
         </VRow>
       </VCardText>
 
@@ -360,15 +381,7 @@ watch(searchQuery, (newQuery) => {
         <template #item.transactionDate="{ item }">
           <div class="d-flex align-center gap-x-2">
             <div class="text-capitalize text-high-emphasis text-body-1">
-              {{ new Date(item.transDate).toLocaleString('en-GB', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                  hour12: false
-              }).replace(',', '') }}
+              {{ formatDate(item.transDate)}}
             </div>
           </div>
         </template>
@@ -416,7 +429,7 @@ watch(searchQuery, (newQuery) => {
         <!-- Actions -->
         <template #item.actions="{ item }">
 
-          <IconBtn @click="openModal(item, 'view')">
+          <IconBtn @click="openModal(item)">
             <VIcon icon="tabler-eye" />
           </IconBtn>
         </template>
@@ -426,12 +439,9 @@ watch(searchQuery, (newQuery) => {
           <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalTransactions" />
         </template>
       </VDataTableServer>
-      <UserInfoEditDialog @submit="handleDataFromUserInfoEDitDialog" v-if="isUserInfoEditDialogVisible"
-        v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="selectedTransaction" :action="todo" />
+      <TransactionViewDialog  v-if="isTransactionViewDialogVisible"
+        v-model:isDialogVisible="isTransactionViewDialogVisible" :trans-data="selectedTransaction" />
       <!-- SECTION -->
     </VCard>
-    <!-- 👉 View Transaction Details -->
-    <ViewTransactionDrawer v-model:isDrawerOpen="isViewTransactionDrawerVisible" v-model:bankList="bankList"
-      @transaction-data="ViewTransactionData" />
   </section>
 </template>
