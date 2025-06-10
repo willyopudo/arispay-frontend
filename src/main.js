@@ -8,6 +8,7 @@ import "@styles/styles.scss";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import VueCookies from "vue3-cookies";
+import moment from "moment"
 
 
 // Create vue app
@@ -17,5 +18,6 @@ const app = createApp(App);
 registerPlugins(app);
 app.use(Toast);
 app.use(VueCookies);
+app.use(moment);
 // Mount vue app
 app.mount("#app");
