@@ -77,7 +77,7 @@ onBeforeUnmount(() => {
   color: rgba(var(--v-theme-on-surface));
   padding: 16px 12px;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
   width: 100%;
   height: 39px;
@@ -94,7 +94,7 @@ onBeforeUnmount(() => {
 }
 
 .dark-input::placeholder {
-  color: rgba(var(--v-theme-on-surface-variant));
+  color: rgba(var(--v-theme-surface-variant));
   opacity: var(--v-disabled-opacity);
 }
 </style>
