@@ -34,6 +34,9 @@ onMounted(() => {
   $el.daterangepicker(
     {
       autoUpdateInput: false,
+      showDropdowns: true,
+      minYear: 2000,
+      maxYear: parseInt(moment().format("YYYY"), 10) + 2,
       locale: {
         cancelLabel: 'Clear',
       },
@@ -47,6 +50,7 @@ onMounted(() => {
           moment().subtract(1, 'month').startOf('month'),
           moment().subtract(1, 'month').endOf('month'),
         ],
+        'This Year': [moment().startOf('year'), moment()],
       }
     },
     function (start, end) {
@@ -262,5 +266,11 @@ onBeforeUnmount(() => {
 
 .daterangepicker:after {
   border-bottom-color: rgb(var(--v-theme-surface)) !important;
+}
+/* Disabled/off dates */
+.daterangepicker td.off,
+.daterangepicker td.disabled {
+  color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity)) !important;
+  background-color: transparent !important;
 }
 </style>
