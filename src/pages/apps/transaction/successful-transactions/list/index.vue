@@ -1,4 +1,6 @@
 <script setup>
+import DateRangePicker from '@core/components/app-form-elements/DateRangepicker.vue'
+
 // 👉 Store
 const searchQuery = ref('')
 const selectedRole = ref()
@@ -161,12 +163,18 @@ const resolveCrDrVariant = stat => {
 
 //const isAddNewUserDrawerVisible = ref(false)
 
+// const formattedDateRange = computed(() => {
+//   if (!dateRange.value) return ''
+//   return dateRange.value
+//     .split(' to ')
+//     .map(date => date.trim())
+//     .join(',')
+// })
+
 const formattedDateRange = computed(() => {
-  if (!dateRange.value) return ''
-  return dateRange.value
-    .split(' to ')
-    .map(date => date.trim())
-    .join(',')
+  if (!dateRange.value || !dateRange.value.startDate || !dateRange.value.endDate) return ''
+  
+  return `${dateRange.value.startDate},${dateRange.value.endDate}`
 })
 
 async function fetchSuccessTransactions() {
@@ -252,6 +260,7 @@ watch(searchQuery, (newQuery) => {
     fetchSuccessTransactions()
   }
 });
+
 </script>
 
 <template>
@@ -311,11 +320,13 @@ watch(searchQuery, (newQuery) => {
 
           <!-- 👉 Date Range Picker -->
           <VCol cols="12" md="4">
-            <AppDateTimePicker
+        <!--  <AppDateTimePicker
               v-model="dateRange"         
               placeholder="Select Date Range"
               :config="{ mode: 'range', enableTime: true, dateFormat: 'Y-m-d H:i:ss', time_24hr: true }"
-            />
+            />-->  
+
+            <DateRangePicker v-model="dateRange" placeholder="Select Date Range" />
           </VCol>
 
           <!-- 👉 Filter Button -->
