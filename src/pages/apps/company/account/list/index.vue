@@ -447,7 +447,7 @@ watch(searchQuery, (newQuery) => {
           <div style="inline-size: 15.625rem;">
             <AppTextField
               v-model="searchQuery"
-              placeholder="Search User"
+              placeholder="Search Accounts"
             />
           </div>
 

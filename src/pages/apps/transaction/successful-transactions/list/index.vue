@@ -6,6 +6,8 @@ const searchQuery = ref('')
 const selectedRole = ref()
 const selectedPlan = ref()
 const selectedBank = ref()
+const selectedAccount = ref()
+const selectedCrDr = ref()
 
 //Date range
 const dateRange = ref('')
@@ -33,7 +35,10 @@ const openModal = (transaction) => {
 //Users stats
 const fetchedTransactions = ref(null)
 const totalFetchedTransactions = ref(0)
+
+//Select options
 const bankList = ref([])
+const accountList = ref([])
 
 const transactionSummary = ref({
   total: 0,
@@ -172,7 +177,7 @@ const resolveCrDrVariant = stat => {
 // })
 
 const formattedDateRange = computed(() => {
-  if (!dateRange.value || !dateRange.value.startDate || !dateRange.value.endDate) return ''
+  if (!dateRange.value || !dateRange.value.startDate || !dateRange.value.endDate) return null
   
   return `${dateRange.value.startDate},${dateRange.value.endDate}`
 })
@@ -192,6 +197,8 @@ async function fetchSuccessTransactions() {
         search: searchQuery.value,
         dateRange: formattedDateRange.value, // This will now send as "2025-06-01, 2025-06-03"
         bank: selectedBank.value,
+        account: selectedAccount.value,
+        crDrInd: selectedCrDr.value
       }
     })
     if (error) {
@@ -202,7 +209,8 @@ async function fetchSuccessTransactions() {
     fetchedTransactions.value = transactionsList.value0.content
     totalFetchedTransactions.value = transactionsList.value0.totalElements
     //transactionSummary.value = transactionsList.value2
-    bankList.value = transactionsList.value1
+    bankList.value = transactionsList?.value1[0] || []
+    accountList.value = transactionsList?.value1[1] || []
 
     // widgetData.value[0].value = transactionSummary.value.total
     // widgetData.value[1].value = transactionSummary.value.active
@@ -254,13 +262,6 @@ const widgetData = ref([
 ])
 
 
-// Watch for changes in searchQuery and fetch users if length is more than 3
-watch(searchQuery, (newQuery) => {
-  if (newQuery.length > 2 || newQuery.length === 0) {
-    fetchSuccessTransactions()
-  }
-});
-
 </script>
 
 <template>
@@ -307,8 +308,13 @@ watch(searchQuery, (newQuery) => {
 
       <VCardText>
         <VRow>
+          <!-- 👉 Date Range Picker -->
+          <VCol cols="12" md="3">      
+            <DateRangePicker v-model="dateRange" placeholder="Select Date Range" />
+          </VCol>
+
           <!-- 👉 Select Bank -->
-          <VCol cols="12" md="4">
+          <VCol cols="12" md="3">
             <AppSelect 
               v-model="selectedBank" 
               placeholder="Select Bank" 
@@ -318,19 +324,33 @@ watch(searchQuery, (newQuery) => {
             />
           </VCol>
 
-          <!-- 👉 Date Range Picker -->
-          <VCol cols="12" md="4">
-        <!--  <AppDateTimePicker
-              v-model="dateRange"         
-              placeholder="Select Date Range"
-              :config="{ mode: 'range', enableTime: true, dateFormat: 'Y-m-d H:i:ss', time_24hr: true }"
-            />-->  
+          <!-- 👉 Select Account -->
+          <VCol cols="12" md="3">
+            <AppSelect 
+              v-model="selectedAccount"
+              placeholder="Select Account" 
+              :items="accountList" 
+              clearable
+              clear-icon="tabler-x" 
+            />
+          </VCol>
 
-            <DateRangePicker v-model="dateRange" placeholder="Select Date Range" />
+          <!-- 👉 Select Cr/Dr -->
+          <VCol cols="12" md="2">
+            <AppSelect 
+              v-model="selectedCrDr"
+              placeholder="Select CR/DR"
+              :items="[
+                { title: 'Credit', value: 'C' },
+                { title: 'Debit', value: 'D' }
+              ]" 
+              clearable
+              clear-icon="tabler-x" 
+            />
           </VCol>
 
           <!-- 👉 Filter Button -->
-          <VCol cols="12" md="4" class="d-flex align-center">
+          <VCol cols="12" md="1" class="d-flex align-center">
             <VBtn @click="fetchSuccessTransactions">
               Filter
               <VIcon end icon="tabler-filter" />
@@ -357,7 +377,7 @@ watch(searchQuery, (newQuery) => {
         <div class="app-user-search-filter d-flex align-center flex-wrap gap-4">
           <!-- 👉 Search  -->
           <div style="inline-size: 15.625rem;">
-            <AppTextField v-model="searchQuery" placeholder="Search User" />
+            <AppTextField v-model="searchQuery" placeholder="Search Transactions" @keyup.enter="fetchSuccessTransactions"/>
           </div>
 
           <!-- 👉 Export button -->
