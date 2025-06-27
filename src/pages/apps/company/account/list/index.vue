@@ -33,10 +33,10 @@ const totalFetchedAccounts = ref(0)
 const bankList = ref([])
 
 const companyAccountSummary = ref({
-  total: 0,
-  active: 0,
-  inactive: 0,
-  pending: 0,
+  first: 0,
+  second: 0,
+  third: 0,
+  fourth: 0,
 })
 
 const updateOptions = options => {
@@ -205,10 +205,10 @@ async function fetchCompanyAccounts(){
     companyAccountSummary.value = accountsList.value2
     bankList.value = accountsList.value1
 
-    widgetData.value[0].value = companyAccountSummary.value.total
-    widgetData.value[1].value = companyAccountSummary.value.active
-    widgetData.value[2].value = companyAccountSummary.value.inactive
-    widgetData.value[3].value = companyAccountSummary.value.pending
+    widgetData.value[0].value = companyAccountSummary.value.first
+    widgetData.value[1].value = companyAccountSummary.value.second
+    widgetData.value[2].value = companyAccountSummary.value.third
+    widgetData.value[3].value = companyAccountSummary.value.fourth
 
     useSweetAlert.toast("Company accounts fetched successfully");
 
@@ -295,7 +295,7 @@ const deleteCompanyAccount = async id => {
 const widgetData = ref([
   {
     title: 'Accounts',
-    value: companyAccountSummary.value.total,
+    value: companyAccountSummary.value.first,
     change: 2.1,
     desc: 'Total Accounts',
     icon: 'tabler-users',
@@ -303,7 +303,7 @@ const widgetData = ref([
   },
   {
     title: 'Active Accounts',
-    value: companyAccountSummary.value.active,
+    value: companyAccountSummary.value.second,
     change: 18,
     desc: 'Active Accounts',
     icon: 'tabler-user-check',
@@ -311,7 +311,7 @@ const widgetData = ref([
   },
   {
     title: 'Inactive Accounts',
-    value: companyAccountSummary.value.inactive,
+    value: companyAccountSummary.value.third,
     change: -14,
     desc: 'Non-Active Accounts',
     icon: 'tabler-user-plus',
@@ -319,7 +319,7 @@ const widgetData = ref([
   },
   {
     title: 'Dormant Accounts',
-    value: companyAccountSummary.value.pending,
+    value: companyAccountSummary.value.fourth,
     change: 42,
     desc: 'Dormant Accounts',
     icon: 'tabler-user-search',

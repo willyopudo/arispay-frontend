@@ -41,10 +41,10 @@ const bankList = ref([])
 const accountList = ref([])
 
 const transactionSummary = ref({
-  total: 0,
-  active: 0,
-  inactive: 0,
-  pending: 0,
+  first: 0,
+  second: 0,
+  third: 0,
+  fourth: 0,
 })
 
 const updateOptions = options => {
@@ -208,14 +208,14 @@ async function fetchSuccessTransactions() {
 
     fetchedTransactions.value = transactionsList.value0.content
     totalFetchedTransactions.value = transactionsList.value0.totalElements
-    //transactionSummary.value = transactionsList.value2
+    transactionSummary.value = transactionsList.value2
     bankList.value = transactionsList?.value1[0] || []
     accountList.value = transactionsList?.value1[1] || []
 
-    // widgetData.value[0].value = transactionSummary.value.total
-    // widgetData.value[1].value = transactionSummary.value.active
-    // widgetData.value[2].value = transactionSummary.value.inactive
-    // widgetData.value[3].value = transactionSummary.value.pending
+    widgetData.value[0].value = numberFormatter(transactionSummary.value.first)
+    widgetData.value[1].value = numberFormatter(transactionSummary.value.second)
+    widgetData.value[2].value = numberFormatter(transactionSummary.value.third, true)
+    widgetData.value[3].value = numberFormatter(transactionSummary.value.fourth, true)
 
     useSweetAlert.toast("Transactions fetched successfully");
 
@@ -226,37 +226,46 @@ async function fetchSuccessTransactions() {
 const transactions = computed(() => fetchedTransactions.value || []);
 const totalTransactions = computed(() => totalFetchedTransactions.value);
 
+const numberFormatter = (value, hasDp = false) => {
+  if (hasDp) {
+    return Number(value).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
+  return Number(value).toLocaleString();
+}
 const widgetData = ref([
   {
-    title: 'Transactions',
-    value: transactionSummary.value.total,
+    title: 'Number of Collections',
+    value: transactionSummary.value.first,
     change: 2.1,
-    desc: 'Total Transactions',
-    icon: 'tabler-users',
+    desc: 'Number of Collections',
+    icon: 'tabler-credit-card-refund',
     iconColor: 'primary',
   },
   {
-    title: 'Active Transactions',
-    value: transactionSummary.value.active,
+    title: 'Number of Disbursements',
+    value: transactionSummary.value.second,
     change: 18,
-    desc: 'Active Transactions',
-    icon: 'tabler-user-check',
+    desc: 'Number of Disbursements',
+    icon: 'tabler-credit-card-pay',
     iconColor: 'success',
   },
   {
-    title: 'Inactive Transactions',
-    value: transactionSummary.value.inactive,
+    title: 'Total Collections',
+    value: transactionSummary.value.third,
     change: -14,
-    desc: 'Non-Active Transactions',
-    icon: 'tabler-user-plus',
+    desc: 'Total Collections',
+    icon: 'tabler-coin',
     iconColor: 'error',
   },
   {
-    title: 'Dormant Transactions',
-    value: transactionSummary.value.pending,
+    title: 'Total Disbursements',
+    value: transactionSummary.value.fourth,
     change: 42,
-    desc: 'Dormant Transactions',
-    icon: 'tabler-user-search',
+    desc: 'Total Disbursements',
+    icon: 'tabler-coin-off',
     iconColor: 'warning',
   },
 ])

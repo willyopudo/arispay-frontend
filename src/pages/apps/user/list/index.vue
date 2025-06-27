@@ -33,10 +33,10 @@ const fetchedUsers = ref(null)
 const totalFetchedUsers = ref(0)
 
 const userSummary = ref({
-  total: 0,
-  active: 0,
-  inactive: 0,
-  pending: 0,
+  first: 0,
+  second: 0,
+  third: 0,
+  fourth: 0,
 })
 
 const updateOptions = options => {
@@ -200,10 +200,10 @@ async function fetchUsers(){
     totalFetchedUsers.value = usersList.value0.totalElements
     userSummary.value = usersList.value1
 
-    widgetData.value[0].value = userSummary.value.total
-    widgetData.value[1].value = userSummary.value.active
-    widgetData.value[2].value = userSummary.value.inactive
-    widgetData.value[3].value = userSummary.value.pending
+    widgetData.value[0].value = userSummary.value.first
+    widgetData.value[1].value = userSummary.value.second
+    widgetData.value[2].value = userSummary.value.third
+    widgetData.value[3].value = userSummary.value.fourth
 
     useSweetAlert.toast("Users fetched successfully");
 
@@ -272,7 +272,7 @@ const deleteUser = async id => {
 const widgetData = ref([
   {
     title: 'Users',
-    value: userSummary.value.total,
+    value: userSummary.value.first,
     change: 2.1,
     desc: 'Total Users',
     icon: 'tabler-users',
@@ -280,7 +280,7 @@ const widgetData = ref([
   },
   {
     title: 'Active Users',
-    value: userSummary.value.active,
+    value: userSummary.value.second,
     change: 18,
     desc: 'Active Users',
     icon: 'tabler-user-check',
@@ -288,7 +288,7 @@ const widgetData = ref([
   },
   {
     title: 'Inactive Users',
-    value: userSummary.value.inactive,
+    value: userSummary.value.third,
     change: -14,
     desc: 'Not ACtive Users',
     icon: 'tabler-user-plus',
@@ -296,7 +296,7 @@ const widgetData = ref([
   },
   {
     title: 'Pending Users',
-    value: userSummary.value.pending,
+    value: userSummary.value.fourth,
     change: 42,
     desc: 'Pending Users',
     icon: 'tabler-user-search',
