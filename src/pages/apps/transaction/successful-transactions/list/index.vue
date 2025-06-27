@@ -6,6 +6,8 @@ const searchQuery = ref('')
 const selectedRole = ref()
 const selectedPlan = ref()
 const selectedBank = ref()
+const selectedAccount = ref()
+const selectedCrDr = ref()
 
 //Date range
 const dateRange = ref('')
@@ -33,13 +35,16 @@ const openModal = (transaction) => {
 //Users stats
 const fetchedTransactions = ref(null)
 const totalFetchedTransactions = ref(0)
+
+//Select options
 const bankList = ref([])
+const accountList = ref([])
 
 const transactionSummary = ref({
-  total: 0,
-  active: 0,
-  inactive: 0,
-  pending: 0,
+  first: 0,
+  second: 0,
+  third: 0,
+  fourth: 0,
 })
 
 const updateOptions = options => {
@@ -172,7 +177,7 @@ const resolveCrDrVariant = stat => {
 // })
 
 const formattedDateRange = computed(() => {
-  if (!dateRange.value || !dateRange.value.startDate || !dateRange.value.endDate) return ''
+  if (!dateRange.value || !dateRange.value.startDate || !dateRange.value.endDate) return null
   
   return `${dateRange.value.startDate},${dateRange.value.endDate}`
 })
@@ -192,6 +197,8 @@ async function fetchSuccessTransactions() {
         search: searchQuery.value,
         dateRange: formattedDateRange.value, // This will now send as "2025-06-01, 2025-06-03"
         bank: selectedBank.value,
+        account: selectedAccount.value,
+        crDrInd: selectedCrDr.value
       }
     })
     if (error) {
@@ -201,13 +208,14 @@ async function fetchSuccessTransactions() {
 
     fetchedTransactions.value = transactionsList.value0.content
     totalFetchedTransactions.value = transactionsList.value0.totalElements
-    //transactionSummary.value = transactionsList.value2
-    bankList.value = transactionsList.value1
+    transactionSummary.value = transactionsList.value2
+    bankList.value = transactionsList?.value1[0] || []
+    accountList.value = transactionsList?.value1[1] || []
 
-    // widgetData.value[0].value = transactionSummary.value.total
-    // widgetData.value[1].value = transactionSummary.value.active
-    // widgetData.value[2].value = transactionSummary.value.inactive
-    // widgetData.value[3].value = transactionSummary.value.pending
+    widgetData.value[0].value = numberFormatter(transactionSummary.value.first)
+    widgetData.value[1].value = numberFormatter(transactionSummary.value.second)
+    widgetData.value[2].value = numberFormatter(transactionSummary.value.third, true)
+    widgetData.value[3].value = numberFormatter(transactionSummary.value.fourth, true)
 
     useSweetAlert.toast("Transactions fetched successfully");
 
@@ -218,48 +226,50 @@ async function fetchSuccessTransactions() {
 const transactions = computed(() => fetchedTransactions.value || []);
 const totalTransactions = computed(() => totalFetchedTransactions.value);
 
+const numberFormatter = (value, hasDp = false) => {
+  if (hasDp) {
+    return Number(value).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
+  return Number(value).toLocaleString();
+}
 const widgetData = ref([
   {
-    title: 'Transactions',
-    value: transactionSummary.value.total,
+    title: 'Number of Collections',
+    value: transactionSummary.value.first,
     change: 2.1,
-    desc: 'Total Transactions',
-    icon: 'tabler-users',
+    desc: 'Number of Collections',
+    icon: 'tabler-credit-card-refund',
     iconColor: 'primary',
   },
   {
-    title: 'Active Transactions',
-    value: transactionSummary.value.active,
+    title: 'Number of Disbursements',
+    value: transactionSummary.value.second,
     change: 18,
-    desc: 'Active Transactions',
-    icon: 'tabler-user-check',
+    desc: 'Number of Disbursements',
+    icon: 'tabler-credit-card-pay',
     iconColor: 'success',
   },
   {
-    title: 'Inactive Transactions',
-    value: transactionSummary.value.inactive,
+    title: 'Total Collections',
+    value: transactionSummary.value.third,
     change: -14,
-    desc: 'Non-Active Transactions',
-    icon: 'tabler-user-plus',
+    desc: 'Total Collections',
+    icon: 'tabler-coin',
     iconColor: 'error',
   },
   {
-    title: 'Dormant Transactions',
-    value: transactionSummary.value.pending,
+    title: 'Total Disbursements',
+    value: transactionSummary.value.fourth,
     change: 42,
-    desc: 'Dormant Transactions',
-    icon: 'tabler-user-search',
+    desc: 'Total Disbursements',
+    icon: 'tabler-coin-off',
     iconColor: 'warning',
   },
 ])
 
-
-// Watch for changes in searchQuery and fetch users if length is more than 3
-watch(searchQuery, (newQuery) => {
-  if (newQuery.length > 2 || newQuery.length === 0) {
-    fetchSuccessTransactions()
-  }
-});
 
 </script>
 
@@ -307,8 +317,13 @@ watch(searchQuery, (newQuery) => {
 
       <VCardText>
         <VRow>
+          <!-- 👉 Date Range Picker -->
+          <VCol cols="12" md="3">      
+            <DateRangePicker v-model="dateRange" placeholder="Select Date Range" />
+          </VCol>
+
           <!-- 👉 Select Bank -->
-          <VCol cols="12" md="4">
+          <VCol cols="12" md="3">
             <AppSelect 
               v-model="selectedBank" 
               placeholder="Select Bank" 
@@ -318,19 +333,33 @@ watch(searchQuery, (newQuery) => {
             />
           </VCol>
 
-          <!-- 👉 Date Range Picker -->
-          <VCol cols="12" md="4">
-        <!--  <AppDateTimePicker
-              v-model="dateRange"         
-              placeholder="Select Date Range"
-              :config="{ mode: 'range', enableTime: true, dateFormat: 'Y-m-d H:i:ss', time_24hr: true }"
-            />-->  
+          <!-- 👉 Select Account -->
+          <VCol cols="12" md="3">
+            <AppSelect 
+              v-model="selectedAccount"
+              placeholder="Select Account" 
+              :items="accountList" 
+              clearable
+              clear-icon="tabler-x" 
+            />
+          </VCol>
 
-            <DateRangePicker v-model="dateRange" placeholder="Select Date Range" />
+          <!-- 👉 Select Cr/Dr -->
+          <VCol cols="12" md="2">
+            <AppSelect 
+              v-model="selectedCrDr"
+              placeholder="Select CR/DR"
+              :items="[
+                { title: 'Credit', value: 'C' },
+                { title: 'Debit', value: 'D' }
+              ]" 
+              clearable
+              clear-icon="tabler-x" 
+            />
           </VCol>
 
           <!-- 👉 Filter Button -->
-          <VCol cols="12" md="4" class="d-flex align-center">
+          <VCol cols="12" md="1" class="d-flex align-center">
             <VBtn @click="fetchSuccessTransactions">
               Filter
               <VIcon end icon="tabler-filter" />
@@ -357,7 +386,7 @@ watch(searchQuery, (newQuery) => {
         <div class="app-user-search-filter d-flex align-center flex-wrap gap-4">
           <!-- 👉 Search  -->
           <div style="inline-size: 15.625rem;">
-            <AppTextField v-model="searchQuery" placeholder="Search User" />
+            <AppTextField v-model="searchQuery" placeholder="Search Transactions" @keyup.enter="fetchSuccessTransactions"/>
           </div>
 
           <!-- 👉 Export button -->
