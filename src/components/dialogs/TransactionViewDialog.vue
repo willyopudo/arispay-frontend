@@ -27,6 +27,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  isRejected: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
 })
 
 const transactionDetailsData = [
@@ -44,6 +49,13 @@ const transactionDetailsData = [
   { title: 'Narration', value: props.transData.narration },
   // { title: 'API Channel', value: props.transData.apiChannel },
 ]
+
+if (props.isRejected) {
+  transactionDetailsData.push(
+    
+  { title: 'Rejection Reason', value: props.transData.reasonRejected},
+  )
+}
 
 const emit = defineEmits([
   'update:isDialogVisible'
