@@ -18,6 +18,6 @@ export default [
   {
     title: "Transaction Query",
     icon: { icon: "tabler-cash-register" },
-    to: "apps-transaction-transaction-query-list",
+    to: "apps-transaction-transaction-query",
   },
 ];
