@@ -60,7 +60,6 @@ async function queryTransaction(){
       }
     })
     if (error) {
-      
       if(error.status === 404) {
         transactionDetailsData.value = [
 
@@ -68,7 +67,7 @@ async function queryTransaction(){
         ]
         console.error('No record found for ' + transactionRef.value)
       }
-      useSweetAlert.errorMessage('Error querying transaction: ' + error.message)
+      useSweetAlert.toast('Error querying transaction: ' + error.response.data || error.message, 'Error')
       return
     }
 
