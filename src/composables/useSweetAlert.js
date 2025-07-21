@@ -10,7 +10,7 @@ class SwalService {
       icon,
       title: message,
       showConfirmButton: false,
-      timer: 3000,
+      timer: 5000,
       timerProgressBar: true,
     });
   }

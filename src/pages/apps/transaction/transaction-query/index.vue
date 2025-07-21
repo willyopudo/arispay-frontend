@@ -67,7 +67,7 @@ async function queryTransaction(){
         ]
         console.error('No record found for ' + transactionRef.value)
       }
-      useSweetAlert.toast('Error querying transaction: ' + error.response.data || error.message, 'Error')
+      useSweetAlert.toast(error.response.data || error.message, 'error')
       return
     }
 
