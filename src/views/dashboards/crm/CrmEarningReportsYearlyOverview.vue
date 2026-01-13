@@ -39,10 +39,10 @@ const transformedData = computed(() => {
     grouped["MASTERCARD"][month] = count["MASTERCARD"] || 0
 
     //BANK TRANSFER
-    if (!grouped["BANK TRANSFER"]) {
-      grouped["BANK TRANSFER"] = {}
+    if (!grouped["TRANSFER"]) {
+      grouped["TRANSFER"] = {}
     }
-    grouped["BANK TRANSFER"][month] = count["BANK TRANSFER"] || 0
+    grouped["TRANSFER"][month] = count["BANK TRANSFER"] || 0
 
     //DEPOSIT
     if (!grouped["DEPOSIT"]) {
