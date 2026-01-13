@@ -94,10 +94,11 @@ export default defineConfig({
     }),
     svgLoader(),
   ],
+
   server: {
     port: 3000
   },
-  define: { 'process.env': {} },
+  define: { 'process.env': {} , global: 'window',},
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
