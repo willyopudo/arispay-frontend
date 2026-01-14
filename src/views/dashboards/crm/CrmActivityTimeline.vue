@@ -29,8 +29,12 @@ const getEventColor = eventType => {
     'BULK_DISBURSEMENT': 'success',
     'CLIENT_CREATED': 'warning',
     'CLIENT_UPDATED': 'secondary',
+    'CLIENT_DELETED': 'error',
     'USER_UPDATED': 'info',
     'ACCOUNT_LINKED': 'success',
+    'ACCOUNT_CREATED': 'success',
+    'ACCOUNT_UPDATED': 'info',
+    'ACCOUNT_DELETED': 'error',
   }
 
   return colorMap[eventType] || 'secondary'
@@ -43,14 +47,18 @@ const getEventIcon = eventType => {
     'BULK_DISBURSEMENT': 'tabler-file-invoice',
     'CLIENT_CREATED': 'tabler-user-plus',
     'CLIENT_UPDATED': 'tabler-user-edit',
+    'CLIENT_DELETED': 'tabler-user-minus',
     'USER_UPDATED': 'tabler-user-cog',
     'ACCOUNT_LINKED': 'tabler-link',
+    'ACCOUNT_CREATED': 'tabler-building-bank',
+    'ACCOUNT_UPDATED': 'tabler-edit',
+    'ACCOUNT_DELETED': 'tabler-trash',
   }
 
   return iconMap[eventType] || 'tabler-bell'
 }
 
-const displayedActivities = computed(() => activities.value.slice(0, 10))
+const displayedActivities = computed(() => activities.value.slice(0, 4))
 </script>
 
 <template>

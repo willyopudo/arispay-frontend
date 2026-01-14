@@ -71,8 +71,8 @@ export function useActivityWebSocket() {
               const activity = JSON.parse(message.body)
               activities.value.unshift(activity) // Add to beginning
 
-              // Keep only last 50 activities in memory
-              if (activities.value.length > 50) {
+              // Keep only last 4 activities for dashboard display
+              if (activities.value.length > 4) {
                 activities.value.pop()
               }
 

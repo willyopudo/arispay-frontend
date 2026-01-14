@@ -21,7 +21,7 @@ export const dashboardService = {
     return await axiosApiCall(`/dashboard/top-clients?limit=${limit}`)
   },
 
-  async getRecentActivities(limit = 20) {
+  async getRecentActivities(limit = 4) {
     return await axiosApiCall(`/dashboard/recent-activities?limit=${limit}`)
   },
 }
