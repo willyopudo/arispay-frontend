@@ -1,65 +1,85 @@
 <script setup>
-import aeIcon from '@images/icons/payments/ae-icon.png'
-import mastercardIcon from '@images/icons/payments/mastercard-icon.png'
-import visaIcon from '@images/icons/payments/visa-icon.png'
+import { computed } from 'vue'
 
-const lastTransitions = [
-  {
-    cardImg: visaIcon,
-    lastDigit: '*4230',
-    cardType: 'Credit',
-    sentDate: '17 Mar 2022',
-    status: 'Verified',
-    trend: '+$1,678',
+const props = defineProps({
+  transactions: {
+    type: Array,
+    default: () => [],
   },
-  {
-    cardImg: mastercardIcon,
-    lastDigit: '*5578',
-    cardType: 'Credit',
-    sentDate: '12 Feb 2022',
-    status: 'Rejected',
-    trend: '-$839',
-  },
-  {
-    cardImg: aeIcon,
-    lastDigit: '*4567',
-    cardType: 'Credit',
-    sentDate: '28 Feb 2022',
-    status: 'Verified',
-    trend: '+$435',
-  },
-  {
-    cardImg: visaIcon,
-    lastDigit: '*5699',
-    cardType: 'Credit',
-    sentDate: '8 Jan 2022',
-    status: 'Pending',
-    trend: '+$2,345',
-  },
-  {
-    cardImg: visaIcon,
-    lastDigit: '*5699',
-    cardType: 'Credit',
-    sentDate: '8 Jan 2022',
-    status: 'Rejected',
-    trend: '-$234',
-  },
-]
+})
 
-const resolveStatus = {
-  Verified: 'success',
-  Rejected: 'error',
-  Pending: 'secondary',
+const getPaymentModeIcon = paymentMode => {
+  const mode = paymentMode?.toUpperCase() || ''
+  if (mode.includes('CARD') || mode.includes('VISA') || mode.includes('MASTERCARD')) {
+    return 'tabler-credit-card'
+  }
+  if (mode.includes('BANK') || mode.includes('TRANSFER')) {
+    return 'tabler-building-bank'
+  }
+  if (mode.includes('MOBILE') || mode.includes('MPESA') || mode.includes('MTN')) {
+    return 'tabler-device-mobile'
+  }
+  if (mode.includes('CASH')) {
+    return 'tabler-cash'
+  }
+
+  return 'tabler-wallet'
 }
+
+const getPaymentModeColor = paymentMode => {
+  const mode = paymentMode?.toUpperCase() || ''
+  if (mode.includes('CARD')) return 'primary'
+  if (mode.includes('BANK')) return 'info'
+  if (mode.includes('MOBILE')) return 'success'
+  if (mode.includes('CASH')) return 'warning'
+
+  return 'secondary'
+}
+
+const formatDate = dateString => {
+  if (!dateString) return 'N/A'
+
+  const date = new Date(dateString)
+  const options = { year: 'numeric', month: 'short', day: 'numeric' }
+
+  return date.toLocaleDateString('en-US', options)
+}
+
+const formatAmount = amount => {
+  if (!amount && amount !== 0) return 'KES 0.00'
+
+  return new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+    minimumFractionDigits: 2,
+  }).format(amount)
+}
+
+const resolveTransactionType = crDrIndicator => {
+  if (crDrIndicator === 'Credit') return { label: 'Credit', color: 'success' }
+  if (crDrIndicator === 'Debit') return { label: 'Debit', color: 'error' }
+
+  return { label: 'Unknown', color: 'secondary' }
+}
+
+const displayTransactions = computed(() => {
+  return props.transactions.map(txn => ({
+    paymentMode: txn.paymentMode || 'Unknown',
+    icon: getPaymentModeIcon(txn.paymentMode),
+    iconColor: getPaymentModeColor(txn.paymentMode),
+    bankName: txn.bankName || 'N/A',
+    clientName: txn.clientName || 'N/A',
+    date: formatDate(txn.transDate),
+    type: resolveTransactionType(txn.crDrIndicator),
+    amount: formatAmount(txn.tranAmount),
+    isCredit: txn.crDrIndicator === 'Credit',
+  }))
+})
 
 const moreList = [
   {
     title: 'Refresh',
     value: 'refresh',
-  },
-  {
-    title: 'Download',
-    value: 'Download',
   },
   {
     title: 'View All',
@@ -71,7 +91,7 @@ const getPaddingStyle = index => index ? 'padding-block-end: 1.25rem;' : 'paddin
 </script>
 
 <template>
-  <VCard title="Last Transaction">
+  <VCard title="Latest Transactions">
     <template #append>
       <div class="me-n2">
         <MoreBtn
@@ -82,21 +102,35 @@ const getPaddingStyle = index => index ? 'padding-block-end: 1.25rem;' : 'paddin
     </template>
 
     <VDivider />
-    <VTable class="text-no-wrap transaction-table">
+
+    <div v-if="displayTransactions.length === 0" class="pa-10 text-center">
+      <VIcon
+        icon="tabler-receipt-off"
+        size="48"
+        color="disabled"
+        class="mb-4"
+      />
+      <p class="text-body-1 text-medium-emphasis">
+        No recent transactions
+      </p>
+    </div>
+
+    <VTable v-else class="text-no-wrap transaction-table">
       <thead>
         <tr>
-          <th>CARD</th>
+          <th>PAYMENT METHOD</th>
+          <th>BANK</th>
           <th>DATE</th>
-          <th>STATUS</th>
-          <th>
-            TREND
+          <th>TYPE</th>
+          <th class="text-end">
+            AMOUNT
           </th>
         </tr>
       </thead>
 
       <tbody>
         <tr
-          v-for="(transition, index) in lastTransitions"
+          v-for="(transaction, index) in displayTransactions"
           :key="index"
         >
           <td
@@ -104,18 +138,23 @@ const getPaddingStyle = index => index ? 'padding-block-end: 1.25rem;' : 'paddin
             style="padding-inline-end: 1.5rem;"
           >
             <div class="d-flex align-center">
-              <div class="me-4">
-                <VImg
-                  :src="transition.cardImg"
-                  width="50"
+              <VAvatar
+                :color="transaction.iconColor"
+                variant="tonal"
+                size="40"
+                class="me-3"
+              >
+                <VIcon
+                  :icon="transaction.icon"
+                  size="24"
                 />
-              </div>
+              </VAvatar>
               <div>
-                <p class="text-base mb-0 text-high-emphasis">
-                  {{ transition.lastDigit }}
+                <p class="text-base mb-0 text-high-emphasis font-weight-medium">
+                  {{ transaction.paymentMode }}
                 </p>
-                <p class="text-sm mb-0">
-                  {{ transition.cardType }}
+                <p class="text-sm mb-0 text-medium-emphasis">
+                  {{ transaction.clientName }}
                 </p>
               </div>
             </div>
@@ -124,12 +163,17 @@ const getPaddingStyle = index => index ? 'padding-block-end: 1.25rem;' : 'paddin
             :style="getPaddingStyle(index)"
             style="padding-inline-end: 1.5rem;"
           >
-            <p class="text-high-emphasis text-base mb-0">
-              Sent
+            <p class="text-base mb-0 text-medium-emphasis">
+              {{ transaction.bankName }}
             </p>
-            <div class="text-sm">
-              {{ transition.sentDate }}
-            </div>
+          </td>
+          <td
+            :style="getPaddingStyle(index)"
+            style="padding-inline-end: 1.5rem;"
+          >
+            <p class="text-base mb-0">
+              {{ transaction.date }}
+            </p>
           </td>
           <td
             :style="getPaddingStyle(index)"
@@ -137,19 +181,22 @@ const getPaddingStyle = index => index ? 'padding-block-end: 1.25rem;' : 'paddin
           >
             <VChip
               label
-              :color="resolveStatus[transition.status]"
+              :color="transaction.type.color"
               size="small"
             >
-              {{ transition.status }}
+              {{ transaction.type.label }}
             </VChip>
           </td>
           <td
             :style="getPaddingStyle(index)"
             style="padding-inline-end: 1.5rem;"
-            align="right"
+            class="text-end"
           >
-            <div class="text-high-emphasis text-base">
-              {{ transition.trend }}
+            <div
+              class="text-base font-weight-medium"
+              :class="transaction.isCredit ? 'text-success' : 'text-error'"
+            >
+              {{ transaction.isCredit ? '+' : '-' }}{{ transaction.amount }}
             </div>
           </td>
         </tr>

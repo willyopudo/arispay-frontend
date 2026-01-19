@@ -1,160 +1,227 @@
 <script setup>
-import CrmActiveProject from '@/views/dashboards/crm/CrmActiveProject.vue'
+import { ref, computed, onMounted } from 'vue'
+import { dashboardService } from '@/services/dashboardService'
 import CrmActivityTimeline from '@/views/dashboards/crm/CrmActivityTimeline.vue'
-import CrmAnalyticsSales from '@/views/dashboards/crm/CrmAnalyticsSales.vue'
 import CrmEarningReportsYearlyOverview from '@/views/dashboards/crm/CrmEarningReportsYearlyOverview.vue'
-import CrmOrderBarChart from '@/views/dashboards/crm/CrmOrderBarChart.vue'
-import CrmProjectStatus from '@/views/dashboards/crm/CrmProjectStatus.vue'
 import CrmRecentTransactions from '@/views/dashboards/crm/CrmRecentTransactions.vue'
-import CrmRevenueGrowth from '@/views/dashboards/crm/CrmRevenueGrowth.vue'
-import CrmSalesAreaCharts from '@/views/dashboards/crm/CrmSalesAreaCharts.vue'
-import CrmSalesByCountries from '@/views/dashboards/crm/CrmSalesByCountries.vue'
+import CrmTopClients from '@/views/dashboards/crm/CrmTopClients.vue'
 
-const simpleStatisticsDemoCards = [
+const dashboardData = ref(null)
+const loading = ref(true)
+const error = ref(null)
+
+const fetchDashboard = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    const { data, error: apiError } = await dashboardService.getDashboardSummary()
+
+    if (apiError) {
+      console.error('API error:', apiError)
+      error.value = 'Failed to load dashboard data. Please try again.'
+      return
+    }
+
+    dashboardData.value = data
+  } catch (err) {
+    console.error('Error fetching dashboard:', err)
+    error.value = 'Failed to load dashboard data. Please try again.'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchDashboard()
+})
+
+const widgets = computed(() => dashboardData.value?.widgets || {})
+
+const formatNumber = value => {
+  if (!value && value !== 0) return '0'
+
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
+const formatCurrency = value => {
+  if (!value && value !== 0) return 'KES 0.00'
+
+  return new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+    minimumFractionDigits: 2,
+  }).format(value)
+}
+
+const widgetCards = computed(() => [
   {
-    icon: 'tabler-credit-card',
-    color: 'error',
-    title: 'Total Profit',
-    subTitle: 'Last week',
-    stat: '1.28k',
-    change: '-12.2%',
+    icon: 'tabler-receipt',
+    color: 'primary',
+    title: 'Collections',
+    subTitle: 'This Month',
+    stat: formatNumber(widgets.value.collections?.currentValue),
+    change: widgets.value.collections?.percentageChange
+      ? `${widgets.value.collections.trend === 'up' ? '+' : '-'}${widgets.value.collections.percentageChange.toFixed(1)}%`
+      : '0%',
+    trend: widgets.value.collections?.trend || 'up',
+  },
+  {
+    icon: 'tabler-arrow-up-right',
+    color: 'success',
+    title: 'Disbursements',
+    subTitle: 'This Month',
+    stat: formatNumber(widgets.value.disbursements?.currentValue),
+    change: widgets.value.disbursements?.percentageChange
+      ? `${widgets.value.disbursements.trend === 'up' ? '+' : '-'}${widgets.value.disbursements.percentageChange.toFixed(1)}%`
+      : '0%',
+    trend: widgets.value.disbursements?.trend || 'up',
   },
   {
     icon: 'tabler-currency-dollar',
-    color: 'success',
-    title: 'Total Sales',
-    subTitle: 'Last week',
-    stat: '$4,673',
-    change: '+25.2%',
+    color: 'info',
+    title: 'Total Collections',
+    subTitle: 'This Month',
+    stat: formatCurrency(widgets.value.totalCollections?.currentValue),
+    change: widgets.value.totalCollections?.percentageChange
+      ? `${widgets.value.totalCollections.trend === 'up' ? '+' : '-'}${widgets.value.totalCollections.percentageChange.toFixed(1)}%`
+      : '0%',
+    trend: widgets.value.totalCollections?.trend || 'up',
   },
-]
+  {
+    icon: 'tabler-credit-card',
+    color: 'warning',
+    title: 'Total Disbursements',
+    subTitle: 'This Month',
+    stat: formatCurrency(widgets.value.totalDisbursements?.currentValue),
+    change: widgets.value.totalDisbursements?.percentageChange
+      ? `${widgets.value.totalDisbursements.trend === 'up' ? '+' : '-'}${widgets.value.totalDisbursements.percentageChange.toFixed(1)}%`
+      : '0%',
+    trend: widgets.value.totalDisbursements?.trend || 'up',
+  },
+])
 </script>
 
 <template>
-  <VRow class="match-height">
-    <VCol
-      cols="12"
-      md="4"
-      sm="6"
-      lg="2"
-    >
-      <CrmOrderBarChart />
+  <!-- Loading State -->
+  <VRow v-if="loading" class="match-height">
+    <VCol cols="12">
+      <VCard>
+        <VCardText class="text-center pa-10">
+          <VProgressCircular indeterminate color="primary" size="64" />
+          <p class="mt-4 text-body-1">
+            Loading dashboard...
+          </p>
+        </VCardText>
+      </VCard>
     </VCol>
+  </VRow>
 
-    <VCol
-      cols="12"
-      md="4"
-      sm="6"
-      lg="2"
-    >
-      <CrmSalesAreaCharts />
+  <!-- Error State -->
+  <VRow v-else-if="error" class="match-height">
+    <VCol cols="12">
+      <VAlert type="error" variant="tonal">
+        <template #title>
+          Error Loading Dashboard
+        </template>
+        {{ error }}
+        <template #append>
+          <VBtn variant="text" color="error" @click="fetchDashboard">
+            Retry
+          </VBtn>
+        </template>
+      </VAlert>
     </VCol>
+  </VRow>
 
+  <!-- Dashboard Content -->
+  <VRow v-else class="match-height">
+    <!-- Widget Cards -->
     <VCol
-      v-for="demo in simpleStatisticsDemoCards"
-      :key="demo.title"
+      v-for="widget in widgetCards"
+      :key="widget.title"
       cols="12"
       sm="6"
-      md="4"
-      lg="2"
+      md="3"
     >
       <VCard>
         <VCardText>
           <VAvatar
-            :color="demo.color"
+            :color="widget.color"
             variant="tonal"
             rounded
             size="44"
           >
             <VIcon
-              :icon="demo.icon"
+              :icon="widget.icon"
               size="28"
             />
           </VAvatar>
 
           <h5 class="text-h5 mt-3">
-            {{ demo.title }}
+            {{ widget.title }}
           </h5>
-          <p class="my-1">
-            {{ demo.subTitle }}
+          <p class="my-1 text-body-2">
+            {{ widget.subTitle }}
           </p>
-          <p class="mb-3 text-high-emphasis">
-            {{ demo.stat }}
+          <p class="mb-3 text-h6 text-high-emphasis">
+            {{ widget.stat }}
           </p>
           <VChip
-            :color="demo.color"
+            :color="widget.trend === 'up' ? 'success' : 'error'"
             label
             size="small"
           >
-            {{ demo.change }}
+            {{ widget.change }}
           </VChip>
         </VCardText>
       </VCard>
     </VCol>
 
-    <!-- 👉 Revenue Growth -->
-    <VCol
-      cols="12"
-      md="8"
-      lg="4"
-    >
-      <CrmRevenueGrowth />
+    <!-- Earning Reports -->
+    <VCol cols="12" md="8">
+      <CrmEarningReportsYearlyOverview
+        v-if="dashboardData?.earningReports"
+        :data="dashboardData.earningReports"
+      />
+      <VCard v-else>
+        <VCardText class="text-center pa-10">
+          No earning reports data available
+        </VCardText>
+      </VCard>
     </VCol>
 
-    <!-- 👉 Earning Reports -->
-    <VCol
-      cols="12"
-      md="8"
-    >
-      <CrmEarningReportsYearlyOverview />
+    <!-- Top Clients -->
+    <VCol cols="12" md="4">
+      <CrmTopClients
+        v-if="dashboardData?.topClients"
+        :clients="dashboardData.topClients"
+      />
+      <VCard v-else>
+        <VCardText class="text-center pa-10">
+          No top clients data available
+        </VCardText>
+      </VCard>
     </VCol>
 
-    <!-- 👉 Sales -->
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <CrmAnalyticsSales />
-    </VCol>
-
-    <!-- 👉 Browser States -->
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <CrmSalesByCountries />
-    </VCol>
-
-    <!-- 👉 Project Status -->
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <CrmProjectStatus />
-    </VCol>
-
-    <!-- 👉 Active Project -->
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <CrmActiveProject />
-    </VCol>
-
-    <!-- 👉 Recent Transactions -->
-    <VCol
-      cols="12"
-      md="6"
-    >
-      <CrmRecentTransactions />
-    </VCol>
-
-    <!-- 👉 Active timeline -->
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <!-- Activity Timeline -->
+    <VCol cols="12" md="4">
       <CrmActivityTimeline />
+    </VCol>
+
+    <!-- Recent Transactions -->
+    <VCol cols="12" md="8">
+      <CrmRecentTransactions
+        v-if="dashboardData?.latestTransactions"
+        :transactions="dashboardData.latestTransactions"
+      />
+      <VCard v-else>
+        <VCardText class="text-center pa-10">
+          No recent transactions
+        </VCardText>
+      </VCard>
     </VCol>
   </VRow>
 </template>
