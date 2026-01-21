@@ -1,10 +1,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { dashboardService } from '@/services/dashboardService'
+import { useTourStore } from '@/stores/tourStore'
 import CrmActivityTimeline from '@/views/dashboards/crm/CrmActivityTimeline.vue'
 import CrmEarningReportsYearlyOverview from '@/views/dashboards/crm/CrmEarningReportsYearlyOverview.vue'
 import CrmRecentTransactions from '@/views/dashboards/crm/CrmRecentTransactions.vue'
 import CrmTopClients from '@/views/dashboards/crm/CrmTopClients.vue'
+
+const tourStore = useTourStore()
 
 const dashboardData = ref(null)
 const loading = ref(true)
@@ -33,6 +36,8 @@ const fetchDashboard = async () => {
 
 onMounted(() => {
   fetchDashboard()
+  // Check and auto-start tour for first-time users
+  tourStore.checkAndAutoStart()
 })
 
 const widgets = computed(() => dashboardData.value?.widgets || {})
@@ -140,11 +145,12 @@ const widgetCards = computed(() => [
   <VRow v-else class="match-height">
     <!-- Widget Cards -->
     <VCol
-      v-for="widget in widgetCards"
+      v-for="(widget, index) in widgetCards"
       :key="widget.title"
       cols="12"
       sm="6"
       md="3"
+      :id="index === 0 ? 'tour-widget-cards' : undefined"
     >
       <VCard>
         <VCardText>
@@ -181,7 +187,7 @@ const widgetCards = computed(() => [
     </VCol>
 
     <!-- Earning Reports -->
-    <VCol cols="12" md="8">
+    <VCol id="tour-earning-reports" cols="12" md="8">
       <CrmEarningReportsYearlyOverview
         v-if="dashboardData?.earningReports"
         :data="dashboardData.earningReports"
@@ -194,7 +200,7 @@ const widgetCards = computed(() => [
     </VCol>
 
     <!-- Top Clients -->
-    <VCol cols="12" md="4">
+    <VCol id="tour-top-clients" cols="12" md="4">
       <CrmTopClients
         v-if="dashboardData?.topClients"
         :clients="dashboardData.topClients"
@@ -207,12 +213,12 @@ const widgetCards = computed(() => [
     </VCol>
 
     <!-- Activity Timeline -->
-    <VCol cols="12" md="4">
+    <VCol id="tour-activity-timeline" cols="12" md="4">
       <CrmActivityTimeline />
     </VCol>
 
     <!-- Recent Transactions -->
-    <VCol cols="12" md="8">
+    <VCol id="tour-recent-transactions" cols="12" md="8">
       <CrmRecentTransactions
         v-if="dashboardData?.latestTransactions"
         :transactions="dashboardData.latestTransactions"

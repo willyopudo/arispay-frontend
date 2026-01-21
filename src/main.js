@@ -5,6 +5,7 @@ import { registerPlugins } from "@core/utils/plugins";
 // Styles
 import "@core/scss/template/index.scss";
 import "@styles/styles.scss";
+import "shepherd.js/dist/css/shepherd.css";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import VueCookies from "vue3-cookies";

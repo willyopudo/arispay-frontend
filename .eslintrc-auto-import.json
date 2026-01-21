@@ -357,6 +357,8 @@
     "customUseApi": true,
     "useSweetAlert": true,
     "axiosApiCall": true,
-    "useActivityWebSocket": true
+    "useActivityWebSocket": true,
+    "tourSteps": true,
+    "useTour": true
   }
 }

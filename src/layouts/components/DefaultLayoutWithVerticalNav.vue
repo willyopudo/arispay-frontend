@@ -31,7 +31,7 @@ import { VerticalNavLayout } from '@layouts'
           />
         </IconBtn>
 
-        <NavSearchBar class="ms-lg-n3" />
+        <NavSearchBar id="tour-search-bar" class="ms-lg-n3" />
 
         <VSpacer />
 
@@ -39,10 +39,10 @@ import { VerticalNavLayout } from '@layouts'
           v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
           :languages="themeConfig.app.i18n.langConfig"
         />
-        <NavbarThemeSwitcher />
+        <NavbarThemeSwitcher id="tour-theme-switcher" />
         <NavbarShortcuts />
-        <NavBarNotifications class="me-1" />
-        <UserProfile />
+        <NavBarNotifications id="tour-notifications" class="me-1" />
+        <UserProfile id="tour-user-profile" />
       </div>
     </template>
 

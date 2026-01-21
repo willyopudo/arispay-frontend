@@ -1,5 +1,5 @@
 node_modules
 node_modules
-tmpclaude-4fe6-cwd
-tmpclaude-51f2-cwd
-tmpclaude-58b3-cwd
+dist
+.env
+tmpclaude-df65-cwd

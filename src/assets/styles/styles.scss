@@ -1,1 +1,321 @@
 // Write your overrides
+
+// Shepherd.js Tour Custom Styles
+// Light mode colors
+$shepherd-light-bg: #ffffff;
+$shepherd-light-text: #2f2b3d;
+$shepherd-light-text-secondary: rgba(47, 43, 61, 0.78);
+$shepherd-light-border: rgba(47, 43, 61, 0.12);
+
+// Dark mode colors
+$shepherd-dark-bg: #312d4b;
+$shepherd-dark-text: #e7e3fc;
+$shepherd-dark-text-secondary: rgba(231, 227, 252, 0.78);
+$shepherd-dark-border: rgba(231, 227, 252, 0.12);
+
+.shepherd-modal-overlay-container {
+  z-index: 9998 !important;
+}
+
+.shepherd-element {
+  z-index: 9999 !important;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.shepherd-theme-custom {
+  background: $shepherd-light-bg;
+  border-radius: 8px;
+  border: 1px solid $shepherd-light-border;
+
+  .shepherd-content {
+    padding: 0;
+  }
+
+  .shepherd-header {
+    background: $shepherd-light-bg;
+    padding: 16px 20px 8px;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+
+    .shepherd-title {
+      color: $shepherd-light-text;
+      font-size: 1.125rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .shepherd-cancel-icon {
+      color: $shepherd-light-text;
+      opacity: 0.6;
+      font-size: 1.5rem;
+      font-weight: 400;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 1;
+        background: transparent;
+      }
+    }
+  }
+
+  .shepherd-text {
+    color: $shepherd-light-text-secondary;
+    padding: 8px 20px 16px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+
+    p {
+      margin-bottom: 8px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+
+      li {
+        margin-bottom: 4px;
+      }
+    }
+
+    strong {
+      color: $shepherd-light-text;
+    }
+  }
+
+  .shepherd-footer {
+    padding: 12px 20px 16px;
+    border-top: none;
+    gap: 8px;
+  }
+
+  .shepherd-button {
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .shepherd-button-primary {
+    background: rgb(var(--v-theme-primary, 105, 108, 255));
+    color: #ffffff;
+
+    &:hover {
+      filter: brightness(0.9);
+    }
+
+    &:focus {
+      outline: 2px solid rgb(var(--v-theme-primary, 105, 108, 255));
+      outline-offset: 2px;
+    }
+  }
+
+  .shepherd-button-secondary {
+    background: rgba(47, 43, 61, 0.08);
+    color: $shepherd-light-text;
+
+    &:hover {
+      background: rgba(47, 43, 61, 0.12);
+    }
+
+    &:focus {
+      outline: 2px solid rgba(47, 43, 61, 0.5);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Shepherd arrow styling
+.shepherd-arrow {
+  border-color: $shepherd-light-bg !important;
+
+  &::before {
+    background: $shepherd-light-bg !important;
+    border: 1px solid $shepherd-light-border;
+  }
+}
+
+// Dark mode styles - using both .v-theme--dark ancestor and .shepherd-theme-dark direct class
+.v-theme--dark,
+.shepherd-theme-dark {
+  &.shepherd-element,
+  .shepherd-element {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  &.shepherd-theme-custom,
+  .shepherd-theme-custom {
+    background: $shepherd-dark-bg;
+    border-color: $shepherd-dark-border;
+
+    .shepherd-content {
+      background: $shepherd-dark-bg;
+    }
+
+    .shepherd-header {
+      background: $shepherd-dark-bg;
+
+      .shepherd-title {
+        color: $shepherd-dark-text;
+      }
+
+      .shepherd-cancel-icon {
+        color: $shepherd-dark-text;
+
+        &:hover {
+          background: rgba(231, 227, 252, 0.1);
+        }
+      }
+    }
+
+    .shepherd-text {
+      background: $shepherd-dark-bg;
+      color: $shepherd-dark-text-secondary;
+
+      p {
+        color: $shepherd-dark-text-secondary;
+      }
+
+      ul {
+        color: $shepherd-dark-text-secondary;
+
+        li {
+          color: $shepherd-dark-text-secondary;
+        }
+      }
+
+      strong {
+        color: $shepherd-dark-text;
+      }
+    }
+
+    .shepherd-footer {
+      background: $shepherd-dark-bg;
+    }
+
+    .shepherd-button-secondary {
+      background: rgba(231, 227, 252, 0.08);
+      color: $shepherd-dark-text;
+
+      &:hover {
+        background: rgba(231, 227, 252, 0.16);
+      }
+
+      &:focus {
+        outline-color: rgba(231, 227, 252, 0.5);
+      }
+    }
+  }
+
+  .shepherd-arrow {
+    border-color: $shepherd-dark-bg !important;
+
+    &::before {
+      background: $shepherd-dark-bg !important;
+      border-color: $shepherd-dark-border;
+    }
+  }
+}
+
+// Direct class on shepherd element for dark mode (added dynamically by useTour.js)
+.shepherd-theme-dark {
+  background: $shepherd-dark-bg !important;
+  border-color: $shepherd-dark-border !important;
+
+  .shepherd-content {
+    background: $shepherd-dark-bg !important;
+  }
+
+  .shepherd-header {
+    background: $shepherd-dark-bg !important;
+
+    .shepherd-title {
+      color: $shepherd-dark-text !important;
+    }
+
+    .shepherd-cancel-icon {
+      color: $shepherd-dark-text !important;
+    }
+  }
+
+  .shepherd-text {
+    background: $shepherd-dark-bg !important;
+    color: $shepherd-dark-text-secondary !important;
+
+    p {
+      color: $shepherd-dark-text-secondary !important;
+    }
+
+    ul {
+      color: $shepherd-dark-text-secondary !important;
+
+      li {
+        color: $shepherd-dark-text-secondary !important;
+      }
+    }
+
+    strong {
+      color: $shepherd-dark-text !important;
+    }
+  }
+
+  .shepherd-footer {
+    background: $shepherd-dark-bg !important;
+  }
+
+  .shepherd-button-secondary {
+    background: rgba(231, 227, 252, 0.08) !important;
+    color: $shepherd-dark-text !important;
+
+    &:hover {
+      background: rgba(231, 227, 252, 0.16) !important;
+    }
+  }
+}
+
+// Highlighted element during tour
+.shepherd-target {
+  position: relative;
+  z-index: 9997;
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .shepherd-element {
+    max-width: calc(100vw - 32px);
+    margin: 0 16px;
+  }
+
+  .shepherd-theme-custom {
+    .shepherd-header {
+      padding: 12px 16px 6px;
+
+      .shepherd-title {
+        font-size: 1rem;
+      }
+    }
+
+    .shepherd-text {
+      padding: 6px 16px 12px;
+      font-size: 0.8125rem;
+    }
+
+    .shepherd-footer {
+      padding: 10px 16px 12px;
+    }
+
+    .shepherd-button {
+      padding: 6px 12px;
+      font-size: 0.8125rem;
+    }
+  }
+}

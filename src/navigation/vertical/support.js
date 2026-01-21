@@ -8,8 +8,7 @@ export default [
   },
   {
     title: 'User Guide',
-    href: 'https://arispay.co.ke/userguide',
     icon: { icon: 'tabler-file-text' },
-    target: '_blank',
+    navAction: 'startTour',
   },
 ]
