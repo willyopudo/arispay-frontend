@@ -1,5 +1,8 @@
 <script setup>
 import { useConfigStore } from '@core/stores/config'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   themes: {
@@ -26,7 +29,7 @@ watch(() => configStore.theme, () => {
       open-delay="1000"
       scroll-strategy="close"
     >
-      <span class="text-capitalize">{{ configStore.theme }}</span>
+      <span class="text-capitalize">{{ $t(configStore.theme) }}</span>
     </VTooltip>
 
     <VMenu
@@ -48,7 +51,7 @@ watch(() => configStore.theme, () => {
           @click="() => { configStore.theme = name }"
         >
           <VListItemTitle class="text-capitalize">
-            {{ name }}
+            {{ $t(name) }}
           </VListItemTitle>
         </VListItem>
       </VList>

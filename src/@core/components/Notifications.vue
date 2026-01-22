@@ -1,5 +1,8 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   notifications: {
@@ -73,7 +76,7 @@ const toggleReadUnread = (isSeen, Id) => {
         <!-- 👉 Header -->
         <VCardItem class="notification-section">
           <VCardTitle class="text-h6">
-            Notifications
+            {{ $t('Notifications') }}
           </VCardTitle>
 
           <template #append>
@@ -83,7 +86,7 @@ const toggleReadUnread = (isSeen, Id) => {
               color="primary"
               class="me-2"
             >
-              {{ totalUnseenNotifications }} New
+              {{ totalUnseenNotifications }} {{ $t('New') }}
             </VChip>
             <IconBtn
               v-show="props.notifications.length"
@@ -100,7 +103,7 @@ const toggleReadUnread = (isSeen, Id) => {
                 activator="parent"
                 location="start"
               >
-                {{ !isAllMarkRead ? 'Mark all as unread' : 'Mark all as read' }}
+                {{ !isAllMarkRead ? $t('Mark all as unread') : $t('Mark all as read') }}
               </VTooltip>
             </IconBtn>
           </template>
@@ -189,7 +192,7 @@ const toggleReadUnread = (isSeen, Id) => {
               class="text-center text-medium-emphasis"
               style="block-size: 56px;"
             >
-              <VListItemTitle>No Notification Found!</VListItemTitle>
+              <VListItemTitle>{{ $t('No Notification Found!') }}</VListItemTitle>
             </VListItem>
           </VList>
         </PerfectScrollbar>
@@ -205,7 +208,7 @@ const toggleReadUnread = (isSeen, Id) => {
             block
             size="small"
           >
-            View All Notifications
+            {{ $t('View All Notifications') }}
           </VBtn>
         </VCardText>
       </VCard>

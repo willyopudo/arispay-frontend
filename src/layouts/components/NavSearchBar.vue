@@ -2,6 +2,9 @@
 import Shepherd from 'shepherd.js'
 import { withQuery } from 'ufo'
 import { useConfigStore } from '@core/stores/config'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineOptions({
   // 👉 Is App Search Bar Visible
@@ -188,7 +191,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
       class="d-none d-md-flex align-center text-disabled ms-2"
       @click="Shepherd.activeTour?.cancel()"
     >
-      <span class="me-2">Search</span>
+      <span class="me-2">{{ $t('Search') }}</span>
       <span class="meta-key">&#8984;K</span>
     </span>
   </div>
@@ -214,7 +217,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
               class="custom-letter-spacing text-disabled text-uppercase py-2 px-4 mb-0"
               style="font-size: 0.75rem; line-height: 0.875rem;"
             >
-              {{ suggestion.title }}
+              {{ $t(suggestion.title) }}
             </p>
             <VList class="card-list">
               <VListItem
@@ -223,7 +226,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
                 class="app-bar-search-suggestion mx-4 mt-2"
                 @click="redirectToSuggestedPage(item)"
               >
-                <VListItemTitle>{{ item.title }}</VListItemTitle>
+                <VListItemTitle>{{ $t(item.title) }}</VListItemTitle>
                 <template #prepend>
                   <VIcon
                     :icon="item.icon"
@@ -241,7 +244,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
     <!-- no data suggestion -->
     <template #noDataSuggestion>
       <div class="mt-9">
-        <span class="d-flex justify-center text-disabled mb-2">Try searching for</span>
+        <span class="d-flex justify-center text-disabled mb-2">{{ $t('Try searching for') }}</span>
         <h6
           v-for="suggestion in noDataSuggestions"
           :key="suggestion.title"
@@ -253,7 +256,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
             :icon="suggestion.icon"
             class="me-2"
           />
-          <span>{{ suggestion.title }}</span>
+          <span>{{ $t(suggestion.title) }}</span>
         </h6>
       </div>
     </template>
@@ -261,7 +264,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
     <!-- search result -->
     <template #searchResult="{ item }">
       <VListSubheader class="text-disabled custom-letter-spacing font-weight-regular ps-4">
-        {{ item.title }}
+        {{ $t(item.title) }}
       </VListSubheader>
       <VListItem
         v-for="list in item.children"
@@ -284,7 +287,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
           />
         </template>
         <VListItemTitle>
-          {{ list.title }}
+          {{ $t(list.title) }}
         </VListItemTitle>
       </VListItem>
     </template>

@@ -1,5 +1,8 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   togglerIcon: {
@@ -32,7 +35,7 @@ const router = useRouter()
       >
         <VCardItem class="py-3">
           <h6 class="text-base font-weight-medium">
-            Shortcuts
+            {{ $t('Shortcuts') }}
           </h6>
 
           <template #append>
@@ -72,10 +75,10 @@ const router = useRouter()
               </VAvatar>
 
               <h6 class="text-base font-weight-medium mt-3 mb-0">
-                {{ shortcut.title }}
+                {{ $t(shortcut.title) }}
               </h6>
               <p class="text-sm mb-0">
-                {{ shortcut.subtitle }}
+                {{ $t(shortcut.subtitle) }}
               </p>
             </VCol>
           </VRow>
