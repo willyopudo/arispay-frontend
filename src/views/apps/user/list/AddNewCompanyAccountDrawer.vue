@@ -2,6 +2,9 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useToast } from 'vue-toastification';
 import { useCookies } from 'vue3-cookies';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   isDrawerOpen: {
@@ -49,6 +52,12 @@ const accountBalance = ref('')
 const currency = ref('')
 const bank = ref('')
 const status = ref('')
+
+const statusItems = computed(() => [
+  { title: t('Active'), value: 'active' },
+  { title: t('Inactive'), value: 'inactive' },
+  { title: t('Pending'), value: 'pending' },
+])
 
 // 👉 drawer close
 const closeNavigationDrawer = () => {
@@ -99,7 +108,7 @@ const handleDrawerModelValueUpdate = val => {
   >
     <!-- 👉 Title -->
     <AppDrawerHeaderSection
-      title="Add New Account"
+      :title="$t('Add New Account')"
       @cancel="closeNavigationDrawer"
     />
 
@@ -120,7 +129,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="accountName"
                   :rules="[requiredValidator]"
-                  label="Account Name"
+                  :label="$t('Account Name')"
                   placeholder="John Kamangu"
                 />
               </VCol>
@@ -129,7 +138,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="accountNumber"
                   :rules="[requiredValidator]"
-                  label="Account Number"
+                  :label="$t('Account Number')"
                   placeholder="035000064547"
                 />
               </VCol>
@@ -139,7 +148,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="accountBalance"
                   :rules="[requiredValidator]"
-                  label="Account Balance"
+                  :label="$t('Account Balance')"
                   placeholder="100,000.00"
                 />
               </VCol>
@@ -148,10 +157,10 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <AppSelect
                   v-model="currency"
-                  label="Select Currency"
-                  placeholder="KES"
+                  :label="$t('Select Currency')"
+                  :placeholder="$t('KES')"
                   :rules="[requiredValidator]"
-                  :items="['KES', 'USD', 'GBP', 'TZS']"
+                  :items="[$t('KES'), $t('USD'), $t('GBP'), $t('TZS')]"
                 />
               </VCol>
 
@@ -159,8 +168,8 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <AppSelect
                   v-model="bank"
-                  label="Select Bank"
-                  placeholder="Select Bank"
+                  :label="$t('Select Bank')"
+                  :placeholder="$t('Select Bank')"
                   :rules="[requiredValidator]"
                   :items="bankList"
                 />
@@ -170,10 +179,10 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <AppSelect
                   v-model="status"
-                  label="Select Status"
-                  placeholder="Select Status"
+                  :label="$t('Select Status')"
+                  :placeholder="$t('Select Status')"
                   :rules="[requiredValidator]"
-                  :items="[{ title: 'Active', value: 'active' }, { title: 'Inactive', value: 'inactive' }, { title: 'Pending', value: 'pending' }]"
+                  :items="statusItems"
                 />
               </VCol>
 
@@ -183,7 +192,7 @@ const handleDrawerModelValueUpdate = val => {
                   type="submit"
                   class="me-3"
                 >
-                  Submit
+                  {{ $t('Submit') }}
                 </VBtn>
                 <VBtn
                   type="reset"
@@ -191,7 +200,7 @@ const handleDrawerModelValueUpdate = val => {
                   color="error"
                   @click="closeNavigationDrawer"
                 >
-                  Cancel
+                  {{ $t('Cancel') }}
                 </VBtn>
               </VCol>
             </VRow>

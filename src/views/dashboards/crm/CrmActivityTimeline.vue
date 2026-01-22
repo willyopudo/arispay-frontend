@@ -1,25 +1,27 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useActivityWebSocket } from '@/composables/useActivityWebSocket'
 
+const { t } = useI18n()
 const { activities, isConnected } = useActivityWebSocket()
 
 const formatTimeAgo = timestamp => {
-  if (!timestamp) return 'Unknown'
+  if (!timestamp) return t('Unknown')
 
   const now = new Date()
   const then = new Date(timestamp)
   const diffMs = now - then
   const diffMins = Math.floor(diffMs / 1000 / 60)
 
-  if (diffMins < 1) return 'Just now'
-  if (diffMins < 60) return `${diffMins} min ago`
+  if (diffMins < 1) return t('Just now')
+  if (diffMins < 60) return `${diffMins} ${t('min ago')}`
 
   const diffHours = Math.floor(diffMins / 60)
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+  if (diffHours < 24) return `${diffHours} ${diffHours > 1 ? t('hours ago') : t('hour ago')}`
 
   const diffDays = Math.floor(diffHours / 24)
-  return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+  return `${diffDays} ${diffDays > 1 ? t('days ago') : t('day ago')}`
 }
 
 const getEventColor = eventType => {
@@ -71,7 +73,7 @@ const displayedActivities = computed(() => activities.value.slice(0, 4))
         />
       </template>
 
-      <VCardTitle>Activity Timeline</VCardTitle>
+      <VCardTitle>{{ $t('Activity Timeline') }}</VCardTitle>
 
       <template #append>
         <VChip
@@ -84,7 +86,7 @@ const displayedActivities = computed(() => activities.value.slice(0, 4))
             size="16"
             start
           />
-          {{ isConnected ? 'Live' : 'Offline' }}
+          {{ isConnected ? $t('Live') : $t('Offline') }}
         </VChip>
       </template>
     </VCardItem>
@@ -112,14 +114,14 @@ const displayedActivities = computed(() => activities.value.slice(0, 4))
                 :color="getEventColor(activity.eventType)"
               />
               <span class="app-timeline-title font-weight-medium">
-                {{ activity.title || 'Activity' }}
+                {{ activity.title || $t('Activity') }}
               </span>
             </div>
             <span class="app-timeline-meta text-caption">{{ formatTimeAgo(activity.timestamp) }}</span>
           </div>
 
           <div class="app-timeline-text mt-1 text-body-2">
-            {{ activity.description || 'No description' }}
+            {{ activity.description || $t('No description') }}
           </div>
 
           <div v-if="activity.userName" class="text-caption mt-2 text-medium-emphasis">
@@ -137,10 +139,10 @@ const displayedActivities = computed(() => activities.value.slice(0, 4))
           class="mb-4"
         />
         <p class="text-body-1 text-medium-emphasis">
-          No recent activities
+          {{ $t('No recent activities') }}
         </p>
         <p class="text-caption text-disabled">
-          {{ isConnected ? 'Activities will appear here in real-time' : 'Connecting to activity feed...' }}
+          {{ isConnected ? $t('Activities will appear here in real-time') : $t('Connecting to activity feed...') }}
         </p>
       </div>
     </VCardText>

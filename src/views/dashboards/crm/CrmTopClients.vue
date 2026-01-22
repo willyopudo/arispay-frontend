@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   clients: {
@@ -51,7 +54,7 @@ const displayClients = computed(() => {
 
     return {
       clientId: client.clientId,
-      clientName: client.clientName || 'Unknown Client',
+      clientName: client.clientName || t('Unknown Client'),
       currentAmount: formatCurrency(client.currentMonthAmount),
       previousAmount: client.previousAmount,
       percentageChange: percentageChange,
@@ -61,22 +64,22 @@ const displayClients = computed(() => {
   })
 })
 
-const moreList = [
+const moreList = computed(() => [
   {
-    title: 'Refresh',
+    title: t('Refresh'),
     value: 'refresh',
   },
   {
-    title: 'View All',
+    title: t('View All'),
     value: 'View All',
   },
-]
+])
 </script>
 
 <template>
   <VCard
-    title="Top Clients"
-    subtitle="Clients with highest growth"
+    :title="$t('Top Clients')"
+    :subtitle="$t('Clients with highest growth')"
   >
     <template #append>
       <div class="mt-n4 me-n2">
@@ -96,10 +99,10 @@ const moreList = [
           class="mb-4"
         />
         <p class="text-body-1 text-medium-emphasis">
-          No top clients data available
+          {{ $t('No top clients data available') }}
         </p>
         <p class="text-sm text-disabled">
-          Client data will appear here once transactions are recorded
+          {{ $t('Client data will appear here once transactions are recorded') }}
         </p>
       </div>
 

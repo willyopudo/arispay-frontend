@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 const props = defineProps({
   transData: {
     type: Object,
@@ -90,7 +94,7 @@ const titleCase = (str) => {
       <VCardText>
         <!-- 👉 Title -->
         <h4 class="text-h4 text-center mb-2">
-          Transaction Details
+          {{ $t('Transaction Details') }}
         </h4>
 
         <div
@@ -99,11 +103,11 @@ const titleCase = (str) => {
         >
           <div class="d-flex flex-column flex-sm-row justify-space-between gap-4 flex-wrap py-4">
             <h6 class="text-h6">
-              {{ item.title }}
+              {{ $t(item.title) }}
             </h6>
             <div class="d-flex gap-4 flex-wrap">
               <span class="text-subtitle-1">
-                {{ item.value || 'N/A' }}
+                {{ item.value || $t('N/A') }}
               </span>
             </div>
           </div>

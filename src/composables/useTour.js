@@ -30,11 +30,8 @@ export function useTour() {
    * Initialize or get the existing tour instance
    */
   function getTour() {
-    console.log('[useTour] getTour() called')
-
     // Destroy existing instance to get fresh theme classes
     if (tourInstance) {
-      console.log('[useTour] Destroying existing tour instance')
       // Remove event listeners before destroying to prevent marking as completed
       tourInstance.off('complete')
       tourInstance.off('cancel')
@@ -47,74 +44,51 @@ export function useTour() {
     }
 
     const themeClasses = getThemeClasses()
-    console.log('[useTour] Theme classes:', themeClasses)
 
-    try {
-      tourInstance = new Shepherd.Tour({
-        useModalOverlay: true,
-        defaultStepOptions: {
-          cancelIcon: {
-            enabled: true,
-          },
-          classes: themeClasses,
-          scrollTo: { behavior: 'smooth', block: 'center' },
+    tourInstance = new Shepherd.Tour({
+      useModalOverlay: true,
+      defaultStepOptions: {
+        cancelIcon: {
+          enabled: true,
         },
-      })
-      console.log('[useTour] Shepherd.Tour created:', tourInstance)
+        classes: themeClasses,
+        scrollTo: { behavior: 'smooth', block: 'center' },
+      },
+    })
 
-      // Add all tour steps
-      console.log('[useTour] Adding tour steps:', tourSteps.length)
-      tourSteps.forEach((step, index) => {
-        console.log(`[useTour] Adding step ${index}:`, step.id)
-        tourInstance.addStep({
-          ...step,
-          classes: themeClasses,
-        })
+    // Add all tour steps
+    tourSteps.forEach(step => {
+      tourInstance.addStep({
+        ...step,
+        classes: themeClasses,
       })
+    })
 
-      // Handle tour completion
-      tourInstance.on('complete', () => {
-        console.log('[useTour] Tour completed')
-        markTourCompleted()
-      })
+    // Handle tour completion
+    tourInstance.on('complete', () => {
+      markTourCompleted()
+    })
 
-      // Handle tour cancellation (only when user cancels, not programmatic)
-      tourInstance.on('cancel', () => {
-        console.log('[useTour] Tour cancelled')
-        markTourCompleted()
-      })
+    // Handle tour cancellation (only when user cancels, not programmatic)
+    tourInstance.on('cancel', () => {
+      markTourCompleted()
+    })
 
-      console.log('[useTour] Tour instance ready')
-      return tourInstance
-    } catch (error) {
-      console.error('[useTour] Error creating tour:', error)
-      throw error
-    }
+    return tourInstance
   }
 
   /**
    * Start the tour
    */
   function start() {
-    console.log('[useTour] start() called')
-    try {
-      const tour = getTour()
-      console.log('[useTour] Got tour instance:', tour)
-      console.log('[useTour] tour.isActive():', tour.isActive())
-      console.log('[useTour] tour.steps:', tour.steps)
+    const tour = getTour()
 
-      // If tour is already active, don't restart
-      if (tour.isActive()) {
-        console.log('[useTour] Tour already active, not restarting')
-        return
-      }
-
-      console.log('[useTour] Calling tour.start()')
-      tour.start()
-      console.log('[useTour] tour.start() completed, currentStep:', tour.currentStep)
-    } catch (error) {
-      console.error('[useTour] Error in start():', error)
+    // If tour is already active, don't restart
+    if (tour.isActive()) {
+      return
     }
+
+    tour.start()
   }
 
   /**

@@ -2,6 +2,9 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useToast } from 'vue-toastification';
 import { useCookies } from 'vue3-cookies';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   isDrawerOpen: {
@@ -135,10 +138,10 @@ headers: {"Content-Type": 'application/json'}
 })
     if (savedUser._value !== null) {
       console.log('Log: ' + JSON.stringify(savedUser))
-      toast.success('Company user created successfully')
+      toast.success(t('Company user created successfully'))
     }
-    else {     
-      toast.error('Error creating company user', err)
+    else {
+      toast.error(t('Error creating company user'), err)
     }
 
     await nextTick(() => {
@@ -146,7 +149,7 @@ headers: {"Content-Type": 'application/json'}
     })
   } catch (err) {
     console.log("Error: "+ err)
-    toast.error('Error creating company user', err)
+    toast.error(t('Error creating company user'), err)
   }
 }
 
@@ -166,7 +169,7 @@ const handleDrawerModelValueUpdate = val => {
   >
     <!-- 👉 Title -->
     <AppDrawerHeaderSection
-      title="Add New User"
+      :title="$t('Add New User')"
       @cancel="closeNavigationDrawer"
     />
 
@@ -187,7 +190,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="firstName"
                   :rules="[requiredValidator]"
-                  label="First Name"
+                  :label="$t('First Name')"
                   placeholder="John"
                 />
               </VCol>
@@ -196,7 +199,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="lastName"
                   :rules="[requiredValidator]"
-                  label="Last Name"
+                  :label="$t('Last Name')"
                   placeholder="Doe"
                 />
               </VCol>
@@ -206,7 +209,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="username"
                   :rules="[requiredValidator]"
-                  label="Username"
+                  :label="$t('Username')"
                   placeholder="Johndoe"
                 />
               </VCol>
@@ -216,7 +219,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="email"
                   :rules="[requiredValidator, emailValidator]"
-                  label="Email"
+                  :label="$t('Email')"
                   placeholder="johndoe@email.com"
                 />
               </VCol>
@@ -227,7 +230,7 @@ const handleDrawerModelValueUpdate = val => {
                   v-model="phoneNumber"
                   type="number"
                   :rules="[requiredValidator]"
-                  label="Phone Number"
+                  :label="$t('Phone Number')"
                   placeholder="+254-711-222-333"
                 />
               </VCol>
@@ -237,7 +240,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="address"
                   :rules="[requiredValidator]"
-                  label="Physical Address"
+                  :label="$t('Physical Address')"
                   placeholder="Kahawa Sukari"
                 />
               </VCol>
@@ -247,7 +250,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="zipCode"
                   :rules="[requiredValidator]"
-                  label="Postal Address"
+                  :label="$t('Postal Address')"
                   placeholder="5306-00200"
                 />
               </VCol>
@@ -257,7 +260,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="town"
                   :rules="[requiredValidator]"
-                  label="Town"
+                  :label="$t('Town')"
                   placeholder="Ruiru"
                 />
               </VCol>
@@ -266,10 +269,10 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <AppSelect
                   v-model="currentPlan"
-                  label="Select Plan"
-                  placeholder="Select Plan"
+                  :label="$t('Select Plan')"
+                  :placeholder="$t('Select Plan')"
                   :rules="[requiredValidator]"
-                  :items="['Basic', 'Company', 'Enterprise', 'Team']"
+                  :items="[$t('Basic'), $t('Company'), $t('Enterprise'), $t('Team')]"
                 />
               </VCol>
 
@@ -277,10 +280,10 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <AppSelect
                   v-model="status"
-                  label="Select Status"
-                  placeholder="Select Status"
+                  :label="$t('Select Status')"
+                  :placeholder="$t('Select Status')"
                   :rules="[requiredValidator]"
-                  :items="[{ title: 'Active', value: 'active' }, { title: 'Inactive', value: 'inactive' }, { title: 'Pending', value: 'pending' }]"
+                  :items="[{ title: $t('Active'), value: 'active' }, { title: $t('Inactive'), value: 'inactive' }, { title: $t('Pending'), value: 'pending' }]"
                 />
               </VCol>
 
@@ -290,7 +293,7 @@ const handleDrawerModelValueUpdate = val => {
                   type="submit"
                   class="me-3"
                 >
-                  Submit
+                  {{ $t('Submit') }}
                 </VBtn>
                 <VBtn
                   type="reset"
@@ -298,7 +301,7 @@ const handleDrawerModelValueUpdate = val => {
                   color="error"
                   @click="closeNavigationDrawer"
                 >
-                  Cancel
+                  {{ $t('Cancel') }}
                 </VBtn>
               </VCol>
             </VRow>

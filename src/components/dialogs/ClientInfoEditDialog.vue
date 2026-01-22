@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 const props = defineProps({
   clientData: {
     type: Object,
@@ -36,6 +40,12 @@ const emit = defineEmits([
 
 const clientData = ref(structuredClone(toRaw(props.clientData)))
 console.log(clientData.value)
+
+const statusItems = computed(() => [
+  { title: t('Active'), value: 'active' },
+  { title: t('Inactive'), value: 'inactive' },
+  { title: t('Pending'), value: 'pending' },
+])
 
 
 
@@ -86,10 +96,10 @@ const dialogModelValueUpdate = val => {
       <VCardText>
         <!-- 👉 Title -->
         <h4 class="text-h4 text-center mb-2">
-          {{ action === 'edit' ? 'Edit' : 'View' }} Client Information
+          {{ action === 'edit' ? $t('Edit') : $t('View') }} {{ $t('Client Information') }}
         </h4>
         <p class="text-body-1 text-center mb-6">
-          Updating client details will receive a privacy audit.
+          {{ action === 'edit' ? $t('Updating client details will receive a privacy audit.') : $t('You can view the client details.') }}
         </p>
 
         <!-- 👉 Form -->
@@ -105,16 +115,16 @@ const dialogModelValueUpdate = val => {
             >
               <AppTextField
                 v-model="clientData.clientName"
-                label="Client Name"
+                :label="$t('Client Name')"
                 placeholder="John"
               />
             </VCol>
-         
+
             <!-- 👉 Username -->
             <VCol cols="12" md="6">
               <AppTextField
                 v-model="clientData.companyName"
-                label="Company Name"
+                :label="$t('Company Name')"
                 placeholder="Super Company"
                 disabled
               />
@@ -127,7 +137,7 @@ const dialogModelValueUpdate = val => {
             >
               <AppTextField
                 v-model="clientData.clientEmail"
-                label="Email"
+                :label="$t('Email')"
                 placeholder="johndoe@email.com"
               />
             </VCol>
@@ -139,13 +149,13 @@ const dialogModelValueUpdate = val => {
             >
               <AppSelect
                 v-model="clientData.status"
-                label="Status"
-                placeholder="Active"
-                :items="[{ title: 'Active', value: 'active', }, { title: 'Inactive', value: 'inactive', }, { title: 'Pending', value: 'pending', }]"
+                :label="$t('Status')"
+                :placeholder="$t('Active')"
+                :items="statusItems"
                 :disabled="action === 'view'"
               />
             </VCol>
-   
+
             <!-- 👉 Contact -->
             <VCol
               cols="12"
@@ -153,7 +163,7 @@ const dialogModelValueUpdate = val => {
             >
               <AppTextField
                 v-model="clientData.clientPhone"
-                label="Phone Number"
+                :label="$t('Phone Number')"
                 placeholder="+254 711 123 456"
               />
             </VCol>
@@ -165,12 +175,12 @@ const dialogModelValueUpdate = val => {
             >
               <AppSelect
                 v-model="clientData.identifierType"
-                label="Identifer Type"
-                placeholder="Type"
+                :label="$t('Identifier Type')"
+                :placeholder="$t('Identifier Type')"
                 :items="identifierTypes"
                 :disabled="action === 'view'"
               />
-            </VCol>                 
+            </VCol>
 
             <!-- 👉 Submit and Cancel -->
             <VCol
@@ -179,7 +189,7 @@ const dialogModelValueUpdate = val => {
             >
               <VBtn type="submit"
                 v-if="action === 'edit'">
-                Submit
+                {{ $t('Submit') }}
               </VBtn>
 
               <VBtn
@@ -187,7 +197,7 @@ const dialogModelValueUpdate = val => {
                 variant="tonal"
                 @click="onFormReset"
               >
-                Cancel
+                {{ $t('Cancel') }}
               </VBtn>
             </VCol>
           </VRow>

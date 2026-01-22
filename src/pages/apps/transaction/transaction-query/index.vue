@@ -1,4 +1,7 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 👉 Store
 const transactionRef = ref('')
@@ -14,7 +17,7 @@ async function fetchBankList() {
   try {
     const { data, error } = await axiosApiCall('/banks/select-list')
     if (error) {
-      useSweetAlert.errorMessage('Error fetching banks: ' + error.message)
+      useSweetAlert.errorMessage(t('Error fetching banks') + ': ' + error.message)
       return
     }
     bankList.value = data || []
@@ -26,25 +29,25 @@ async function fetchBankList() {
 onMounted(() => {
   fetchBankList()
 })
-const status = [
+const status = computed(() => [
   {
-    title: 'Pending',
+    title: t('Pending'),
     value: 'pending',
   },
   {
-    title: 'Active',
+    title: t('Active'),
     value: 'active',
   },
   {
-    title: 'Inactive',
+    title: t('Inactive'),
     value: 'inactive',
   },
-]
+])
 
 
 async function queryTransaction(){
   if (!transactionRef.value || !selectedBank.value) {
-    useSweetAlert.errorMessage('Please provide both Transaction Reference and Bank')
+    useSweetAlert.errorMessage(t('Please provide both Transaction Reference and Bank'))
     return
   }
   try {
@@ -56,14 +59,14 @@ async function queryTransaction(){
       params: {
         transRef: transactionRef.value,
         bank: selectedBank.value
-      
+
       }
     })
     if (error) {
       if(error.status === 404) {
         transactionDetailsData.value = [
 
-        { title: 'notfound', value: 'No record found for ' + transactionRef.value }
+        { title: 'notfound', value: t('No record found for') + ' ' + transactionRef.value }
         ]
         console.error('No record found for ' + transactionRef.value)
       }
@@ -88,11 +91,10 @@ async function queryTransaction(){
         { title: 'Payer Phone', value: fetchedTransaction.value.payerPhone },
         { title: 'Payment Mode', value: fetchedTransaction.value.paymentMode },
         { title: 'Narration', value: fetchedTransaction.value.narration },
-        // { title: 'API Channel', value: props.transData.apiChannel },
       ]
     }
 
-    useSweetAlert.toast("Transaction fetched successfully");
+    useSweetAlert.toast(t("Transaction fetched successfully"));
 
   } catch (error) {
     console.error(error)
@@ -105,7 +107,7 @@ async function queryTransaction(){
   <section>
     <VCard class="mb-6">
       <VCardItem class="pb-4">
-        <VCardTitle>Transaction Query</VCardTitle>
+        <VCardTitle>{{ $t('Transaction Query') }}</VCardTitle>
       </VCardItem>
 
       <VCardText>
@@ -113,7 +115,7 @@ async function queryTransaction(){
           <VCol cols="12" md="6">
             <VTextField
               v-model="transactionRef"
-              label="Transaction Reference"
+              :label="$t('Transaction Reference')"
               prepend-inner-icon="tabler-folder-symlink"
               dense
               outlined
@@ -124,7 +126,7 @@ async function queryTransaction(){
             <VSelect
               v-model="selectedBank"
               :items="bankList"
-              label="Select Bank"
+              :label="$t('Select Bank')"
               prepend-inner-icon="tabler-building-bank"
               dense
               outlined
@@ -139,7 +141,7 @@ async function queryTransaction(){
               @click="queryTransaction"
               prepend-icon="tabler-search"
             >
-              Search
+              {{ $t('Search') }}
             </VBtn>
           </VCol>
         </VRow>
@@ -147,13 +149,13 @@ async function queryTransaction(){
 
       <VDivider />
 
-     
+
     </VCard>
   </section>
   <section v-if="fetchedTransaction || transactionDetailsData.length > 0" class="mb-6">
     <VCard>
       <VCardItem>
-        <VCardTitle>Transaction Details</VCardTitle>
+        <VCardTitle>{{ $t('Transaction Details') }}</VCardTitle>
       </VCardItem>
       <VCardText>
         <VRow>
@@ -166,11 +168,11 @@ async function queryTransaction(){
               >
                 <div class="d-flex flex-column flex-sm-row justify-space-between gap-4 flex-wrap py-4">
                   <h6 class="text-h6" v-if="item.title !== 'notfound'">
-                    {{ item.title }}
+                    {{ $t(item.title) }}
                   </h6>
                   <div class="d-flex gap-4 flex-wrap">
                     <span class="text-subtitle-1">
-                      {{ item.value || 'N/A' }}
+                      {{ item.value || $t('N/A') }}
                     </span>
                   </div>
                 </div>

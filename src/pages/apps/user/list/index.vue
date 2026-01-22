@@ -1,5 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
+
+const { t } = useI18n()
 
 // 👉 Store
 const searchQuery = ref('')
@@ -49,85 +52,81 @@ const updateOptions = options => {
 }
 
 // Headers
-const headers = [
+const headers = computed(() => [
   {
-    title: 'User',
+    title: t('User'),
     key: 'user',
   },
   {
-    title: 'Role',
+    title: t('Role'),
     key: 'role',
   },
   {
-    title: 'Subscription Plan',
+    title: t('Subscription Plan'),
     key: 'plan',
   },
-  // {
-  //   title: 'Billing',
-  //   key: 'billing',
-  // },
   {
-    title: 'Status',
+    title: t('Status'),
     key: 'status',
   },
   {
-    title: 'Actions',
+    title: t('Actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 // await fetchUsers()
 
 // 👉 search filters
-const roles = [
+const roles = computed(() => [
   {
-    title: 'Company Admin',
+    title: t('Company Admin'),
     value: 'ROLE_COMPANY_ADMIN',
   },
   {
-    title: 'Company User',
+    title: t('Company User'),
     value: 'ROLE_COMPANY_USER',
   },
   {
-    title: 'Super Admin',
+    title: t('Super Admin'),
     value: 'ROLE_ADMIN',
   }
-]
+])
 
-const plans = [
+const plans = computed(() => [
   {
-    title: 'Basic',
+    title: t('Basic'),
     value: 'basic',
   },
   {
-    title: 'Standard',
+    title: t('Standard'),
     value: 'standard',
   },
   {
-    title: 'Enterprise',
+    title: t('Enterprise'),
     value: 'enterprise',
   },
   {
-    title: 'Special',
+    title: t('Special'),
     value: 'special',
   },
-]
+])
 
-const status = [
+const status = computed(() => [
   {
-    title: 'Pending',
+    title: t('Pending'),
     value: 'pending',
   },
   {
-    title: 'Active',
+    title: t('Active'),
     value: 'active',
   },
   {
-    title: 'Inactive',
+    title: t('Inactive'),
     value: 'inactive',
   },
-]
+])
 
 const resolveUserRoleVariant = role => {
   const roleLowerCase = role.toLowerCase()
@@ -192,10 +191,10 @@ async function fetchUsers(){
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error fetching users: ' + error.message)
+      useSweetAlert.errorMessage(t('Error fetching users') + ': ' + error.message)
       return
     }
-    
+
     fetchedUsers.value = usersList.value0.content
     totalFetchedUsers.value = usersList.value0.totalElements
     userSummary.value = usersList.value1
@@ -205,7 +204,7 @@ async function fetchUsers(){
     widgetData.value[2].value = userSummary.value.third
     widgetData.value[3].value = userSummary.value.fourth
 
-    useSweetAlert.toast("Users fetched successfully");
+    useSweetAlert.toast(t("Users fetched successfully"));
 
   } catch (error) {
     console.error(error)
@@ -250,18 +249,18 @@ const deleteUser = async id => {
     })
     
     if (error && error.response) {
-      useSweetAlert.errorMessage('An error occured: ' + error.response.data.message)
+      useSweetAlert.errorMessage(t('An error occurred') + ': ' + error.response.data.message)
       return
     }
-    
-    useSweetAlert.successMessage('User deleted successfully')
+
+    useSweetAlert.successMessage(t('User deleted successfully'))
 
     // Refetch User
     setTimeout(fetchUsers, 3000);
 
   } catch (error) {
     console.error(error)
-    useSweetAlert.errorMessage('An error occured while deleting user')
+    useSweetAlert.errorMessage(t('An error occurred while deleting user'))
   }
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
@@ -334,7 +333,7 @@ watch(searchQuery, (newQuery) => {
                 <div class="d-flex justify-space-between">
                   <div class="d-flex flex-column gap-y-1">
                     <div class="text-body-1 text-high-emphasis">
-                      {{ data.title }}
+                      {{ $t(data.title) }}
                     </div>
                     <div class="d-flex gap-x-2 align-center">
                       <h4 class="text-h4">
@@ -348,7 +347,7 @@ watch(searchQuery, (newQuery) => {
                       </div>
                     </div>
                     <div class="text-sm">
-                      {{ data.desc }}
+                      {{ $t(data.desc) }}
                     </div>
                   </div>
                   <VAvatar
@@ -372,7 +371,7 @@ watch(searchQuery, (newQuery) => {
 
     <VCard class="mb-6">
       <VCardItem class="pb-4">
-        <VCardTitle>Filters</VCardTitle>
+        <VCardTitle>{{ $t('Filters') }}</VCardTitle>
       </VCardItem>
 
       <VCardText>
@@ -384,7 +383,7 @@ watch(searchQuery, (newQuery) => {
           >
             <AppSelect
               v-model="selectedRole"
-              placeholder="Select Role"
+              :placeholder="$t('Select Role')"
               :items="roles"
               clearable
               clear-icon="tabler-x"
@@ -397,7 +396,7 @@ watch(searchQuery, (newQuery) => {
           >
             <AppSelect
               v-model="selectedPlan"
-              placeholder="Select Plan"
+              :placeholder="$t('Select Plan')"
               :items="plans"
               clearable
               clear-icon="tabler-x"
@@ -408,14 +407,14 @@ watch(searchQuery, (newQuery) => {
   <div class="d-flex align-center">
     <AppSelect
       v-model="selectedStatus"
-      placeholder="Select Status"
+      :placeholder="$t('Select Status')"
       :items="status"
       clearable
       clear-icon="tabler-x"
       class="flex-grow-1 mr-2"
     />
     <VBtn class="ml-4" @click="fetchUsers">
-      Filter
+      {{ $t('Filter') }}
       <VIcon end icon="tabler-filter" />
     </VBtn>
   </div>
@@ -431,12 +430,12 @@ watch(searchQuery, (newQuery) => {
           <AppSelect
             :model-value="itemsPerPage"
             :items="[
-              { value: 5, title: '5' },
-              { value: 10, title: '10' },
-              { value: 25, title: '25' },
-              { value: 50, title: '50' },
-              { value: 100, title: '100' },
-              { value: -1, title: 'All' },
+              { value: 5, title: $t('5') },
+              { value: 10, title: $t('10') },
+              { value: 25, title: $t('25') },
+              { value: 50, title: $t('50') },
+              { value: 100, title: $t('100') },
+              { value: -1, title: $t('All') },
             ]"
             style="inline-size: 6.25rem;"
             @update:model-value="itemsPerPage = parseInt($event, 10)"
@@ -449,7 +448,7 @@ watch(searchQuery, (newQuery) => {
           <div style="inline-size: 15.625rem;">
             <AppTextField
               v-model="searchQuery"
-              placeholder="Search User"
+              :placeholder="$t('Search User')"
             />
           </div>
 
@@ -459,7 +458,7 @@ watch(searchQuery, (newQuery) => {
             color="secondary"
             prepend-icon="tabler-upload"
           >
-            Export
+            {{ $t('Export') }}
           </VBtn>
 
           <!-- 👉 Add user button -->
@@ -467,7 +466,7 @@ watch(searchQuery, (newQuery) => {
             prepend-icon="tabler-plus"
             @click="isAddNewUserDrawerVisible = true"
           >
-            Add New User
+            {{ $t('Add New User') }}
           </VBtn>
         </div>
       </VCardText>

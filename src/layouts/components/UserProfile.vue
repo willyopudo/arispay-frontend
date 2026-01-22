@@ -1,6 +1,8 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const ability = useAbility()
 
@@ -163,7 +165,7 @@ const userProfileList = [
                   />
                 </template>
 
-                <VListItemTitle>{{ item.title }}</VListItemTitle>
+                <VListItemTitle>{{ $t(item.title) }}</VListItemTitle>
 
                 <template
                   v-if="item.badgeProps"
@@ -191,7 +193,7 @@ const userProfileList = [
                 append-icon="tabler-logout"
                 @click="logout"
               >
-                Logout
+                {{ $t('Logout') }}
               </VBtn>
             </div>
           </PerfectScrollbar>

@@ -1,5 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import AddNewCompanyAccountDrawer from '@/views/apps/user/list/AddNewCompanyAccountDrawer.vue'
+
+const { t } = useI18n()
 
 // 👉 Store
 const searchQuery = ref('')
@@ -50,85 +53,85 @@ const updateOptions = options => {
 }
 
 // Headers
-const headers = [
+const headers = computed(() => [
   {
-    title: 'Account',
+    title: t('Account'),
     key: 'accountName',
   },
   {
-    title: 'Company',
+    title: t('Company'),
     key: 'companyName',
   },
   {
-    title: 'Bank',
+    title: t('Bank'),
     key: 'bank',
   },
   {
-    title: 'Balance',
+    title: t('Balance'),
     key: 'balance',
   },
   {
-    title: 'Status',
+    title: t('Status'),
     key: 'status',
   },
   {
-    title: 'Actions',
+    title: t('Actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 // await fetchUsers()
 
 // 👉 search filters
-const roles = [
+const roles = computed(() => [
   {
-    title: 'Company Admin',
+    title: t('Company Admin'),
     value: 'ROLE_COMPANY_ADMIN',
   },
   {
-    title: 'Company User',
+    title: t('Company User'),
     value: 'ROLE_COMPANY_USER',
   },
   {
-    title: 'Super Admin',
+    title: t('Super Admin'),
     value: 'ROLE_ADMIN',
   }
-]
+])
 
-const plans = [
+const plans = computed(() => [
   {
-    title: 'Basic',
+    title: t('Basic'),
     value: 'basic',
   },
   {
-    title: 'Standard',
+    title: t('Standard'),
     value: 'standard',
   },
   {
-    title: 'Enterprise',
+    title: t('Enterprise'),
     value: 'enterprise',
   },
   {
-    title: 'Special',
+    title: t('Special'),
     value: 'special',
   },
-]
+])
 
-const status = [
+const status = computed(() => [
   {
-    title: 'Pending',
+    title: t('Pending'),
     value: 'pending',
   },
   {
-    title: 'Active',
+    title: t('Active'),
     value: 'active',
   },
   {
-    title: 'Inactive',
+    title: t('Inactive'),
     value: 'inactive',
   },
-]
+])
 
 const resolveUserRoleVariant = role => {
   const roleLowerCase = role.toLowerCase()
@@ -193,10 +196,10 @@ async function fetchCompanyAccounts(){
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error fetching company accounts: ' + error.message)
+      useSweetAlert.errorMessage(t('Error fetching company accounts') + ': ' + error.message)
       return
     }
-    
+
     fetchedAccounts.value = accountsList.value0.content
     totalFetchedAccounts.value = accountsList.value0.totalElements
     companyAccountSummary.value = accountsList.value2
@@ -207,7 +210,7 @@ async function fetchCompanyAccounts(){
     widgetData.value[2].value = companyAccountSummary.value.inactive
     widgetData.value[3].value = companyAccountSummary.value.pending
 
-    useSweetAlert.toast("Company accounts fetched successfully");
+    useSweetAlert.toast(t("Company accounts fetched successfully"));
 
   } catch (error) {
     console.error(error)
@@ -232,12 +235,12 @@ const AddNewCompanyAccount = async companyAccountData => {
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error during company account creation: ' + error.message)
+      useSweetAlert.errorMessage(t('Error during company account creation') + ': ' + error.message)
       return
     }
-    
+
     fetchCompanyAccounts()
-    useSweetAlert.toast("Company Account created successfully");
+    useSweetAlert.toast(t("Company Account created successfully"));
  
   } catch (error) {
     console.error(error)

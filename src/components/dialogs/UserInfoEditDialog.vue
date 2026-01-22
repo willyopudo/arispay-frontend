@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 const props = defineProps({
   userData: {
     type: Object,
@@ -87,10 +91,10 @@ const currentPlan = computed({
       <VCardText>
         <!-- 👉 Title -->
         <h4 class="text-h4 text-center mb-2">
-          {{ action === 'edit' ? 'Edit' : 'View' }} User Information
+          {{ action === 'edit' ? $t('Edit') : $t('View') }} {{ $t('User Information') }}
         </h4>
         <p class="text-body-1 text-center mb-6">
-          Updating user details will receive a privacy audit.
+          {{ action === 'edit' ? $t('Updating user details will receive a privacy audit.') : $t('You can view the user details.') }}
         </p>
 
         <!-- 👉 Form -->
@@ -106,7 +110,7 @@ const currentPlan = computed({
             >
               <AppTextField
                 v-model="userData.firstName"
-                label="First Name"
+                :label="$t('First Name')"
                 placeholder="John"
               />
             </VCol>
@@ -118,7 +122,7 @@ const currentPlan = computed({
             >
               <AppTextField
                 v-model="userData.lastName"
-                label="Last Name"
+                :label="$t('Last Name')"
                 placeholder="Doe"
               />
             </VCol>
@@ -127,7 +131,7 @@ const currentPlan = computed({
             <VCol cols="12">
               <AppTextField
                 v-model="userData.username"
-                label="Username"
+                :label="$t('Username')"
                 placeholder="john.doe.007"
               />
             </VCol>
@@ -139,7 +143,7 @@ const currentPlan = computed({
             >
               <AppTextField
                 v-model="userData.email"
-                label="Email"
+                :label="$t('Email')"
                 placeholder="johndoe@email.com"
               />
             </VCol>
@@ -151,9 +155,9 @@ const currentPlan = computed({
             >
               <AppSelect
                 v-model="userData.status"
-                label="Status"
-                placeholder="Active"
-                :items="[{ title: 'Active', value: 'active', }, { title: 'Inactive', value: 'inactive', }, { title: 'Pending', value: 'pending', }]"
+                :label="$t('Status')"
+                :placeholder="$t('Active')"
+                :items="[{ title: $t('Active'), value: 'active', }, { title: $t('Inactive'), value: 'inactive', }, { title: $t('Pending'), value: 'pending', }]"
                 :disabled="action === 'view'"
               />
             </VCol>
@@ -165,7 +169,7 @@ const currentPlan = computed({
             >
               <AppTextField
                 v-model="userData.address"
-                label="Address"
+                :label="$t('Address')"
                 placeholder="123456789"
               />
             </VCol>
@@ -177,7 +181,7 @@ const currentPlan = computed({
             >
               <AppTextField
                 v-model="userData.phoneNumber"
-                label="Phone Number"
+                :label="$t('Phone Number')"
                 placeholder="+1 9876543210"
               />
             </VCol>
@@ -189,9 +193,9 @@ const currentPlan = computed({
             >
               <AppSelect
                 v-model="currentPlan"
-                label="Current Plan"
-                placeholder="Basic"
-                :items="[{ title: 'Basic', value: 'basic', }, { title: 'Standard', value: 'standard', }, { title: 'Enterprise', value: 'enterprise', },{ title: 'Special', value: 'special', }]"
+                :label="$t('Current Plan')"
+                :placeholder="$t('Basic')"
+                :items="[{ title: $t('Basic'), value: 'basic', }, { title: $t('Standard'), value: 'standard', }, { title: $t('Enterprise'), value: 'enterprise', },{ title: $t('Special'), value: 'special', }]"
                 :disabled="action === 'view'"
               />
             </VCol>
@@ -203,9 +207,9 @@ const currentPlan = computed({
             >
               <AppSelect
                 v-model="userData.role"
-                label="Role"
-                placeholder="United States"
-                :items="[ { title: 'Company Admin', value: 'ROLE_COMPANY_ADMIN', }, { title: 'Company User', value: 'ROLE_COMPANY_USER', }, { title: 'Super Admin', value: 'ROLE_ADMIN', },  ] "
+                :label="$t('Role')"
+                :placeholder="$t('Select Role')"
+                :items="[ { title: $t('Company Admin'), value: 'ROLE_COMPANY_ADMIN', }, { title: $t('Company User'), value: 'ROLE_COMPANY_USER', }, { title: $t('Super Admin'), value: 'ROLE_ADMIN', },  ] "
                 :disabled="action === 'view'"
                 />
             </VCol>
@@ -215,7 +219,7 @@ const currentPlan = computed({
               <VSwitch
                 v-model="isUseAsBillingAddress"
                 density="compact"
-                :label="userData.userCompanies.length != 0 ? userData.userCompanies[0].companyName : 'Undefined'"
+                :label="userData.userCompanies.length != 0 ? userData.userCompanies[0].companyName : $t('Unknown')"
               />
             </VCol>
 
@@ -226,7 +230,7 @@ const currentPlan = computed({
             >
               <VBtn type="submit"
                 v-if="action === 'edit'">
-                Submit
+                {{ $t('Submit') }}
               </VBtn>
 
               <VBtn
@@ -234,7 +238,7 @@ const currentPlan = computed({
                 variant="tonal"
                 @click="onFormReset"
               >
-                Cancel
+                {{ $t('Cancel') }}
               </VBtn>
             </VCol>
           </VRow>

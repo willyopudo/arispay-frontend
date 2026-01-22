@@ -1,7 +1,9 @@
 <script setup>
 import { useTheme } from 'vuetify'
+import { useI18n } from 'vue-i18n'
 import { hexToRgb } from '@layouts/utils'
 
+const { t } = useI18n()
 const vuetifyTheme = useTheme()
 const currentTab = ref(0)
 const refVueApexChart = ref()
@@ -22,8 +24,8 @@ const transformedData = computed(() => {
   const monthsSet = new Set()
 
   props.data.forEach(item => {
-    const mode = item.paymentMode || 'Unknown'
-    const month = item.month || 'N/A'
+    const mode = item.paymentMode || t('Unknown')
+    const month = item.month || t('N/A')
     const count = item.paymentModeCount || 0
 
     //MPESA
@@ -176,7 +178,7 @@ const chartConfigs = computed(() => {
           enabled: true,
           y: {
             formatter(val) {
-              return `${ val } transactions`
+              return `${ val } ${t('transactions')}`
             },
           },
         },
@@ -246,22 +248,22 @@ const chartConfigs = computed(() => {
   return configs
 })
 
-const moreList = [
+const moreList = computed(() => [
   {
-    title: 'View More',
+    title: t('View More'),
     value: 'View More',
   },
   {
-    title: 'Delete',
+    title: t('Delete'),
     value: 'Delete',
   },
-]
+])
 </script>
 
 <template>
   <VCard
-    title="Earning Reports"
-    subtitle="Transaction Overview by Payment Mode"
+    :title="$t('Earning Reports')"
+    :subtitle="$t('Transaction Overview by Payment Mode')"
   >
     <template #append>
       <div class="mt-n4 me-n2">
@@ -281,10 +283,10 @@ const moreList = [
           class="mb-4"
         />
         <p class="text-body-1 text-medium-emphasis">
-          No earning reports data available
+          {{ $t('No earning reports data available') }}
         </p>
         <p class="text-sm text-disabled">
-          Transaction data will appear here once payment activities are recorded
+          {{ $t('Transaction data will appear here once payment activities are recorded') }}
         </p>
       </div>
 

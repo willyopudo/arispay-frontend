@@ -1,5 +1,8 @@
 <script setup>
 import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   companyAccountData: {
@@ -39,6 +42,12 @@ const emit = defineEmits([
 
 const companyAccountData = ref(structuredClone(toRaw(props.companyAccountData)))
 console.log(companyAccountData.value)
+
+const statusItems = computed(() => [
+  { title: t('Active'), value: 'active' },
+  { title: t('Inactive'), value: 'inactive' },
+  { title: t('Dormant'), value: 'pending' },
+])
 
 
 
@@ -91,10 +100,10 @@ const dialogModelValueUpdate = val => {
       <VCardText>
         <!-- 👉 Title -->
         <h4 class="text-h4 text-center mb-2">
-          {{ action === 'edit' ? 'Edit' : 'View' }} Company Account Information
+          {{ action === 'edit' ? $t('Edit') : $t('View') }} {{ $t('Company Account Information') }}
         </h4>
         <p class="text-body-1 text-center mb-6">
-          {{ action === 'edit' ? 'Updating company account details will receive a privacy audit.' : 'You can view the company account details.' }}
+          {{ action === 'edit' ? $t('Updating company account details will receive a privacy audit.') : $t('You can view the company account details.') }}
         </p>
 
         <!-- 👉 Form -->
@@ -110,16 +119,16 @@ const dialogModelValueUpdate = val => {
             >
               <AppTextField
                 v-model="companyAccountData.accountName"
-                label="Account Name"
+                :label="$t('Account Name')"
                 placeholder="John"
               />
             </VCol>
-         
+
             <!-- 👉 Account Number -->
             <VCol cols="12" md="6">
               <AppTextField
                 v-model="companyAccountData.accountNumber"
-                label="Account Number"
+                :label="$t('Account Number')"
                 placeholder="Super Company"
               />
             </VCol>
@@ -131,7 +140,7 @@ const dialogModelValueUpdate = val => {
             >
               <AppTextField
                 v-model="companyAccountData.companyName"
-                label="Company Name"
+                :label="$t('Company Name')"
                 placeholder="johndoe@email.com"
               />
             </VCol>
@@ -143,13 +152,13 @@ const dialogModelValueUpdate = val => {
             >
               <AppSelect
                 v-model="companyAccountData.status"
-                label="Status"
-                placeholder="Active"
-                :items="[{ title: 'Active', value: 'active', }, { title: 'Inactive', value: 'inactive', }, { title: 'Dormant', value: 'pending', }]"
+                :label="$t('Status')"
+                :placeholder="$t('Active')"
+                :items="statusItems"
                 :disabled="action === 'view'"
               />
             </VCol>
-   
+
             <!-- 👉 Bank -->
             <VCol
               cols="12"
@@ -157,7 +166,7 @@ const dialogModelValueUpdate = val => {
             >
               <AppSelect
                 :value="companyAccountData.bankCode + ' ' + companyAccountData.bankName"
-                label="Bank"
+                :label="$t('Bank')"
                 :items="banks"
                 placeholder="+254 711 123 456"
                 :disabled="action === 'view'"
@@ -171,11 +180,11 @@ const dialogModelValueUpdate = val => {
             >
               <AppTextField
                 :value="Number(companyAccountData.balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})"
-                label="Balance"
+                :label="$t('Balance')"
                 placeholder="Type"
-                
+
               />
-            </VCol>   
+            </VCol>
             <!-- 👉 Currency -->
             <VCol
               cols="12"
@@ -183,12 +192,12 @@ const dialogModelValueUpdate = val => {
             >
               <AppSelect
                 v-model="companyAccountData.currency"
-                label="Currency"
-                placeholder="KES"
-                :items="['KES', 'USD', 'GBP', 'TZS']"
-                
+                :label="$t('Currency')"
+                :placeholder="$t('KES')"
+                :items="[$t('KES'), $t('USD'), $t('GBP'), $t('TZS')]"
+
               />
-            </VCol>  
+            </VCol>
 
             <!-- 👉 Submit and Cancel -->
             <VCol
@@ -197,7 +206,7 @@ const dialogModelValueUpdate = val => {
             >
               <VBtn type="submit"
                 v-if="action === 'edit'">
-                Submit
+                {{ $t('Submit') }}
               </VBtn>
 
               <VBtn
@@ -205,7 +214,7 @@ const dialogModelValueUpdate = val => {
                 variant="tonal"
                 @click="onFormReset"
               >
-                Cancel
+                {{ $t('Cancel') }}
               </VBtn>
             </VCol>
           </VRow>

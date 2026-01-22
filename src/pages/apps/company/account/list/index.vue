@@ -1,6 +1,9 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import CompanyAccountInfoEditDialog from '@/components/dialogs/CompanyAccountInfoEditDialog.vue'
 import AddNewCompanyAccountDrawer from '@/views/apps/user/list/AddNewCompanyAccountDrawer.vue'
+
+const { t } = useI18n()
 
 // 👉 Store
 const searchQuery = ref('')
@@ -49,37 +52,37 @@ const updateOptions = options => {
 }
 
 // Headers
-const headers = [
+const headers = computed(() => [
   {
-    title: 'Account',
+    title: t('Account'),
     key: 'accountName',
   },
   {
-    title: 'Company',
+    title: t('Company'),
     key: 'companyName',
   },
   {
-    title: 'Bank',
+    title: t('Bank'),
     key: 'bank',
   },
   {
-    title: 'Currency',
+    title: t('Currency'),
     key: 'currency',
   },
   {
-    title: 'Balance',
+    title: t('Balance'),
     key: 'balance',
   },
   {
-    title: 'Status',
+    title: t('Status'),
     key: 'status',
   },
   {
-    title: 'Actions',
+    title: t('Actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 // await fetchUsers()
 
@@ -118,20 +121,20 @@ const plans = [
   },
 ]
 
-const status = [
+const status = computed(() => [
   {
-    title: 'Pending',
+    title: t('Pending'),
     value: 'pending',
   },
   {
-    title: 'Active',
+    title: t('Active'),
     value: 'active',
   },
   {
-    title: 'Inactive',
+    title: t('Inactive'),
     value: 'inactive',
   },
-]
+])
 
 const resolveUserRoleVariant = role => {
   const roleLowerCase = role.toLowerCase()
@@ -196,21 +199,16 @@ async function fetchCompanyAccounts(){
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error fetching company accounts: ' + error.message)
+      useSweetAlert.errorMessage(t('Error fetching company accounts') + ': ' + error.message)
       return
     }
-    
+
     fetchedAccounts.value = accountsList.value0.content
     totalFetchedAccounts.value = accountsList.value0.totalElements
     companyAccountSummary.value = accountsList.value2
     bankList.value = accountsList.value1
 
-    widgetData.value[0].value = companyAccountSummary.value.first
-    widgetData.value[1].value = companyAccountSummary.value.second
-    widgetData.value[2].value = companyAccountSummary.value.third
-    widgetData.value[3].value = companyAccountSummary.value.fourth
-
-    useSweetAlert.toast("Company accounts fetched successfully");
+    useSweetAlert.toast(t("Company accounts fetched successfully"));
 
   } catch (error) {
     console.error(error)
@@ -235,12 +233,12 @@ const AddNewCompanyAccount = async companyAccountData => {
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error during company account creation: ' + error.message)
+      useSweetAlert.errorMessage(t('Error during company account creation') + ': ' + error.message)
       return
     }
-    
+
     fetchCompanyAccounts()
-    useSweetAlert.toast("Company Account created successfully");
+    useSweetAlert.toast(t("Company Account created successfully"));
  
   } catch (error) {
     console.error(error)
@@ -273,18 +271,18 @@ const deleteCompanyAccount = async id => {
     })
     
     if (error && error.response) {
-      useSweetAlert.errorMessage('An error occured: ' + error.response.data.message)
+      useSweetAlert.errorMessage(t('An error occurred') + ': ' + error.response.data.message)
       return
     }
-    
-    useSweetAlert.successMessage('Company account deleted successfully')
+
+    useSweetAlert.successMessage(t('Company account deleted successfully'))
 
     // Refetch User
     setTimeout(fetchCompanyAccounts, 3000);
 
   } catch (error) {
     console.error(error)
-    useSweetAlert.errorMessage('An error occured while deleting company account')
+    useSweetAlert.errorMessage(t('An error occurred while deleting company account'))
   }
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
@@ -292,36 +290,36 @@ const deleteCompanyAccount = async id => {
     selectedRows.value.splice(index, 1)
 }
 
-const widgetData = ref([
+const widgetData = computed(() => [
   {
-    title: 'Accounts',
+    title: t('Accounts'),
     value: companyAccountSummary.value.first,
     change: 2.1,
-    desc: 'Total Accounts',
+    desc: t('Total Accounts'),
     icon: 'tabler-users',
     iconColor: 'primary',
   },
   {
-    title: 'Active Accounts',
+    title: t('Active Accounts'),
     value: companyAccountSummary.value.second,
     change: 18,
-    desc: 'Active Accounts',
+    desc: t('Active Accounts'),
     icon: 'tabler-user-check',
     iconColor: 'success',
   },
   {
-    title: 'Inactive Accounts',
+    title: t('Inactive Accounts'),
     value: companyAccountSummary.value.third,
     change: -14,
-    desc: 'Non-Active Accounts',
+    desc: t('Non-Active Accounts'),
     icon: 'tabler-user-plus',
     iconColor: 'error',
   },
   {
-    title: 'Dormant Accounts',
+    title: t('Dormant Accounts'),
     value: companyAccountSummary.value.fourth,
     change: 42,
-    desc: 'Dormant Accounts',
+    desc: t('Dormant Accounts'),
     icon: 'tabler-user-search',
     iconColor: 'warning',
   },
@@ -395,7 +393,7 @@ watch(searchQuery, (newQuery) => {
 
     <VCard class="mb-6">
       <VCardItem class="pb-4">
-        <VCardTitle>Filters</VCardTitle>
+        <VCardTitle>{{ $t('Filters') }}</VCardTitle>
       </VCardItem>
 
       <VCardText>
@@ -406,14 +404,14 @@ watch(searchQuery, (newQuery) => {
   <div class="d-flex align-center">
     <AppSelect
       v-model="selectedStatus"
-      placeholder="Select Status"
+      :placeholder="$t('Select Status')"
       :items="status"
       clearable
       clear-icon="tabler-x"
       class="flex-grow-1 mr-2"
     />
     <VBtn class="ml-4" @click="fetchCompanyAccounts">
-      Filter
+      {{ $t('Filter') }}
       <VIcon end icon="tabler-filter" />
     </VBtn>
   </div>
@@ -429,12 +427,12 @@ watch(searchQuery, (newQuery) => {
           <AppSelect
             :model-value="itemsPerPage"
             :items="[
-              { value: 5, title: '5' },
-              { value: 10, title: '10' },
-              { value: 25, title: '25' },
-              { value: 50, title: '50' },
-              { value: 100, title: '100' },
-              { value: -1, title: 'All' },
+              { value: 5, title: $t('5') },
+              { value: 10, title: $t('10') },
+              { value: 25, title: $t('25') },
+              { value: 50, title: $t('50') },
+              { value: 100, title: $t('100') },
+              { value: -1, title: $t('All') },
             ]"
             style="inline-size: 6.25rem;"
             @update:model-value="itemsPerPage = parseInt($event, 10)"
@@ -447,7 +445,7 @@ watch(searchQuery, (newQuery) => {
           <div style="inline-size: 15.625rem;">
             <AppTextField
               v-model="searchQuery"
-              placeholder="Search Accounts"
+              :placeholder="$t('Search Accounts')"
             />
           </div>
 
@@ -457,7 +455,7 @@ watch(searchQuery, (newQuery) => {
             color="secondary"
             prepend-icon="tabler-upload"
           >
-            Export
+            {{ $t('Export') }}
           </VBtn>
 
           <!-- 👉 Add user button -->
@@ -465,7 +463,7 @@ watch(searchQuery, (newQuery) => {
             prepend-icon="tabler-plus"
             @click="isAddNewUserDrawerVisible = true"
           >
-            Add New Account
+            {{ $t('Add New Account') }}
           </VBtn>
         </div>
       </VCardText>

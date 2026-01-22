@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { dashboardService } from '@/services/dashboardService'
 import { useTourStore } from '@/stores/tourStore'
 import CrmActivityTimeline from '@/views/dashboards/crm/CrmActivityTimeline.vue'
@@ -7,6 +8,7 @@ import CrmEarningReportsYearlyOverview from '@/views/dashboards/crm/CrmEarningRe
 import CrmRecentTransactions from '@/views/dashboards/crm/CrmRecentTransactions.vue'
 import CrmTopClients from '@/views/dashboards/crm/CrmTopClients.vue'
 
+const { t } = useI18n()
 const tourStore = useTourStore()
 
 const dashboardData = ref(null)
@@ -65,8 +67,8 @@ const widgetCards = computed(() => [
   {
     icon: 'tabler-receipt',
     color: 'primary',
-    title: 'Collections',
-    subTitle: 'This Month',
+    title: t('Collections'),
+    subTitle: t('This Month'),
     stat: formatNumber(widgets.value.collections?.currentValue),
     change: widgets.value.collections?.percentageChange
       ? `${widgets.value.collections.trend === 'up' ? '+' : '-'}${widgets.value.collections.percentageChange.toFixed(1)}%`
@@ -76,8 +78,8 @@ const widgetCards = computed(() => [
   {
     icon: 'tabler-arrow-up-right',
     color: 'success',
-    title: 'Disbursements',
-    subTitle: 'This Month',
+    title: t('Disbursements'),
+    subTitle: t('This Month'),
     stat: formatNumber(widgets.value.disbursements?.currentValue),
     change: widgets.value.disbursements?.percentageChange
       ? `${widgets.value.disbursements.trend === 'up' ? '+' : '-'}${widgets.value.disbursements.percentageChange.toFixed(1)}%`
@@ -87,8 +89,8 @@ const widgetCards = computed(() => [
   {
     icon: 'tabler-currency-dollar',
     color: 'info',
-    title: 'Total Collections',
-    subTitle: 'This Month',
+    title: t('Total Collections'),
+    subTitle: t('This Month'),
     stat: formatCurrency(widgets.value.totalCollections?.currentValue),
     change: widgets.value.totalCollections?.percentageChange
       ? `${widgets.value.totalCollections.trend === 'up' ? '+' : '-'}${widgets.value.totalCollections.percentageChange.toFixed(1)}%`
@@ -98,8 +100,8 @@ const widgetCards = computed(() => [
   {
     icon: 'tabler-credit-card',
     color: 'warning',
-    title: 'Total Disbursements',
-    subTitle: 'This Month',
+    title: t('Total Disbursements'),
+    subTitle: t('This Month'),
     stat: formatCurrency(widgets.value.totalDisbursements?.currentValue),
     change: widgets.value.totalDisbursements?.percentageChange
       ? `${widgets.value.totalDisbursements.trend === 'up' ? '+' : '-'}${widgets.value.totalDisbursements.percentageChange.toFixed(1)}%`
@@ -117,7 +119,7 @@ const widgetCards = computed(() => [
         <VCardText class="text-center pa-10">
           <VProgressCircular indeterminate color="primary" size="64" />
           <p class="mt-4 text-body-1">
-            Loading dashboard...
+            {{ $t('Loading dashboard...') }}
           </p>
         </VCardText>
       </VCard>
@@ -129,12 +131,12 @@ const widgetCards = computed(() => [
     <VCol cols="12">
       <VAlert type="error" variant="tonal">
         <template #title>
-          Error Loading Dashboard
+          {{ $t('Error Loading Dashboard') }}
         </template>
-        {{ error }}
+        {{ $t('Failed to load dashboard data. Please try again.') }}
         <template #append>
           <VBtn variant="text" color="error" @click="fetchDashboard">
-            Retry
+            {{ $t('Retry') }}
           </VBtn>
         </template>
       </VAlert>
@@ -194,7 +196,7 @@ const widgetCards = computed(() => [
       />
       <VCard v-else>
         <VCardText class="text-center pa-10">
-          No earning reports data available
+          {{ $t('No earning reports data available') }}
         </VCardText>
       </VCard>
     </VCol>
@@ -207,7 +209,7 @@ const widgetCards = computed(() => [
       />
       <VCard v-else>
         <VCardText class="text-center pa-10">
-          No top clients data available
+          {{ $t('No top clients data available') }}
         </VCardText>
       </VCard>
     </VCol>
@@ -225,7 +227,7 @@ const widgetCards = computed(() => [
       />
       <VCard v-else>
         <VCardText class="text-center pa-10">
-          No recent transactions
+          {{ $t('No recent transactions') }}
         </VCardText>
       </VCard>
     </VCol>

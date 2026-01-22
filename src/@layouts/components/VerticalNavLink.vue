@@ -22,41 +22,19 @@ const hideTitleAndBadge = configStore.isVerticalNavMini()
 
 // Check if item is a nav action item (has navAction but no to/href)
 const isNavActionItem = computed(() => {
-  const result = props.item.navAction && !props.item.to && !props.item.href
-  console.log('[VerticalNavLink] isNavActionItem computed:', {
-    title: props.item.title,
-    navAction: props.item.navAction,
-    to: props.item.to,
-    href: props.item.href,
-    result,
-  })
-  return result
+  return props.item.navAction && !props.item.to && !props.item.href
 })
 
 // Handle click for nav action items
 const handleClick = (event) => {
-  console.log('[VerticalNavLink] handleClick called:', {
-    title: props.item.title,
-    isNavActionItem: isNavActionItem.value,
-    navAction: props.item.navAction,
-  })
-
   if (isNavActionItem.value) {
-    console.log('[VerticalNavLink] Preventing default and handling action')
     event.preventDefault()
     event.stopPropagation()
 
     // Handle specific actions
     if (props.item.navAction === 'startTour') {
-      console.log('[VerticalNavLink] Starting tour...')
-      try {
-        const tourStore = useTourStore()
-        console.log('[VerticalNavLink] tourStore obtained:', tourStore)
-        tourStore.startTour()
-        console.log('[VerticalNavLink] startTour() called successfully')
-      } catch (error) {
-        console.error('[VerticalNavLink] Error starting tour:', error)
-      }
+      const tourStore = useTourStore()
+      tourStore.startTour()
     }
   }
 }

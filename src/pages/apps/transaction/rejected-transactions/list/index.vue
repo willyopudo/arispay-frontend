@@ -1,5 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import DateRangePicker from '@core/components/app-form-elements/DateRangepicker.vue'
+
+const { t } = useI18n()
 
 // 👉 Store
 const searchQuery = ref('')
@@ -57,74 +60,74 @@ const updateOptions = options => {
 }
 
 // Headers
-const headers = [
+const headers = computed(() => [
   {
-    title: 'Reference',
+    title: t('Reference'),
     key: 'reference',
   },
   {
-    title: 'Date',
+    title: t('Date'),
     key: 'transactionDate',
   },
   {
-    title: 'Bank',
+    title: t('Bank'),
     key: 'bank',
   },
   {
-    title: 'Amount',
+    title: t('Amount'),
     key: 'amount',
   },
   {
-    title: 'Account',
+    title: t('Account'),
     key: 'account',
   },
   {
-    title: 'Client ID',
+    title: t('Client ID'),
     key: 'clientId',
   },
   {
-    title: 'Trans Type',
+    title: t('Trans Type'),
     key: 'transType',
   },
   {
-    title: 'Actions',
+    title: t('Actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 // await fetchUsers()
 
 // 👉 search filters
-const roles = [
+const roles = computed(() => [
   {
-    title: 'Company Admin',
+    title: t('Company Admin'),
     value: 'ROLE_COMPANY_ADMIN',
   },
   {
-    title: 'Company User',
+    title: t('Company User'),
     value: 'ROLE_COMPANY_USER',
   },
   {
-    title: 'Super Admin',
+    title: t('Super Admin'),
     value: 'ROLE_ADMIN',
   }
-]
+])
 
-const status = [
+const status = computed(() => [
   {
-    title: 'Pending',
+    title: t('Pending'),
     value: 'pending',
   },
   {
-    title: 'Active',
+    title: t('Active'),
     value: 'active',
   },
   {
-    title: 'Inactive',
+    title: t('Inactive'),
     value: 'inactive',
   },
-]
+])
 
 const resolveUserRoleVariant = role => {
   const roleLowerCase = role.toLowerCase()
@@ -202,7 +205,7 @@ async function fetchSuccessTransactions() {
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error fetching transactions: ' + error.message)
+      useSweetAlert.errorMessage(t('Error fetching transactions') + ': ' + error.message)
       return
     }
 
@@ -217,7 +220,7 @@ async function fetchSuccessTransactions() {
     widgetData.value[2].value = numberFormatter(transactionSummary.value.third, true)
     widgetData.value[3].value = numberFormatter(transactionSummary.value.fourth, true)
 
-    useSweetAlert.toast("Transactions fetched successfully");
+    useSweetAlert.toast(t("Transactions fetched successfully"));
 
   } catch (error) {
     console.error(error)
@@ -285,7 +288,7 @@ const widgetData = ref([
                 <div class="d-flex justify-space-between">
                   <div class="d-flex flex-column gap-y-1">
                     <div class="text-body-1 text-high-emphasis">
-                      {{ data.title }}
+                      {{ $t(data.title) }}
                     </div>
                     <div class="d-flex gap-x-2 align-center">
                       <h4 class="text-h4">
@@ -296,7 +299,7 @@ const widgetData = ref([
                       </div>
                     </div>
                     <div class="text-sm">
-                      {{ data.desc }}
+                      {{ $t(data.desc) }}
                     </div>
                   </div>
                   <VAvatar :color="data.iconColor" variant="tonal" rounded size="42">
@@ -312,56 +315,56 @@ const widgetData = ref([
 
     <VCard class="mb-6">
       <VCardItem class="pb-4">
-        <VCardTitle>Filters</VCardTitle>
+        <VCardTitle>{{ $t('Filters') }}</VCardTitle>
       </VCardItem>
 
       <VCardText>
         <VRow>
           <!-- 👉 Date Range Picker -->
-          <VCol cols="12" md="3">      
-            <DateRangePicker v-model="dateRange" placeholder="Select Date Range" />
+          <VCol cols="12" md="3">
+            <DateRangePicker v-model="dateRange" :placeholder="$t('Select Date Range')" />
           </VCol>
 
           <!-- 👉 Select Bank -->
           <VCol cols="12" md="3">
-            <AppSelect 
-              v-model="selectedBank" 
-              placeholder="Select Bank" 
-              :items="bankList" 
+            <AppSelect
+              v-model="selectedBank"
+              :placeholder="$t('Select Bank')"
+              :items="bankList"
               clearable
-              clear-icon="tabler-x" 
+              clear-icon="tabler-x"
             />
           </VCol>
 
           <!-- 👉 Select Account -->
           <VCol cols="12" md="3">
-            <AppSelect 
+            <AppSelect
               v-model="selectedAccount"
-              placeholder="Select Account" 
-              :items="accountList" 
+              :placeholder="$t('Select Account')"
+              :items="accountList"
               clearable
-              clear-icon="tabler-x" 
+              clear-icon="tabler-x"
             />
           </VCol>
 
           <!-- 👉 Select Cr/Dr -->
           <VCol cols="12" md="2">
-            <AppSelect 
+            <AppSelect
               v-model="selectedCrDr"
-              placeholder="Select CR/DR"
+              :placeholder="$t('Select CR/DR')"
               :items="[
-                { title: 'Credit', value: 'C' },
-                { title: 'Debit', value: 'D' }
-              ]" 
+                { title: $t('Credit'), value: 'C' },
+                { title: $t('Debit'), value: 'D' }
+              ]"
               clearable
-              clear-icon="tabler-x" 
+              clear-icon="tabler-x"
             />
           </VCol>
 
           <!-- 👉 Filter Button -->
           <VCol cols="12" md="1" class="d-flex align-center">
             <VBtn @click="fetchSuccessTransactions">
-              Filter
+              {{ $t('Filter') }}
               <VIcon end icon="tabler-filter" />
             </VBtn>
           </VCol>
@@ -373,12 +376,12 @@ const widgetData = ref([
       <VCardText class="d-flex flex-wrap gap-4">
         <div class="me-3 d-flex gap-3">
           <AppSelect :model-value="itemsPerPage" :items="[
-            { value: 5, title: '5' },
-            { value: 10, title: '10' },
-            { value: 25, title: '25' },
-            { value: 50, title: '50' },
-            { value: 100, title: '100' },
-            { value: -1, title: 'All' },
+            { value: 5, title: $t('5') },
+            { value: 10, title: $t('10') },
+            { value: 25, title: $t('25') },
+            { value: 50, title: $t('50') },
+            { value: 100, title: $t('100') },
+            { value: -1, title: $t('All') },
           ]" style="inline-size: 6.25rem;" @update:model-value="itemsPerPage = parseInt($event, 10)" />
         </div>
         <VSpacer />
@@ -386,12 +389,12 @@ const widgetData = ref([
         <div class="app-user-search-filter d-flex align-center flex-wrap gap-4">
           <!-- 👉 Search  -->
           <div style="inline-size: 15.625rem;">
-            <AppTextField v-model="searchQuery" placeholder="Search Transactions" @keyup.enter="fetchSuccessTransactions"/>
+            <AppTextField v-model="searchQuery" :placeholder="$t('Search Transactions')" @keyup.enter="fetchSuccessTransactions"/>
           </div>
 
           <!-- 👉 Export button -->
           <VBtn variant="tonal" color="secondary" prepend-icon="tabler-upload">
-            Export
+            {{ $t('Export') }}
           </VBtn>
         </div>
       </VCardText>

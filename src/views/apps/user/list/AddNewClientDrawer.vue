@@ -2,6 +2,9 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useToast } from 'vue-toastification';
 import { useCookies } from 'vue3-cookies';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   isDrawerOpen: {
@@ -49,6 +52,21 @@ const town = ref('')
 const role = ref()
 const identifierType = ref()
 const status = ref()
+
+const identifierTypeItems = computed(() => [
+  { title: t('Invoice Number'), value: 'INVOICE_NUMBER' },
+  { title: t('Registration Number'), value: 'REG_NUMBER' },
+  { title: t('Bill Number'), value: 'BILL_NUMBER' },
+  { title: t('ID Number'), value: 'ID_NUMBER' },
+  { title: t('Phone Number'), value: 'MSSIDN' },
+  { title: t('Account Number'), value: 'ACCOUNT_NUMBER' },
+])
+
+const statusItems = computed(() => [
+  { title: t('Active'), value: 'active' },
+  { title: t('Inactive'), value: 'inactive' },
+  { title: t('Pending'), value: 'pending' },
+])
 
 // 👉 drawer close
 const closeNavigationDrawer = () => {
@@ -99,7 +117,7 @@ const handleDrawerModelValueUpdate = val => {
   >
     <!-- 👉 Title -->
     <AppDrawerHeaderSection
-      title="Add New Client"
+      :title="$t('Add New Client')"
       @cancel="closeNavigationDrawer"
     />
 
@@ -119,7 +137,7 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <AppTextField
                   v-model="clientId"
-                  label="Client ID"
+                  :label="$t('Client ID')"
                   placeholder="MATA000001"
                 />
                 <VTooltip
@@ -127,7 +145,7 @@ const handleDrawerModelValueUpdate = val => {
                 location="left"
                 max-width="300"
               >
-                Enter your client's unique identifier. If you don't have one, leave it blank and the system will generate one for you.
+                {{ $t("Enter your client's unique identifier. If you don't have one, leave it blank and the system will generate one for you.") }}
               </VTooltip>
               </VCol>
               <!-- 👉 Last name -->
@@ -135,7 +153,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="clientName"
                   :rules="[requiredValidator]"
-                  label="Client's Name"
+                  :label="$t('Client\'s Name')"
                   placeholder="John Doe"
                 />
               </VCol>
@@ -145,7 +163,7 @@ const handleDrawerModelValueUpdate = val => {
                 <AppTextField
                   v-model="clientEmail"
                   :rules="[requiredValidator, emailValidator]"
-                  label="Email"
+                  :label="$t('Email')"
                   placeholder="johndoe@email.com"
                 />
               </VCol>
@@ -156,7 +174,7 @@ const handleDrawerModelValueUpdate = val => {
                   v-model="clientPhone"
                   type="number"
                   :rules="[requiredValidator]"
-                  label="Phone Number"
+                  :label="$t('Phone Number')"
                   placeholder="+254-711-222-333"
                 />
               </VCol>
@@ -165,10 +183,10 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <AppSelect
                   v-model="identifierType"
-                  label="Select Identifier Type"
-                  placeholder="Select Plan"
+                  :label="$t('Select Identifier Type')"
+                  :placeholder="$t('Select Identifier Type')"
                   :rules="[requiredValidator]"
-                  :items="[{ title: 'Invoice Number', value: 'INVOICE_NUMBER' },{ title: 'Registration Number', value: 'REG_NUMBER' },{ title: 'Bill Number', value: 'BILL_NUMBER' },{ title: 'ID Number', value: 'ID_NUMBER' }, { title: 'Phone Number', value: 'MSSIDN' }, { title: 'Account Number', value: 'ACCOUNT_NUMBER' }]"
+                  :items="identifierTypeItems"
                 />
               </VCol>
 
@@ -176,10 +194,10 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <AppSelect
                   v-model="status"
-                  label="Select Status"
-                  placeholder="Select Status"
+                  :label="$t('Select Status')"
+                  :placeholder="$t('Select Status')"
                   :rules="[requiredValidator]"
-                  :items="[{ title: 'Active', value: 'active', }, { title: 'Inactive', value: 'inactive', }, { title: 'Pending', value: 'pending', }]"
+                  :items="statusItems"
                 />
               </VCol>
 
@@ -189,7 +207,7 @@ const handleDrawerModelValueUpdate = val => {
                   type="submit"
                   class="me-3"
                 >
-                  Submit
+                  {{ $t('Submit') }}
                 </VBtn>
                 <VBtn
                   type="reset"
@@ -197,7 +215,7 @@ const handleDrawerModelValueUpdate = val => {
                   color="error"
                   @click="closeNavigationDrawer"
                 >
-                  Cancel
+                  {{ $t('Cancel') }}
                 </VBtn>
               </VCol>
             </VRow>

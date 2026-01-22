@@ -1,6 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import AddNewClientDrawer from '@/views/apps/user/list/AddNewClientDrawer.vue'
 
+const { t } = useI18n()
 
 // 👉 Store
 const searchQuery = ref('')
@@ -39,38 +41,38 @@ const clientSummary = ref({
 
 
 // Headers
-const headers = [
+const headers = computed(() => [
   {
-    title: 'Client ID',
+    title: t('Client ID'),
     key: 'clientId',
   },
   {
-    title: 'Client Name',
+    title: t('Client Name'),
     key: 'clientName',
   },
   {
-    title: 'Identifier Type',
+    title: t('Identifier Type'),
     key: 'identifierType',
   },
   {
-    title: 'Company',
+    title: t('Company'),
     key: 'company',
     sortable: false,
   },
   {
-    title: 'Status',
+    title: t('Status'),
     key: 'status',
   },
   {
-    title: 'Created Date',
+    title: t('Created Date'),
     key: 'createdDate',
   },
   {
-    title: 'Actions',
+    title: t('Actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 async function fetchClients(){
   try {
@@ -90,15 +92,14 @@ async function fetchClients(){
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error fetching clients: ' + error.message)
+      useSweetAlert.errorMessage(t('Error fetching clients') + ': ' + error.message)
       return
     }
-    
 
     fetchedClients.value = clientsList.content
     totalFetchedClients.value = clientsList.totalElements
 
-    useSweetAlert.toast("Clients fetched successfully");
+    useSweetAlert.toast(t("Clients fetched successfully"));
 
   } catch (error) {
     console.error(error)
@@ -111,47 +112,47 @@ const totalClients = computed(() => totalFetchedClients.value)
 
 // 👉 search filters
 
-const status = [
+const status = computed(() => [
   {
-    title: 'Pending',
+    title: t('Pending'),
     value: 'pending',
   },
   {
-    title: 'Active',
+    title: t('Active'),
     value: 'active',
   },
   {
-    title: 'Inactive',
+    title: t('Inactive'),
     value: 'inactive',
   },
-]
+])
 
-const identifierTypes = [
+const identifierTypes = computed(() => [
   {
-    title: 'ID Number',
+    title: t('ID Number'),
     value: 'ID_NUMBER',
   },
   {
-    title: 'Phone Number',
+    title: t('Phone Number'),
     value: 'MSSIDN',
   },
   {
-    title: 'Account Number',
+    title: t('Account Number'),
     value: 'ACCOUNT_NUMBER',
   },
   {
-    title: 'Bill Number',
+    title: t('Bill Number'),
     value: 'BILL_NUMBER',
   },
   {
-    title: 'Registration Number',
+    title: t('Registration Number'),
     value: 'REG_NUMBER',
   },
   {
-    title: 'Invoice Number',
+    title: t('Invoice Number'),
     value: 'INVOICE_NUMBER',
   },
-]
+])
 
 
 const resolveClientStatusVariant = stat => {
@@ -183,12 +184,12 @@ const addNewClient = async clientData => {
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error during client creation: ' + error.message)
+      useSweetAlert.errorMessage(t('Error during client creation') + ': ' + error.message)
       return
     }
-    
+
     fetchClients()
-    useSweetAlert.toast("Client created successfully");
+    useSweetAlert.toast(t("Client created successfully"));
  
   } catch (error) {
     console.error(error)
@@ -209,18 +210,18 @@ const deleteClient = async id => {
     })
     
     if (error && error.response) {
-      useSweetAlert.errorMessage('An error occured: ' + error.response.data.message)
+      useSweetAlert.errorMessage(t('An error occurred') + ': ' + error.response.data.message)
       return
     }
-    
-    useSweetAlert.successMessage('Client deleted successfully')
+
+    useSweetAlert.successMessage(t('Client deleted successfully'))
 
     // Refetch User
     setTimeout(fetchClients, 3000);
 
   } catch (error) {
     console.error(error)
-    useSweetAlert.errorMessage('An error occured while deleting client')
+    useSweetAlert.errorMessage(t('An error occurred while deleting client'))
   }
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
@@ -254,13 +255,13 @@ const updateClient = async clientData => {
       }
     })
     if (error) {
-      useSweetAlert.errorMessage('Error during client update: ' + error.message)
+      useSweetAlert.errorMessage(t('Error during client update') + ': ' + error.message)
       return
     }
-    
+
      // Refetch Client
     fetchClients()
-    useSweetAlert.toast("Client updated successfully");
+    useSweetAlert.toast(t("Client updated successfully"));
  
   } catch (error) {
     console.error(error)
@@ -279,7 +280,7 @@ watch(searchQuery, (newQuery) => {
   <section>
     <VCard class="mb-6">
       <VCardItem class="pb-4">
-        <VCardTitle>Filters</VCardTitle>
+        <VCardTitle>{{ $t('Filters') }}</VCardTitle>
       </VCardItem>
 
       <VCardText>
@@ -291,7 +292,7 @@ watch(searchQuery, (newQuery) => {
           >
             <AppSelect
               v-model="selectedIdentifierType"
-              placeholder="Select Identifier Type"
+              :placeholder="$t('Select Identifier Type')"
               :items="identifierTypes"
               clearable
               clear-icon="tabler-x"
@@ -317,7 +318,7 @@ watch(searchQuery, (newQuery) => {
           >
             <AppSelect
               v-model="selectedStatus"
-              placeholder="Select Status"
+              :placeholder="$t('Select Status')"
               :items="status"
               clearable
               clear-icon="tabler-x"
@@ -328,11 +329,11 @@ watch(searchQuery, (newQuery) => {
             sm="4"
           >
           <VBtn class="ml-4" @click="fetchClients">
-      Filter
+      {{ $t('Filter') }}
       <VIcon end icon="tabler-filter" />
     </VBtn>
         </VCol>
-          
+
         </VRow>
       </VCardText>
 
@@ -343,12 +344,12 @@ watch(searchQuery, (newQuery) => {
           <AppSelect
             :model-value="itemsPerPage"
             :items="[
-              { value: 5, title: '5' },
-              { value: 10, title: '10' },
-              { value: 25, title: '25' },
-              { value: 50, title: '50' },
-              { value: 100, title: '100' },
-              { value: -1, title: 'All' },
+              { value: 5, title: $t('5') },
+              { value: 10, title: $t('10') },
+              { value: 25, title: $t('25') },
+              { value: 50, title: $t('50') },
+              { value: 100, title: $t('100') },
+              { value: -1, title: $t('All') },
             ]"
             style="inline-size: 6.25rem;"
             @update:model-value="itemsPerPage = parseInt($event, 10)"
@@ -361,7 +362,7 @@ watch(searchQuery, (newQuery) => {
           <div style="inline-size: 15.625rem;">
             <AppTextField
               v-model="searchQuery"
-              placeholder="Search Client"
+              :placeholder="$t('Search Client')"
             />
           </div>
 
@@ -371,7 +372,7 @@ watch(searchQuery, (newQuery) => {
             color="secondary"
             prepend-icon="tabler-upload"
           >
-            Export
+            {{ $t('Export') }}
           </VBtn>
 
           <!-- 👉 Add user button -->
@@ -379,7 +380,7 @@ watch(searchQuery, (newQuery) => {
             prepend-icon="tabler-plus"
             @click="isAddNewClientDrawerVisible = true"
           >
-            Add New Client
+            {{ $t('Add New Client') }}
           </VBtn>
         </div>
       </VCardText>

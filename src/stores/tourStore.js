@@ -11,14 +11,8 @@ export const useTourStore = defineStore('tour', () => {
 
   // Actions
   function startTour() {
-    console.log('[tourStore] startTour() called')
-    try {
-      tour.start()
-      console.log('[tourStore] tour.start() completed')
-      isActive.value = true
-    } catch (error) {
-      console.error('[tourStore] Error in startTour:', error)
-    }
+    tour.start()
+    isActive.value = true
   }
 
   function stopTour() {

@@ -4,11 +4,11 @@ export default [
     icon: { icon: 'tabler-smart-home' },
     children: [
       {
-        title: 'Company Dasboard',
+        title: 'Company Dashboard',
         to: 'dashboards-crm',
       }
-      
+
     ]
-  
+
   }
 ]

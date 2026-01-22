@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   transactions: {
@@ -37,7 +40,7 @@ const getPaymentModeColor = paymentMode => {
 }
 
 const formatDate = dateString => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return t('N/A')
 
   const date = new Date(dateString)
   const options = { year: 'numeric', month: 'short', day: 'numeric' }
@@ -56,19 +59,19 @@ const formatAmount = amount => {
 }
 
 const resolveTransactionType = crDrIndicator => {
-  if (crDrIndicator === 'Credit') return { label: 'Credit', color: 'success' }
-  if (crDrIndicator === 'Debit') return { label: 'Debit', color: 'error' }
+  if (crDrIndicator === 'Credit') return { label: t('Credit'), color: 'success' }
+  if (crDrIndicator === 'Debit') return { label: t('Debit'), color: 'error' }
 
-  return { label: 'Unknown', color: 'secondary' }
+  return { label: t('Unknown'), color: 'secondary' }
 }
 
 const displayTransactions = computed(() => {
   return props.transactions.map(txn => ({
-    paymentMode: txn.paymentMode || 'Unknown',
+    paymentMode: txn.paymentMode || t('Unknown'),
     icon: getPaymentModeIcon(txn.paymentMode),
     iconColor: getPaymentModeColor(txn.paymentMode),
-    bankName: txn.bankName || 'N/A',
-    clientName: txn.clientName || 'N/A',
+    bankName: txn.bankName || t('N/A'),
+    clientName: txn.clientName || t('N/A'),
     date: formatDate(txn.transDate),
     type: resolveTransactionType(txn.crDrIndicator),
     amount: formatAmount(txn.tranAmount),
@@ -76,22 +79,22 @@ const displayTransactions = computed(() => {
   }))
 })
 
-const moreList = [
+const moreList = computed(() => [
   {
-    title: 'Refresh',
+    title: t('Refresh'),
     value: 'refresh',
   },
   {
-    title: 'View All',
+    title: t('View All'),
     value: 'View All',
   },
-]
+])
 
 const getPaddingStyle = index => index ? 'padding-block-end: 1.25rem;' : 'padding-block: 1.25rem;'
 </script>
 
 <template>
-  <VCard title="Latest Transactions">
+  <VCard :title="$t('Latest Transactions')">
     <template #append>
       <div class="me-n2">
         <MoreBtn
@@ -111,19 +114,19 @@ const getPaddingStyle = index => index ? 'padding-block-end: 1.25rem;' : 'paddin
         class="mb-4"
       />
       <p class="text-body-1 text-medium-emphasis">
-        No recent transactions
+        {{ $t('No recent transactions') }}
       </p>
     </div>
 
     <VTable v-else class="text-no-wrap transaction-table">
       <thead>
         <tr>
-          <th>PAYMENT METHOD</th>
-          <th>BANK</th>
-          <th>DATE</th>
-          <th>TYPE</th>
+          <th>{{ $t('PAYMENT METHOD') }}</th>
+          <th>{{ $t('BANK') }}</th>
+          <th>{{ $t('DATE') }}</th>
+          <th>{{ $t('TYPE') }}</th>
           <th class="text-end">
-            AMOUNT
+            {{ $t('AMOUNT') }}
           </th>
         </tr>
       </thead>
