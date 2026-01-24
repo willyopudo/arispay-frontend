@@ -357,6 +357,7 @@
     "customUseApi": true,
     "useSweetAlert": true,
     "axiosApiCall": true,
-    "useActivityWebSocket": true
+    "useActivityWebSocket": true,
+    "useUserPreferences": true
   }
 }

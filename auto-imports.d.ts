@@ -158,6 +158,7 @@ declare global {
   const useAbility: typeof import('./src/plugins/casl/composables/useAbility.js')['useAbility']
   const useAbs: typeof import('@vueuse/math')['useAbs']
   const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
+  const useActivityWebSocket: typeof import('./src/composables/useActivityWebSocket.js')['useActivityWebSocket']
   const useAnimate: typeof import('@vueuse/core')['useAnimate']
   const useApi: typeof import('./src/composables/useApi.js')['default']
   const useArrayDifference: typeof import('@vueuse/core')['useArrayDifference']
@@ -323,6 +324,7 @@ declare global {
   const useTrunc: typeof import('@vueuse/math')['useTrunc']
   const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
   const useUserMedia: typeof import('@vueuse/core')['useUserMedia']
+  const useUserPreferences: typeof import('./src/@core/composable/useUserPreferences.js')['useUserPreferences']
   const useVModel: typeof import('@vueuse/core')['useVModel']
   const useVModels: typeof import('@vueuse/core')['useVModels']
   const useVibrate: typeof import('@vueuse/core')['useVibrate']
@@ -516,6 +518,7 @@ declare module 'vue' {
     readonly useAbility: UnwrapRef<typeof import('./src/plugins/casl/composables/useAbility.js')['useAbility']>
     readonly useAbs: UnwrapRef<typeof import('@vueuse/math')['useAbs']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
+    readonly useActivityWebSocket: UnwrapRef<typeof import('./src/composables/useActivityWebSocket.js')['useActivityWebSocket']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useApi: UnwrapRef<typeof import('./src/composables/useApi.js')['default']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
@@ -681,6 +684,7 @@ declare module 'vue' {
     readonly useTrunc: UnwrapRef<typeof import('@vueuse/math')['useTrunc']>
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>
+    readonly useUserPreferences: UnwrapRef<typeof import('./src/@core/composable/useUserPreferences.js')['useUserPreferences']>
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>
     readonly useVModels: UnwrapRef<typeof import('@vueuse/core')['useVModels']>
     readonly useVibrate: UnwrapRef<typeof import('@vueuse/core')['useVibrate']>

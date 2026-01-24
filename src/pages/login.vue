@@ -51,6 +51,8 @@ const credentials = ref({
 
 const rememberMe = ref(false)
 
+const { saveUserPreferences } = useUserPreferences()
+
 const login = async () => {
 
   //Use axios
@@ -76,7 +78,7 @@ const login = async () => {
       return
     }
     
-    const { access_token, refresh_token, userDetails } = loginData
+    const { access_token, refresh_token, userDetails, userPreferences } = loginData
     userDetails.avatar = `${import.meta.env.BASE_URL ?? '/'}images/avatars/` + userDetails.avatar
     const userAbilityRules = [
         {
@@ -91,6 +93,12 @@ const login = async () => {
     useCookie('userAbilityRules').value = userAbilityRules
     ability.update(userAbilityRules)
     useCookie('userData').value = userDetails
+
+    // ℹ️ Load and apply user preferences (theme customizations, language, etc.)
+    if (userPreferences) {
+      saveUserPreferences(userPreferences)
+    }
+
     // useCookie('accessToken').value = accessToken
     await nextTick(() => {
       router.replace(route.query.to ? String(route.query.to) : '/dashboards/crm')

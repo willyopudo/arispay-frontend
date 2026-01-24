@@ -34,6 +34,7 @@ import wideSvg from '@images/customizer-icons/wide-light.svg'
 const isNavDrawerOpen = ref(false)
 const configStore = useConfigStore()
 const vuetifyTheme = useTheme()
+const isSavingPreferences = ref(false)
 
 const colors = [
   {
@@ -250,6 +251,61 @@ const resetCustomizer = async () => {
     await nextTick()
     isCookieHasAnyValue.value = false
     customPrimaryColor.value = '#ffffff'
+  }
+}
+
+const saveUserPreferences = async () => {
+  isSavingPreferences.value = true
+  try {
+    // Build the preferences payload matching the user_preferences structure
+    const preferencesPayload = {
+      themeCustomizations: {
+        primaryColor: vuetifyTheme.themes.value.light.colors.primary,
+        fontSize: configStore.fontSize,
+        theme: configStore.theme,
+        skin: configStore.skin,
+        contentWidth: configStore.appContentWidth,
+        navLayout: configStore.isVerticalNavCollapsed ? 'collapsed' : configStore.appContentLayoutNav,
+        navDarkMode: configStore.isVerticalNavSemiDark,
+        rtl: configStore.isAppRTL,
+      },
+      notificationPreferences: useCookie('notificationPreferences').value 
+        ? JSON.parse(useCookie('notificationPreferences').value)
+        : { email: true, push: true, sms: false, frequency: 'instant' },
+      language: useCookie('language').value || 'en',
+      timezone: useCookie('timezone').value || 'EAT',
+      currency: useCookie('currency').value || 'KES',
+      dateFormat: useCookie('dateFormat').value || 'DD/MM/YYYY',
+      timeFormat: useCookie('timeFormat').value || '24h',
+      twoFactorEnabled: useCookie('twoFactorEnabled').value || false,
+      emailNotificationsEnabled: useCookie('emailNotificationsEnabled').value !== undefined 
+        ? useCookie('emailNotificationsEnabled').value 
+        : true,
+      customSettings: null,
+    }
+
+    const {
+      data: responseData,
+      error,
+    } = await axiosApiCall('/api/v1/user-preferences', {
+      data: preferencesPayload,
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (error) {
+      useSweetAlert.errorMessage('Failed to save preferences: ' + error.message)
+      return
+    }
+
+    useSweetAlert.successMessage('Preferences saved successfully!')
+  } catch (err) {
+    console.error('Error saving preferences:', err)
+    useSweetAlert.errorMessage('An error occurred while saving preferences')
+  } finally {
+    isSavingPreferences.value = false
   }
 }
 </script>
@@ -543,6 +599,27 @@ const resetCustomizer = async () => {
         </CustomizerSection>
         <!-- !SECTION -->
       </PerfectScrollbar>
+
+      <!-- 👉 Footer with Save Button -->
+      <VDivider />
+      <div class="d-flex align-center justify-space-between gap-2 pa-4">
+        <VBtn
+          color="error"
+          variant="tonal"
+          @click="resetCustomizer"
+          :disabled="!isCookieHasAnyValue || isSavingPreferences"
+        >
+          Reset
+        </VBtn>
+        <VBtn
+          color="success"
+          @click="saveUserPreferences"
+          :loading="isSavingPreferences"
+          :disabled="!isCookieHasAnyValue"
+        >
+          Save Changes
+        </VBtn>
+      </div>
     </VNavigationDrawer>
   </div>
 </template>

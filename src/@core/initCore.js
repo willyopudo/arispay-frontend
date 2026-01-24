@@ -1,6 +1,7 @@
 import { useStorage } from '@vueuse/core'
 import { useTheme } from 'vuetify'
 import { useConfigStore } from '@core/stores/config'
+import { useUserPreferences } from '@core/composable/useUserPreferences'
 import { cookieRef, namespaceConfig } from '@layouts/stores/config'
 import { themeConfig } from '@themeConfig'
 
@@ -69,9 +70,22 @@ const _syncInitialLoaderTheme = () => {
   }, { immediate: true })
 }
 
+const _loadUserPreferences = () => {
+  const { loadAndApplyUserPreferences } = useUserPreferences()
+
+  // ℹ️ Load user preferences after app initialization
+  // This should run after user is authenticated and preferences are available in cookies
+  nextTick(() => {
+    loadAndApplyUserPreferences()
+  })
+}
+
 const initCore = () => {
   _syncInitialLoaderTheme()
   _handleSkinChanges()
+
+  // ℹ️ Load user preferences from cookies (theme customizations, language, etc.)
+  _loadUserPreferences()
 
   // ℹ️ We don't want to trigger i18n in SK
   if (themeConfig.app.i18n.enable)
