@@ -52,6 +52,7 @@ declare module 'vue-router/auto-routes' {
     'apps-transaction-transaction-query': RouteRecordInfo<'apps-transaction-transaction-query', '/apps/transaction/transaction-query', Record<never, never>, Record<never, never>>,
     'apps-user-list': RouteRecordInfo<'apps-user-list', '/apps/user/list', Record<never, never>, Record<never, never>>,
     'apps-user-view-id': RouteRecordInfo<'apps-user-view-id', '/apps/user/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    'apps-userprefs-list': RouteRecordInfo<'apps-userprefs-list', '/apps/userprefs/list', Record<never, never>, Record<never, never>>,
     'apps-email-filter': RouteRecordInfo<'apps-email-filter', '/apps/email/:filter', { filter: ParamValue<true> }, { filter: ParamValue<false> }>,
     'apps-email-label': RouteRecordInfo<'apps-email-label', '/apps/email/:label', { label: ParamValue<true> }, { label: ParamValue<false> }>,
     'charts-apex-chart': RouteRecordInfo<'charts-apex-chart', '/charts/apex-chart', Record<never, never>, Record<never, never>>,

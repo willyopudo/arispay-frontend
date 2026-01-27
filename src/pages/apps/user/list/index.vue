@@ -179,7 +179,7 @@ async function fetchUsers(){
       data: usersList,
       error,
       response
-    } = await axiosApiCall('/user', {
+    } = await axiosApiCall('/users', {
       params: {
         page: page.value,
         itemsPerPage: itemsPerPage.value,
@@ -215,7 +215,7 @@ const users = computed(() => fetchedUsers.value || []);
 const totalUsers = computed(() => totalFetchedUsers.value);
 
 const addNewUser = async userData => {
-  await $api('/apps/users', {
+  await $api('/users', {
     method: 'POST',
     body: userData,
   })
@@ -226,7 +226,7 @@ const addNewUser = async userData => {
 
 const updateUser = async userData => {
   console.log(JSON.stringify(userData))
-  await customUseApi(`/user/${userData.id}`, {
+  await customUseApi(`/users/${userData.id}`, {
     method: 'PUT',
     body: JSON.stringify(userData),
     headers: {"Content-Type": 'application/json'}
@@ -244,7 +244,7 @@ const deleteUser = async id => {
       data,
       error,
       resp: status
-    } = await axiosApiCall(`/user/${id}`, {
+    } = await axiosApiCall(`/users/${id}`, {
     method: 'DELETE',
   
     })

@@ -270,7 +270,9 @@ const saveUserPreferences = async () => {
         rtl: configStore.isAppRTL,
       },
       notificationPreferences: useCookie('notificationPreferences').value 
-        ? JSON.parse(useCookie('notificationPreferences').value)
+        ? (typeof useCookie('notificationPreferences').value === 'string' 
+          ? JSON.parse(useCookie('notificationPreferences').value)
+          : useCookie('notificationPreferences').value)
         : { email: true, push: true, sms: false, frequency: 'instant' },
       language: useCookie('language').value || 'en',
       timezone: useCookie('timezone').value || 'EAT',
@@ -287,7 +289,7 @@ const saveUserPreferences = async () => {
     const {
       data: responseData,
       error,
-    } = await axiosApiCall('/api/v1/user-preferences', {
+    } = await axiosApiCall('/user-preferences', {
       data: preferencesPayload,
       method: 'PUT',
       headers: {
@@ -296,14 +298,14 @@ const saveUserPreferences = async () => {
     })
 
     if (error) {
-      useSweetAlert.errorMessage('Failed to save preferences: ' + error.message)
+      useSweetAlert.toast('Failed to save preferences: ' + error.message, 'error')
       return
     }
 
-    useSweetAlert.successMessage('Preferences saved successfully!')
+    useSweetAlert.toast('Preferences saved successfully!')
   } catch (err) {
     console.error('Error saving preferences:', err)
-    useSweetAlert.errorMessage('An error occurred while saving preferences')
+    useSweetAlert.toast('An error occurred while saving preferences', 'error')
   } finally {
     isSavingPreferences.value = false
   }

@@ -8,6 +8,6 @@ export default [
   {
     title: "User Preferences",
     icon: { icon: "tabler-mood-cog" },
-    to: "forms-form-layouts",
+    to: "apps-userprefs-list",
   },
 ];

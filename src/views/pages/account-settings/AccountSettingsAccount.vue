@@ -1,31 +1,140 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import avatar1 from '@images/avatars/avatar-1.png'
 
 const accountData = {
+  id: null,
   avatarImg: avatar1,
-  firstName: 'john',
-  lastName: 'Doe',
-  email: 'johnDoe@example.com',
-  org: 'Pixinvent',
-  phone: '+1 (917) 543-9876',
-  address: '123 Main St, New York, NY 10001',
-  state: 'New York',
-  zip: '10001',
-  country: 'USA',
-  language: 'English',
-  timezone: '(GMT-11:00) International Date Line West',
-  currency: 'USD',
+  firstName: '',
+  lastName: '',
+  email: '',
+  phoneNumber: '',
+  address: '',
+  town: '',
+  zipCode: '',
+  role: '',
+  status: '',
+  currentPlan: '',
+  userCompanies: [],
 }
 
 const refInputEl = ref()
 const isConfirmDialogOpen = ref(false)
 const accountDataLocal = ref(structuredClone(accountData))
 const isAccountDeactivated = ref(false)
+const isLoading = ref(false)
+const isSaving = ref(false)
 const validateAccountDeactivation = [v => !!v || 'Please confirm account deactivation']
+
+// Compute role without ROLE_ prefix
+const displayRole = computed(() => {
+  return accountDataLocal.value.role?.replace('ROLE_', '') || ''
+})
+
+// Fetch user data
+const fetchUserData = async () => {
+  try {
+    isLoading.value = true
+    
+    // Get user data from cookie (saved during login)
+    const userData = useCookie('userData').value
+    
+    if (!userData || !userData.id) {
+      console.error('User data not found in storage')
+      return
+    }
+
+    const { data, error } = await axiosApiCall(`/users/${userData.id}`, {
+      method: 'GET',
+    })
+
+    if (error) {
+      useSweetAlert.errorMessage('Failed to fetch user data: ' + error.message)
+      return
+    }
+
+    if (data) {
+      accountData.id = data.id
+      accountData.firstName = data.firstName || ''
+      accountData.lastName = data.lastName || ''
+      accountData.email = data.email || ''
+      accountData.phoneNumber = data.phoneNumber || ''
+      accountData.address = data.address || ''
+      accountData.town = data.town || ''
+      accountData.zipCode = data.zipCode || ''
+      accountData.role = data.role || ''
+      accountData.status = data.status || ''
+      accountData.currentPlan = data.currentPlan || ''
+      accountData.userCompanies = data.userCompanies || []
+      
+      accountDataLocal.value = structuredClone(accountData)
+    }
+  } catch (err) {
+    useSweetAlert.toast('An error occurred while fetching user data' + err, 'error')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Update user data
+const updateUserData = async () => {
+  try {
+    isSaving.value = true
+    
+    // Get user data from cookie (saved during login)
+    const userData = useCookie('userData').value
+    
+    if (!userData || !userData.id) {
+      console.error('User data not found in storage')
+      return
+    }
+
+    const updatePayload = {
+      firstName: accountDataLocal.value.firstName,
+      lastName: accountDataLocal.value.lastName,
+      email: accountDataLocal.value.email,
+      phoneNumber: accountDataLocal.value.phoneNumber,
+      address: accountDataLocal.value.address,
+      town: accountDataLocal.value.town,
+      zipCode: accountDataLocal.value.zipCode,
+    }
+
+    const { data, error } = await axiosApiCall(`/users/${userData.id}`, {
+      method: 'PUT',
+      data: updatePayload,
+    })
+
+    if (error) {
+      useSweetAlert.errorMessage('Failed to update user data: ' + error.message)
+      return
+    }
+
+    if (data) {
+      accountData.firstName = data.firstName || accountDataLocal.value.firstName
+      accountData.lastName = data.lastName || accountDataLocal.value.lastName
+      accountData.email = data.email || accountDataLocal.value.email
+      accountData.phoneNumber = data.phoneNumber || accountDataLocal.value.phoneNumber
+      accountData.address = data.address || accountDataLocal.value.address
+      accountData.town = data.town || accountDataLocal.value.town
+      accountData.zipCode = data.zipCode || accountDataLocal.value.zipCode
+    }
+  } catch (err) {
+    useSweetAlert.toast('An error occurred while updating user data', 'error')
+  } finally {
+    isSaving.value = false
+  }
+}
+
 
 const resetForm = () => {
   accountDataLocal.value = structuredClone(accountData)
 }
+
+// Fetch user data on component mount
+onMounted(() => {
+  fetchUserData()
+})
+
 
 const changeAvatar = file => {
   const fileReader = new FileReader()
@@ -43,121 +152,75 @@ const changeAvatar = file => {
 const resetAvatar = () => {
   accountDataLocal.value.avatarImg = accountData.avatarImg
 }
-
-const timezones = [
-  '(GMT-11:00) International Date Line West',
-  '(GMT-11:00) Midway Island',
-  '(GMT-10:00) Hawaii',
-  '(GMT-09:00) Alaska',
-  '(GMT-08:00) Pacific Time (US & Canada)',
-  '(GMT-08:00) Tijuana',
-  '(GMT-07:00) Arizona',
-  '(GMT-07:00) Chihuahua',
-  '(GMT-07:00) La Paz',
-  '(GMT-07:00) Mazatlan',
-  '(GMT-07:00) Mountain Time (US & Canada)',
-  '(GMT-06:00) Central America',
-  '(GMT-06:00) Central Time (US & Canada)',
-  '(GMT-06:00) Guadalajara',
-  '(GMT-06:00) Mexico City',
-  '(GMT-06:00) Monterrey',
-  '(GMT-06:00) Saskatchewan',
-  '(GMT-05:00) Bogota',
-  '(GMT-05:00) Eastern Time (US & Canada)',
-  '(GMT-05:00) Indiana (East)',
-  '(GMT-05:00) Lima',
-  '(GMT-05:00) Quito',
-  '(GMT-04:00) Atlantic Time (Canada)',
-  '(GMT-04:00) Caracas',
-  '(GMT-04:00) La Paz',
-  '(GMT-04:00) Santiago',
-  '(GMT-03:30) Newfoundland',
-  '(GMT-03:00) Brasilia',
-  '(GMT-03:00) Buenos Aires',
-  '(GMT-03:00) Georgetown',
-  '(GMT-03:00) Greenland',
-  '(GMT-02:00) Mid-Atlantic',
-  '(GMT-01:00) Azores',
-  '(GMT-01:00) Cape Verde Is.',
-  '(GMT+00:00) Casablanca',
-  '(GMT+00:00) Dublin',
-  '(GMT+00:00) Edinburgh',
-  '(GMT+00:00) Lisbon',
-  '(GMT+00:00) London',
-]
-
-const currencies = [
-  'USD',
-  'EUR',
-  'GBP',
-  'AUD',
-  'BRL',
-  'CAD',
-  'CNY',
-  'CZK',
-  'DKK',
-  'HKD',
-  'HUF',
-  'INR',
-]
 </script>
 
 <template>
   <VRow>
     <VCol cols="12">
       <VCard>
-        <VCardText class="d-flex">
-          <!-- 👉 Avatar -->
-          <VAvatar
-            rounded
-            size="100"
-            class="me-6"
-            :image="accountDataLocal.avatarImg"
-          />
+        <VCardText class="d-flex justify-space-between align-center">
+          <!-- 👉 Left Section: Avatar and Upload -->
+          <div class="d-flex">
+            <!-- 👉 Avatar -->
+            <VAvatar
+              rounded
+              size="100"
+              class="me-6"
+              :image="accountDataLocal.avatarImg"
+            />
 
-          <!-- 👉 Upload Photo -->
-          <form class="d-flex flex-column justify-center gap-4">
-            <div class="d-flex flex-wrap gap-4">
-              <VBtn
-                color="primary"
-                size="small"
-                @click="refInputEl?.click()"
-              >
-                <VIcon
-                  icon="tabler-cloud-upload"
-                  class="d-sm-none"
-                />
-                <span class="d-none d-sm-block">Upload new photo</span>
-              </VBtn>
+            <!-- 👉 Upload Photo -->
+            <form class="d-flex flex-column justify-center gap-4">
+              <div class="d-flex flex-wrap gap-4">
+                <VBtn
+                  color="primary"
+                  size="small"
+                  @click="refInputEl?.click()"
+                >
+                  <VIcon
+                    icon="tabler-cloud-upload"
+                    class="d-sm-none"
+                  />
+                  <span class="d-none d-sm-block">Upload new photo</span>
+                </VBtn>
 
-              <input
-                ref="refInputEl"
-                type="file"
-                name="file"
-                accept=".jpeg,.png,.jpg,GIF"
-                hidden
-                @input="changeAvatar"
-              >
+                <input
+                  ref="refInputEl"
+                  type="file"
+                  name="file"
+                  accept=".jpeg,.png,.jpg,GIF"
+                  hidden
+                  @input="changeAvatar"
+                >
 
-              <VBtn
-                type="reset"
-                size="small"
-                color="secondary"
-                variant="tonal"
-                @click="resetAvatar"
-              >
-                <span class="d-none d-sm-block">Reset</span>
-                <VIcon
-                  icon="tabler-refresh"
-                  class="d-sm-none"
-                />
-              </VBtn>
-            </div>
+                <VBtn
+                  type="reset"
+                  size="small"
+                  color="secondary"
+                  variant="tonal"
+                  @click="resetAvatar"
+                >
+                  <span class="d-none d-sm-block">Reset</span>
+                  <VIcon
+                    icon="tabler-refresh"
+                    class="d-sm-none"
+                  />
+                </VBtn>
+              </div>
 
-            <p class="text-body-1 mb-0">
-              Allowed JPG, GIF or PNG. Max size of 800K
+              <p class="text-body-1 mb-0">
+                Allowed JPG, GIF or PNG. Max size of 800K
+              </p>
+            </form>
+          </div>
+
+          <!-- 👉 Right Section: User Companies -->
+          <div class="text-right">
+            <p class="text-body-2 font-weight-600 mb-2">Companies</p>
+            <p class="text-body-2 mb-0">
+              {{ accountDataLocal.userCompanies?.map(c => c.companyName).join(', ') || 'No companies' }}
             </p>
-          </form>
+          </div>
         </VCardText>
 
         <VCardText class="pt-2">
@@ -207,9 +270,9 @@ const currencies = [
                 md="6"
               >
                 <AppTextField
-                  v-model="accountDataLocal.org"
-                  label="Organization"
-                  placeholder="Pixinvent"
+                  v-model="accountDataLocal.town"
+                  label="Town"
+                  placeholder="Ruiru"
                 />
               </VCol>
 
@@ -219,9 +282,9 @@ const currencies = [
                 md="6"
               >
                 <AppTextField
-                  v-model="accountDataLocal.phone"
+                  v-model="accountDataLocal.phoneNumber"
                   label="Phone Number"
-                  placeholder="+1 (917) 543-9876"
+                  placeholder="+254717488029"
                 />
               </VCol>
 
@@ -243,9 +306,9 @@ const currencies = [
                 md="6"
               >
                 <AppTextField
-                  v-model="accountDataLocal.state"
-                  label="State"
-                  placeholder="New York"
+                  v-model="accountDataLocal.zipCode"
+                  label="Zip Code"
+                  placeholder=""
                 />
               </VCol>
 
@@ -255,9 +318,10 @@ const currencies = [
                 md="6"
               >
                 <AppTextField
-                  v-model="accountDataLocal.zip"
-                  label="Zip Code"
-                  placeholder="10001"
+                  v-model="displayRole"
+                  label="Role"
+                  disabled
+                  placeholder="ADMIN"
                 />
               </VCol>
 
@@ -266,11 +330,11 @@ const currencies = [
                 cols="12"
                 md="6"
               >
-                <AppSelect
-                  v-model="accountDataLocal.country"
-                  label="Country"
-                  :items="['USA', 'Canada', 'UK', 'India', 'Australia']"
-                  placeholder="Select Country"
+                <AppTextField
+                  v-model="accountDataLocal.status"
+                  label="Status"
+                  disabled
+                  placeholder="pending"
                 />
               </VCol>
 
@@ -279,48 +343,28 @@ const currencies = [
                 cols="12"
                 md="6"
               >
-                <AppSelect
-                  v-model="accountDataLocal.language"
-                  label="Language"
-                  placeholder="Select Language"
-                  :items="['English', 'Spanish', 'Arabic', 'Hindi', 'Urdu']"
+                <AppTextField
+                  v-model="accountDataLocal.currentPlan"
+                  label="Current Plan"
+                  disabled
+                  placeholder="basic"
                 />
               </VCol>
 
               <!-- 👉 Timezone -->
-              <VCol
-                cols="12"
-                md="6"
-              >
-                <AppSelect
-                  v-model="accountDataLocal.timezone"
-                  label="Timezone"
-                  placeholder="Select Timezone"
-                  :items="timezones"
-                  :menu-props="{ maxHeight: 200 }"
-                />
-              </VCol>
-
               <!-- 👉 Currency -->
-              <VCol
-                cols="12"
-                md="6"
-              >
-                <AppSelect
-                  v-model="accountDataLocal.currency"
-                  label="Currency"
-                  placeholder="Select Currency"
-                  :items="currencies"
-                  :menu-props="{ maxHeight: 200 }"
-                />
-              </VCol>
 
               <!-- 👉 Form Actions -->
               <VCol
                 cols="12"
                 class="d-flex flex-wrap gap-4"
               >
-                <VBtn>Save changes</VBtn>
+                <VBtn
+                  :loading="isSaving"
+                  @click="updateUserData"
+                >
+                  Save changes
+                </VBtn>
 
                 <VBtn
                   color="secondary"
