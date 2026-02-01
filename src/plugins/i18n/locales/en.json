@@ -382,6 +382,105 @@
   "Mark all as read": "Mark all as read",
   "No Notification Found!": "No Notification Found!",
   "View All Notifications": "View All Notifications",
+  "Payment Received": "Payment Received",
+  "Bulk Payment Initiated": "Bulk Payment Initiated",
+  "Bulk Payment Completed": "Bulk Payment Completed",
+  "Total Notifications": "Total Notifications",
+  "Unread": "Unread",
+  "Read": "Read",
+  "Today": "Today",
+  "General": "General",
+  "Select Status": "Select Status",
+  "Select Type": "Select Type",
+  "Search Notifications": "Search Notifications",
+  "Mark Read": "Mark Read",
+  "Mark as read": "Mark as read",
+  "Mark as unread": "Mark as unread",
+  "selected": "selected",
+  "Notification": "Notification",
+  "notifications": {
+    "browserNotifications": "Browser Notifications",
+    "browserNotificationsDescription": "Receive desktop notifications when new events arrive while you're away from the tab.",
+    "enableBrowserNotifications": "Enable browser notifications",
+    "enableBrowserNotificationsHint": "When enabled, you'll receive desktop notifications for new events while the tab is not focused.",
+    "requestPermission": "Request Permission",
+    "permissionGranted": "Permission Granted",
+    "permissionDenied": "Permission Denied",
+    "permissionDeniedHelp": "Browser notifications are blocked. Please enable them in your browser settings for this site.",
+    "permissionStatusGranted": "Granted",
+    "permissionStatusDenied": "Denied",
+    "permissionStatusDefault": "Not Set"
+  },
+  "tour": {
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "skip": "Skip Tour",
+    "welcome": {
+      "title": "Welcome to ArisPay!",
+      "text1": "Let's take a quick tour to help you get familiar with the platform.",
+      "text2": "ArisPay helps you manage payments, collections, and disbursements for your business."
+    },
+    "sidebar": {
+      "title": "Navigation Menu",
+      "text1": "This is your main navigation menu.",
+      "text2": "Access all features including Dashboard, Transactions, Collections, Disbursements, and more."
+    },
+    "search": {
+      "title": "Quick Search",
+      "text1": "Use the search bar to quickly find transactions, clients, or any information across the platform."
+    },
+    "themeSwitcher": {
+      "title": "Theme Switcher",
+      "text1": "Toggle between light and dark mode for a comfortable viewing experience."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "text1": "Stay updated with real-time notifications about transactions, payments, and important alerts."
+    },
+    "userProfile": {
+      "title": "Your Profile",
+      "text1": "Access your profile settings, account preferences, and logout from here."
+    },
+    "widgetCards": {
+      "title": "Key Metrics",
+      "text1": "These cards show your key performance indicators at a glance:",
+      "collections": "Collections",
+      "collectionsDesc": "Number of incoming payments",
+      "disbursements": "Disbursements",
+      "disbursementsDesc": "Number of outgoing payments",
+      "totalCollections": "Total Collections",
+      "totalCollectionsDesc": "Total amount received",
+      "totalDisbursements": "Total Disbursements",
+      "totalDisbursementsDesc": "Total amount sent"
+    },
+    "earningReports": {
+      "title": "Transaction Trends",
+      "text1": "This chart shows your transaction trends over time.",
+      "text2": "Monitor your collections and disbursements to track business performance."
+    },
+    "topClients": {
+      "title": "Top Clients",
+      "text1": "See your top performing clients based on transaction volume.",
+      "text2": "This helps you identify your most active business relationships."
+    },
+    "activityTimeline": {
+      "title": "Recent Activity",
+      "text1": "Track recent activities and events in your account.",
+      "text2": "Stay informed about the latest transactions and system events."
+    },
+    "recentTransactions": {
+      "title": "Recent Transactions",
+      "text1": "View your most recent transactions with quick access to details.",
+      "text2": "Click on any transaction to see more information."
+    },
+    "complete": {
+      "title": "You're All Set!",
+      "text1": "You've completed the ArisPay tour.",
+      "text2": "You can restart this tour anytime by clicking \"User Guide\" in the Support section of the sidebar.",
+      "text3": "If you need help, visit our support portal or contact our team."
+    }
+  },
   "$vuetify": {
     "badge": "Badge",
     "noDataText": "No data available",

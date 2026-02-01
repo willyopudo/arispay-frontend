@@ -1,5 +1,5 @@
 import Shepherd from 'shepherd.js'
-import { tourSteps } from './tourSteps'
+import { getTourSteps } from './tourSteps'
 
 const TOUR_STORAGE_KEY = 'arispay-tour-completed'
 const TOUR_VERSION = '1.0.0'
@@ -56,8 +56,8 @@ export function useTour() {
       },
     })
 
-    // Add all tour steps
-    tourSteps.forEach(step => {
+    // Add all tour steps (resolved with current locale)
+    getTourSteps().forEach(step => {
       tourInstance.addStep({
         ...step,
         classes: themeClasses,

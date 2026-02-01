@@ -359,6 +359,9 @@
     "axiosApiCall": true,
     "useActivityWebSocket": true,
     "tourSteps": true,
-    "useTour": true
+    "useTour": true,
+    "useNotificationWebSocket": true,
+    "getTourSteps": true,
+    "useBrowserNotification": true
   }
 }

@@ -1,4 +1,38 @@
 <script setup>
+import { useBrowserNotification } from '@/composables/useBrowserNotification'
+
+const { t } = useI18n()
+const { permission, isEnabled, isSupported, requestPermission, enable, disable } = useBrowserNotification()
+
+const toggleEnabled = value => {
+  if (value) {
+    enable()
+  } else {
+    disable()
+  }
+}
+
+const handleRequestPermission = async () => {
+  const result = await requestPermission()
+  if (result === 'granted') {
+    enable()
+  }
+}
+
+const permissionColor = computed(() => {
+  if (permission.value === 'granted') return 'success'
+  if (permission.value === 'denied') return 'error'
+
+  return 'warning'
+})
+
+const permissionLabel = computed(() => {
+  if (permission.value === 'granted') return t('notifications.permissionStatusGranted')
+  if (permission.value === 'denied') return t('notifications.permissionStatusDenied')
+
+  return t('notifications.permissionStatusDefault')
+})
+
 const recentDevices = ref([
   {
     type: 'New for you',
@@ -32,10 +66,70 @@ const selectedNotification = ref('Only when I\'m online')
 <template>
   <VCard>
     <VCardItem>
-      <VCardTitle>Recent Devices</VCardTitle>
+      <VCardTitle>{{ t('notifications.browserNotifications') }}</VCardTitle>
       <p class="text-body-1 mb-0">
-        We need permission from your browser to show notifications. <span class="text-primary cursor-pointer">Request Permission</span>
+        {{ t('notifications.browserNotificationsDescription') }}
       </p>
+    </VCardItem>
+
+    <VCardText>
+      <VRow align="center">
+        <VCol
+          cols="12"
+          sm="6"
+        >
+          <div class="d-flex align-center gap-2 mb-4">
+            <span class="text-body-1">{{ t('Status') }}:</span>
+            <VChip
+              :color="permissionColor"
+              size="small"
+              label
+            >
+              {{ permissionLabel }}
+            </VChip>
+          </div>
+
+          <VSwitch
+            :model-value="isEnabled"
+            :label="t('notifications.enableBrowserNotifications')"
+            :disabled="!isSupported || permission === 'denied'"
+            @update:model-value="toggleEnabled"
+          />
+          <p class="text-body-2 text-disabled mt-1">
+            {{ t('notifications.enableBrowserNotificationsHint') }}
+          </p>
+        </VCol>
+
+        <VCol
+          cols="12"
+          sm="6"
+        >
+          <VBtn
+            v-if="permission === 'default'"
+            color="primary"
+            variant="tonal"
+            @click="handleRequestPermission"
+          >
+            {{ t('notifications.requestPermission') }}
+          </VBtn>
+
+          <VAlert
+            v-if="permission === 'denied'"
+            type="warning"
+            variant="tonal"
+            density="compact"
+            class="mt-2"
+          >
+            {{ t('notifications.permissionDeniedHelp') }}
+          </VAlert>
+        </VCol>
+      </VRow>
+    </VCardText>
+
+    <VDivider />
+
+    <VCardItem>
+      <VCardTitle>{{ t('Notifications') }}</VCardTitle>
     </VCardItem>
 
     <VCardText class="px-0">

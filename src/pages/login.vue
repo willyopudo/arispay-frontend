@@ -1,6 +1,7 @@
 <!-- ❗Errors in the form are set on line 60 -->
 <script setup>
 import { VForm } from 'vuetify/components/VForm'
+import { useBrowserNotification } from '@/composables/useBrowserNotification'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
@@ -94,6 +95,17 @@ const login = async () => {
     // useCookie('accessToken').value = accessToken
     await nextTick(() => {
       router.replace(route.query.to ? String(route.query.to) : '/dashboards/crm')
+
+      const { isSupported, permission, requestPermission, enable } = useBrowserNotification()
+      if (isSupported.value && permission.value === 'default') {
+        setTimeout(async () => {
+          const result = await requestPermission()
+          if (result === 'granted') {
+            enable()
+            useSweetAlert.toast('Browser notifications enabled')
+          }
+        }, 1500)
+      }
     })
 
   } catch (error) {

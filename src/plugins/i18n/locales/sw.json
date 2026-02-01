@@ -393,6 +393,105 @@
   "Mark all as read": "Weka zote kama zimesomwa",
   "No Notification Found!": "Hakuna Arifa Iliyopatikana!",
   "View All Notifications": "Angalia Arifa Zote",
+  "Payment Received": "Malipo Yamepokelewa",
+  "Bulk Payment Initiated": "Malipo ya Wingi Yameanzishwa",
+  "Bulk Payment Completed": "Malipo ya Wingi Yamekamilika",
+  "Total Notifications": "Jumla ya Arifa",
+  "Unread": "Hazijasomwa",
+  "Read": "Zimesomwa",
+  "Today": "Leo",
+  "General": "Ujumla",
+  "Select Status": "Chagua Hali",
+  "Select Type": "Chagua Aina",
+  "Search Notifications": "Tafuta Arifa",
+  "Mark Read": "Weka kama Imesomwa",
+  "Mark as read": "Weka kama imesomwa",
+  "Mark as unread": "Weka kama haijasomwa",
+  "selected": "zimechaguliwa",
+  "Notification": "Arifa",
+  "notifications": {
+    "browserNotifications": "Arifa za Kivinjari",
+    "browserNotificationsDescription": "Pokea arifa za eneo-kazi wakati matukio mapya yanafika ukiwa mbali na kichupo.",
+    "enableBrowserNotifications": "Washa arifa za kivinjari",
+    "enableBrowserNotificationsHint": "Ikiwashwa, utapokea arifa za eneo-kazi kwa matukio mapya wakati kichupo hakina umakini.",
+    "requestPermission": "Omba Ruhusa",
+    "permissionGranted": "Ruhusa Imetolewa",
+    "permissionDenied": "Ruhusa Imekataliwa",
+    "permissionDeniedHelp": "Arifa za kivinjari zimezuiwa. Tafadhali ziwashe katika mipangilio ya kivinjari chako kwa tovuti hii.",
+    "permissionStatusGranted": "Imetolewa",
+    "permissionStatusDenied": "Imekataliwa",
+    "permissionStatusDefault": "Haijawekwa"
+  },
+  "tour": {
+    "next": "Endelea",
+    "back": "Rudi",
+    "finish": "Maliza",
+    "skip": "Ruka Ziara",
+    "welcome": {
+      "title": "Karibu ArisPay!",
+      "text1": "Hebu tuchukue ziara fupi kukusaidia kuifahamu jukwaa hili.",
+      "text2": "ArisPay inakusaidia kudhibiti malipo, makusanyo, na utumaji wa fedha kwa biashara yako."
+    },
+    "sidebar": {
+      "title": "Menyu ya Urambazaji",
+      "text1": "Hii ni menyu yako kuu ya urambazaji.",
+      "text2": "Fikia vipengele vyote ikiwa ni pamoja na Dashibodi, Miamala, Makusanyo, Utumaji wa Fedha, na mengine zaidi."
+    },
+    "search": {
+      "title": "Utafutaji wa Haraka",
+      "text1": "Tumia upau wa utafutaji kupata miamala, wateja, au taarifa yoyote kwenye jukwaa hili kwa haraka."
+    },
+    "themeSwitcher": {
+      "title": "Kubadilisha Mandhari",
+      "text1": "Badilisha kati ya mandhari ya mwanga na giza kwa uzoefu mzuri wa kutazama."
+    },
+    "notifications": {
+      "title": "Arifa",
+      "text1": "Endelea kupata taarifa za wakati halisi kuhusu miamala, malipo, na arifa muhimu."
+    },
+    "userProfile": {
+      "title": "Wasifu Wako",
+      "text1": "Fikia mipangilio ya wasifu wako, mapendeleo ya akaunti, na kutoka hapa."
+    },
+    "widgetCards": {
+      "title": "Vipimo Muhimu",
+      "text1": "Kadi hizi zinaonyesha viashiria vyako muhimu vya utendaji kwa mtazamo mmoja:",
+      "collections": "Makusanyo",
+      "collectionsDesc": "Idadi ya malipo yanayoingia",
+      "disbursements": "Utumaji",
+      "disbursementsDesc": "Idadi ya malipo yanayotoka",
+      "totalCollections": "Jumla ya Makusanyo",
+      "totalCollectionsDesc": "Jumla ya kiasi kilichopokelewa",
+      "totalDisbursements": "Jumla ya Utumaji",
+      "totalDisbursementsDesc": "Jumla ya kiasi kilichotumwa"
+    },
+    "earningReports": {
+      "title": "Mwenendo wa Miamala",
+      "text1": "Chati hii inaonyesha mwenendo wa miamala yako kwa muda.",
+      "text2": "Fuatilia makusanyo na utumaji wako ili kufuatilia utendaji wa biashara."
+    },
+    "topClients": {
+      "title": "Wateja Wakuu",
+      "text1": "Ona wateja wako wanaofanya vizuri zaidi kulingana na kiasi cha miamala.",
+      "text2": "Hii inakusaidia kutambua mahusiano yako ya biashara yanayofanya kazi zaidi."
+    },
+    "activityTimeline": {
+      "title": "Shughuli za Hivi Karibuni",
+      "text1": "Fuatilia shughuli na matukio ya hivi karibuni katika akaunti yako.",
+      "text2": "Endelea kupata taarifa kuhusu miamala na matukio ya mfumo ya hivi karibuni."
+    },
+    "recentTransactions": {
+      "title": "Miamala ya Hivi Karibuni",
+      "text1": "Tazama miamala yako ya hivi karibuni na ufikie maelezo kwa haraka.",
+      "text2": "Bofya muamala wowote kuona taarifa zaidi."
+    },
+    "complete": {
+      "title": "Uko Tayari!",
+      "text1": "Umekamilisha ziara ya ArisPay.",
+      "text2": "Unaweza kuanzisha upya ziara hii wakati wowote kwa kubofya \"User Guide\" katika sehemu ya Msaada kwenye menyu ya pembeni.",
+      "text3": "Ikiwa unahitaji msaada, tembelea tovuti yetu ya msaada au wasiliana na timu yetu."
+    }
+  },
   "$vuetify": {
     "badge": "Beji",
     "noDataText": "Hakuna data inayopatikana",

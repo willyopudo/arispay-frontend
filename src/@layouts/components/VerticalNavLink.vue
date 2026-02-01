@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { layoutConfig } from '@layouts'
 import { can } from '@layouts/plugins/casl'
 import { useLayoutConfigStore } from '@layouts/stores/config'
@@ -19,6 +20,7 @@ const props = defineProps({
 
 const configStore = useLayoutConfigStore()
 const hideTitleAndBadge = configStore.isVerticalNavMini()
+const router = useRouter()
 
 // Check if item is a nav action item (has navAction but no to/href)
 const isNavActionItem = computed(() => {
@@ -26,7 +28,7 @@ const isNavActionItem = computed(() => {
 })
 
 // Handle click for nav action items
-const handleClick = (event) => {
+const handleClick = async (event) => {
   if (isNavActionItem.value) {
     event.preventDefault()
     event.stopPropagation()
@@ -34,7 +36,19 @@ const handleClick = (event) => {
     // Handle specific actions
     if (props.item.navAction === 'startTour') {
       const tourStore = useTourStore()
-      tourStore.startTour()
+
+      // Tour references dashboard elements, so navigate there first
+      const dashboardRoute = '/dashboards/crm'
+      if (router.currentRoute.value.path !== dashboardRoute) {
+        await router.push(dashboardRoute)
+
+        // Wait for dashboard components to render
+        setTimeout(() => {
+          tourStore.startTour()
+        }, 1500)
+      } else {
+        tourStore.startTour()
+      }
     }
   }
 }

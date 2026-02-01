@@ -1,8 +1,10 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
+const router = useRouter()
 
 const props = defineProps({
   notifications: {
@@ -56,11 +58,12 @@ const toggleReadUnread = (isSeen, Id) => {
   <IconBtn id="notification-btn">
     <VBadge
       v-bind="props.badgeProps"
-      :model-value="props.notifications.some(n => !n.isSeen)"
+      :model-value="totalUnseenNotifications > 0"
+      :content="totalUnseenNotifications"
       color="error"
-      dot
       offset-x="2"
       offset-y="3"
+      class="notification-badge"
     >
       <VIcon icon="tabler-bell" />
     </VBadge>
@@ -119,7 +122,7 @@ const toggleReadUnread = (isSeen, Id) => {
           <VList class="notification-list rounded-0 py-0">
             <template
               v-for="(notification, index) in props.notifications"
-              :key="notification.title"
+              :key="notification.id"
             >
               <VDivider v-if="index > 0" />
               <VListItem
@@ -207,6 +210,7 @@ const toggleReadUnread = (isSeen, Id) => {
           <VBtn
             block
             size="small"
+            @click="router.push('/apps/notifications/list')"
           >
             {{ $t('View All Notifications') }}
           </VBtn>

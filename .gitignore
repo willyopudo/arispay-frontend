@@ -3,3 +3,5 @@ node_modules
 dist
 .env
 tmpclaude-df65-cwd
+.claude/memory.md
+.gitignore

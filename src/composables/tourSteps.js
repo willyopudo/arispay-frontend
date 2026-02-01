@@ -1,216 +1,227 @@
 /**
  * Tour step definitions for ArisPay guided tour
  * Each step targets specific UI elements and provides helpful descriptions
+ * Uses i18n for translations - text is resolved at tour start time
  */
+import { getI18n } from '@/plugins/i18n'
 
-const buttonConfig = {
-  next: {
-    text: 'Next',
-    action: function() { this.next() },
-    classes: 'shepherd-button-primary',
-  },
-  back: {
-    text: 'Back',
-    action: function() { this.back() },
-    classes: 'shepherd-button-secondary',
-  },
-  finish: {
-    text: 'Finish',
-    action: function() { this.complete() },
-    classes: 'shepherd-button-primary',
-  },
-  skip: {
-    text: 'Skip Tour',
-    action: function() { this.cancel() },
-    classes: 'shepherd-button-secondary',
-  },
+const buttonConfig = () => {
+  const { t } = getI18n().global
+
+  return {
+    next: {
+      text: t('tour.next'),
+      action: function() { this.next() },
+      classes: 'shepherd-button-primary',
+    },
+    back: {
+      text: t('tour.back'),
+      action: function() { this.back() },
+      classes: 'shepherd-button-secondary',
+    },
+    finish: {
+      text: t('tour.finish'),
+      action: function() { this.complete() },
+      classes: 'shepherd-button-primary',
+    },
+    skip: {
+      text: t('tour.skip'),
+      action: function() { this.cancel() },
+      classes: 'shepherd-button-secondary',
+    },
+  }
 }
 
-export const tourSteps = [
-  {
-    id: 'welcome',
-    title: 'Welcome to ArisPay!',
-    text: `
-      <p>Let's take a quick tour to help you get familiar with the platform.</p>
-      <p>ArisPay helps you manage payments, collections, and disbursements for your business.</p>
-    `,
-    buttons: [
-      buttonConfig.skip,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'sidebar',
-    title: 'Navigation Menu',
-    text: `
-      <p>This is your main navigation menu.</p>
-      <p>Access all features including Dashboard, Transactions, Collections, Disbursements, and more.</p>
-    `,
-    attachTo: {
-      element: '.layout-vertical-nav',
-      on: 'right',
+export function getTourSteps() {
+  const { t } = getI18n().global
+  const buttons = buttonConfig()
+
+  return [
+    {
+      id: 'welcome',
+      title: t('tour.welcome.title'),
+      text: `
+        <p>${t('tour.welcome.text1')}</p>
+        <p>${t('tour.welcome.text2')}</p>
+      `,
+      buttons: [
+        buttons.skip,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'search',
-    title: 'Quick Search',
-    text: `
-      <p>Use the search bar to quickly find transactions, clients, or any information across the platform.</p>
-    `,
-    attachTo: {
-      element: '#tour-search-bar',
-      on: 'bottom',
+    {
+      id: 'sidebar',
+      title: t('tour.sidebar.title'),
+      text: `
+        <p>${t('tour.sidebar.text1')}</p>
+        <p>${t('tour.sidebar.text2')}</p>
+      `,
+      attachTo: {
+        element: '.layout-vertical-nav',
+        on: 'right',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'theme-switcher',
-    title: 'Theme Switcher',
-    text: `
-      <p>Toggle between light and dark mode for a comfortable viewing experience.</p>
-    `,
-    attachTo: {
-      element: '#tour-theme-switcher',
-      on: 'bottom',
+    {
+      id: 'search',
+      title: t('tour.search.title'),
+      text: `
+        <p>${t('tour.search.text1')}</p>
+      `,
+      attachTo: {
+        element: '#tour-search-bar',
+        on: 'bottom',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'notifications',
-    title: 'Notifications',
-    text: `
-      <p>Stay updated with real-time notifications about transactions, payments, and important alerts.</p>
-    `,
-    attachTo: {
-      element: '#tour-notifications',
-      on: 'bottom',
+    {
+      id: 'theme-switcher',
+      title: t('tour.themeSwitcher.title'),
+      text: `
+        <p>${t('tour.themeSwitcher.text1')}</p>
+      `,
+      attachTo: {
+        element: '#tour-theme-switcher',
+        on: 'bottom',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'user-profile',
-    title: 'Your Profile',
-    text: `
-      <p>Access your profile settings, account preferences, and logout from here.</p>
-    `,
-    attachTo: {
-      element: '#tour-user-profile',
-      on: 'bottom-end',
+    {
+      id: 'notifications',
+      title: t('tour.notifications.title'),
+      text: `
+        <p>${t('tour.notifications.text1')}</p>
+      `,
+      attachTo: {
+        element: '#tour-notifications',
+        on: 'bottom',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'widget-cards',
-    title: 'Key Metrics',
-    text: `
-      <p>These cards show your key performance indicators at a glance:</p>
-      <ul>
-        <li><strong>Collections</strong> - Number of incoming payments</li>
-        <li><strong>Disbursements</strong> - Number of outgoing payments</li>
-        <li><strong>Total Collections</strong> - Total amount received</li>
-        <li><strong>Total Disbursements</strong> - Total amount sent</li>
-      </ul>
-    `,
-    attachTo: {
-      element: '#tour-widget-cards',
-      on: 'bottom',
+    {
+      id: 'user-profile',
+      title: t('tour.userProfile.title'),
+      text: `
+        <p>${t('tour.userProfile.text1')}</p>
+      `,
+      attachTo: {
+        element: '#tour-user-profile',
+        on: 'bottom-end',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'earning-reports',
-    title: 'Transaction Trends',
-    text: `
-      <p>This chart shows your transaction trends over time.</p>
-      <p>Monitor your collections and disbursements to track business performance.</p>
-    `,
-    attachTo: {
-      element: '#tour-earning-reports',
-      on: 'top',
+    {
+      id: 'widget-cards',
+      title: t('tour.widgetCards.title'),
+      text: `
+        <p>${t('tour.widgetCards.text1')}</p>
+        <ul>
+          <li><strong>${t('tour.widgetCards.collections')}</strong> - ${t('tour.widgetCards.collectionsDesc')}</li>
+          <li><strong>${t('tour.widgetCards.disbursements')}</strong> - ${t('tour.widgetCards.disbursementsDesc')}</li>
+          <li><strong>${t('tour.widgetCards.totalCollections')}</strong> - ${t('tour.widgetCards.totalCollectionsDesc')}</li>
+          <li><strong>${t('tour.widgetCards.totalDisbursements')}</strong> - ${t('tour.widgetCards.totalDisbursementsDesc')}</li>
+        </ul>
+      `,
+      attachTo: {
+        element: '#tour-widget-cards',
+        on: 'bottom',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'top-clients',
-    title: 'Top Clients',
-    text: `
-      <p>See your top performing clients based on transaction volume.</p>
-      <p>This helps you identify your most active business relationships.</p>
-    `,
-    attachTo: {
-      element: '#tour-top-clients',
-      on: 'left',
+    {
+      id: 'earning-reports',
+      title: t('tour.earningReports.title'),
+      text: `
+        <p>${t('tour.earningReports.text1')}</p>
+        <p>${t('tour.earningReports.text2')}</p>
+      `,
+      attachTo: {
+        element: '#tour-earning-reports',
+        on: 'top',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'activity-timeline',
-    title: 'Recent Activity',
-    text: `
-      <p>Track recent activities and events in your account.</p>
-      <p>Stay informed about the latest transactions and system events.</p>
-    `,
-    attachTo: {
-      element: '#tour-activity-timeline',
-      on: 'right',
+    {
+      id: 'top-clients',
+      title: t('tour.topClients.title'),
+      text: `
+        <p>${t('tour.topClients.text1')}</p>
+        <p>${t('tour.topClients.text2')}</p>
+      `,
+      attachTo: {
+        element: '#tour-top-clients',
+        on: 'left',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'recent-transactions',
-    title: 'Recent Transactions',
-    text: `
-      <p>View your most recent transactions with quick access to details.</p>
-      <p>Click on any transaction to see more information.</p>
-    `,
-    attachTo: {
-      element: '#tour-recent-transactions',
-      on: 'top',
+    {
+      id: 'activity-timeline',
+      title: t('tour.activityTimeline.title'),
+      text: `
+        <p>${t('tour.activityTimeline.text1')}</p>
+        <p>${t('tour.activityTimeline.text2')}</p>
+      `,
+      attachTo: {
+        element: '#tour-activity-timeline',
+        on: 'right',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
     },
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.next,
-    ],
-  },
-  {
-    id: 'complete',
-    title: 'You\'re All Set!',
-    text: `
-      <p>You've completed the ArisPay tour.</p>
-      <p>You can restart this tour anytime by clicking <strong>"User Guide"</strong> in the Support section of the sidebar.</p>
-      <p>If you need help, visit our support portal or contact our team.</p>
-    `,
-    buttons: [
-      buttonConfig.back,
-      buttonConfig.finish,
-    ],
-  },
-]
+    {
+      id: 'recent-transactions',
+      title: t('tour.recentTransactions.title'),
+      text: `
+        <p>${t('tour.recentTransactions.text1')}</p>
+        <p>${t('tour.recentTransactions.text2')}</p>
+      `,
+      attachTo: {
+        element: '#tour-recent-transactions',
+        on: 'top',
+      },
+      buttons: [
+        buttons.back,
+        buttons.next,
+      ],
+    },
+    {
+      id: 'complete',
+      title: t('tour.complete.title'),
+      text: `
+        <p>${t('tour.complete.text1')}</p>
+        <p>${t('tour.complete.text2')}</p>
+        <p>${t('tour.complete.text3')}</p>
+      `.replace(/"User Guide"/g, '<strong>"User Guide"</strong>'),
+      buttons: [
+        buttons.back,
+        buttons.finish,
+      ],
+    },
+  ]
+}
