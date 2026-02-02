@@ -1,8 +1,8 @@
 <script setup>
 import Shepherd from 'shepherd.js'
-import { withQuery } from 'ufo'
 import { useConfigStore } from '@core/stores/config'
 import { useI18n } from 'vue-i18n'
+import { db } from '@db/app-bar-search/db'
 
 const { t } = useI18n()
 
@@ -13,7 +13,6 @@ defineOptions({
 
 const configStore = useConfigStore()
 const isAppSearchBarVisible = ref(false)
-const isLoading = ref(false)
 
 // 👉 Default suggestions
 const suggestionGroups = [
@@ -21,102 +20,49 @@ const suggestionGroups = [
     title: 'Popular Searches',
     content: [
       {
-        icon: 'tabler-chart-bar',
-        title: 'Analytics',
+        icon: 'tabler-dashboard',
+        title: 'Company Dashboard',
         url: { name: 'dashboards-crm' },
       },
       {
-        icon: 'tabler-chart-donut-3',
-        title: 'CRM',
-        url: { name: 'dashboards-crm' },
+        icon: 'tabler-transfer',
+        title: 'Transactions',
+        url: { name: 'apps-transaction-successful-transactions-list' },
       },
       {
-        icon: 'tabler-shopping-cart',
-        title: 'eCommerce',
-        url: { name: 'dashboards-crm' },
+        icon: 'tabler-building-bank',
+        title: 'Accounts',
+        url: { name: 'apps-company-account-list' },
       },
       {
-        icon: 'tabler-truck',
-        title: 'Logistics',
-        url: { name: 'dashboards-crm' },
+        icon: 'tabler-users',
+        title: 'Clients',
+        url: { name: 'apps-company-client-list' },
       },
     ],
   },
   {
-    title: 'Apps & Pages',
+    title: 'Quick Access',
     content: [
       {
-        icon: 'tabler-calendar',
-        title: 'Calendar',
-        url: { name: 'apps-calendar' },
+        icon: 'tabler-users-group',
+        title: 'Users',
+        url: { name: 'apps-user-list' },
       },
       {
-        icon: 'tabler-lock',
-        title: 'Roles & Permissions',
-        url: { name: 'apps-roles' },
+        icon: 'tabler-cash',
+        title: 'Bulk Payments',
+        url: { name: 'apps-transaction-bulk-payments-list' },
       },
       {
-        icon: 'tabler-settings',
+        icon: 'tabler-bell',
+        title: 'Notifications',
+        url: { name: 'apps-notifications-list' },
+      },
+      {
+        icon: 'tabler-user-circle',
         title: 'Account Settings',
-        url: {
-          name: 'pages-account-settings-tab',
-          params: { tab: 'account' },
-        },
-      },
-      {
-        icon: 'tabler-copy',
-        title: 'Dialog Examples',
-        url: { name: 'pages-dialog-examples' },
-      },
-    ],
-  },
-  {
-    title: 'User Interface',
-    content: [
-      {
-        icon: 'tabler-typography',
-        title: 'Typography',
-        url: { name: 'pages-typography' },
-      },
-      {
-        icon: 'tabler-menu-2',
-        title: 'Accordion',
-        url: { name: 'components-expansion-panel' },
-      },
-      {
-        icon: 'tabler-info-triangle',
-        title: 'Alert',
-        url: { name: 'components-alert' },
-      },
-      {
-        icon: 'tabler-checkbox',
-        title: 'Cards',
-        url: { name: 'pages-cards-card-basic' },
-      },
-    ],
-  },
-  {
-    title: 'Forms & Tables',
-    content: [
-      {
-        icon: 'tabler-circle-dot',
-        title: 'Radio',
-        url: { name: 'forms-radio' },
-      },
-      {
-        icon: 'tabler-file-invoice',
-        title: 'Form Layouts',
-        url: { name: 'forms-form-layouts' },
-      },
-      {
-        icon: 'tabler-table',
-        title: 'Table',
-        url: { name: 'tables-data-table' },
-      },
-      {
-        icon: 'tabler-edit',
-        title: 'Editor',
-        url: { name: 'forms-editors' },
+        url: { name: 'pages-account-settings-tab', params: { tab: 'account' } },
       },
     ],
   },
@@ -125,19 +71,19 @@ const suggestionGroups = [
 // 👉 No Data suggestion
 const noDataSuggestions = [
   {
-    title: 'Analytics',
-    icon: 'tabler-chart-bar',
+    title: 'Company Dashboard',
+    icon: 'tabler-dashboard',
     url: { name: 'dashboards-crm' },
   },
   {
-    title: 'CRM',
-    icon: 'tabler-chart-donut-3',
-    url: { name: 'dashboards-crm' },
+    title: 'Transactions',
+    icon: 'tabler-transfer',
+    url: { name: 'apps-transaction-successful-transactions-list' },
   },
   {
-    title: 'eCommerce',
-    icon: 'tabler-shopping-cart',
-    url: { name: 'dashboards-crm' },
+    title: 'Accounts',
+    icon: 'tabler-building-bank',
+    url: { name: 'apps-company-account-list' },
   },
 ]
 
@@ -145,17 +91,24 @@ const searchQuery = ref('')
 const router = useRouter()
 const searchResult = ref([])
 
-const fetchResults = async () => {
-  isLoading.value = true
+const fetchResults = () => {
+  const query = searchQuery.value.toLowerCase()
+  if (!query) {
+    searchResult.value = []
 
-  const { data } = await useApi(withQuery('/app-bar/search', { q: searchQuery.value }))
+    return
+  }
 
-  searchResult.value = data.value
+  const filtered = db.searchItems
+    .map(group => ({
+      ...group,
+      children: group.children
+        .filter(c => c.title.toLowerCase().includes(query))
+        .slice(0, 5),
+    }))
+    .filter(group => group.children.length > 0)
 
-  // ℹ️ simulate loading: we have used setTimeout for better user experience your can remove it
-  setTimeout(() => {
-    isLoading.value = false
-  }, 500)
+  searchResult.value = filtered
 }
 
 watch(searchQuery, fetchResults)
@@ -200,7 +153,6 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
   <LazyAppBarSearch
     v-model:isDialogVisible="isAppSearchBarVisible"
     :search-results="searchResult"
-    :is-loading="isLoading"
     @search="searchQuery = $event"
   >
     <!-- suggestion -->
