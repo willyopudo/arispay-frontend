@@ -14,59 +14,15 @@ defineOptions({
 const configStore = useConfigStore()
 const isAppSearchBarVisible = ref(false)
 
-// 👉 Default suggestions
-const suggestionGroups = [
-  {
-    title: 'Popular Searches',
-    content: [
-      {
-        icon: 'tabler-dashboard',
-        title: 'Company Dashboard',
-        url: { name: 'dashboards-crm' },
-      },
-      {
-        icon: 'tabler-transfer',
-        title: 'Transactions',
-        url: { name: 'apps-transaction-successful-transactions-list' },
-      },
-      {
-        icon: 'tabler-building-bank',
-        title: 'Accounts',
-        url: { name: 'apps-company-account-list' },
-      },
-      {
-        icon: 'tabler-users',
-        title: 'Clients',
-        url: { name: 'apps-company-client-list' },
-      },
-    ],
-  },
-  {
-    title: 'Quick Access',
-    content: [
-      {
-        icon: 'tabler-users-group',
-        title: 'Users',
-        url: { name: 'apps-user-list' },
-      },
-      {
-        icon: 'tabler-cash',
-        title: 'Bulk Payments',
-        url: { name: 'apps-transaction-bulk-payments-list' },
-      },
-      {
-        icon: 'tabler-bell',
-        title: 'Notifications',
-        url: { name: 'apps-notifications-list' },
-      },
-      {
-        icon: 'tabler-user-circle',
-        title: 'Account Settings',
-        url: { name: 'pages-account-settings-tab', params: { tab: 'account' } },
-      },
-    ],
-  },
-]
+// 👉 Default suggestions (derived from db.js categories)
+const suggestionGroups = db.searchItems.map(group => ({
+  title: group.title,
+  content: group.children.map(child => ({
+    icon: child.icon,
+    title: child.title,
+    url: child.url,
+  })),
+}))
 
 // 👉 No Data suggestion
 const noDataSuggestions = [
@@ -157,39 +113,38 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
   >
     <!-- suggestion -->
     <template #suggestions>
-      <VCardText class="app-bar-search-suggestions pa-12">
-        <VRow v-if="suggestionGroups">
-          <VCol
+      <VCardText class="app-bar-search-suggestions pa-6 pa-sm-8">
+        <div
+          v-if="suggestionGroups"
+          class="suggestion-columns"
+        >
+          <div
             v-for="suggestion in suggestionGroups"
             :key="suggestion.title"
-            cols="12"
-            sm="6"
+            class="suggestion-category"
           >
-            <p
-              class="custom-letter-spacing text-disabled text-uppercase py-2 px-4 mb-0"
-              style="font-size: 0.75rem; line-height: 0.875rem;"
-            >
+            <p class="suggestion-category-title text-uppercase text-disabled font-weight-medium mb-2 px-1">
               {{ $t(suggestion.title) }}
             </p>
-            <VList class="card-list">
-              <VListItem
+            <div class="d-flex flex-wrap ga-2">
+              <VChip
                 v-for="item in suggestion.content"
                 :key="item.title"
-                class="app-bar-search-suggestion mx-4 mt-2"
+                class="suggestion-chip"
+                variant="tonal"
+                label
                 @click="redirectToSuggestedPage(item)"
               >
-                <VListItemTitle>{{ $t(item.title) }}</VListItemTitle>
-                <template #prepend>
-                  <VIcon
-                    :icon="item.icon"
-                    size="20"
-                    class="me-n1"
-                  />
-                </template>
-              </VListItem>
-            </VList>
-          </VCol>
-        </VRow>
+                <VIcon
+                  :icon="item.icon"
+                  size="16"
+                  start
+                />
+                {{ $t(item.title) }}
+              </VChip>
+            </div>
+          </div>
+        </div>
       </VCardText>
     </template>
 
@@ -266,6 +221,49 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
 
   .card-list {
     --v-card-list-gap: 8px;
+  }
+
+  // Suggestion columns – masonry-style layout
+  .suggestion-columns {
+    columns: 2;
+    column-gap: 24px;
+
+    @media (max-width: 599.98px) {
+      columns: 1;
+    }
+  }
+
+  .suggestion-category {
+    break-inside: avoid;
+    margin-block-end: 16px;
+  }
+
+  .suggestion-category-title {
+    font-size: 0.6875rem;
+    letter-spacing: 0.8px;
+    line-height: 1;
+  }
+
+  .suggestion-chip {
+    cursor: pointer;
+    white-space: normal;
+    height: auto !important;
+    padding-block: 6px;
+
+    .v-chip__content {
+      white-space: normal;
+      line-height: 1.25;
+    }
+  }
+
+  // Search result text wrapping
+  .app-bar-search-list {
+    .v-list-item-title {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      line-height: 1.375;
+    }
   }
 }
 </style>
