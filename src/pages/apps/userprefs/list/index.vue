@@ -501,22 +501,34 @@ onMounted(() => {
 
     <!-- Action Buttons -->
     <VRow class="mb-6">
-      <VCol cols="12" class="d-flex justify-center gap-4">
+      <VCol
+        cols="12"
+        sm="6"
+        class="d-flex justify-center"
+      >
         <VBtn
           color="primary"
-          size="large"
+          :size="$vuetify.display.smAndDown ? 'default' : 'large'"
           prepend-icon="tabler-send"
           :loading="isLoading"
           :disabled="!hasChanges"
+          width="100%"
           @click="saveUserPreferences"
         >
           Save Changes
         </VBtn>
+      </VCol>
+      <VCol
+        cols="12"
+        sm="6"
+        class="d-flex justify-center"
+      >
         <VBtn
           variant="outlined"
           color="secondary"
-          size="large"
+          :size="$vuetify.display.smAndDown ? 'default' : 'large'"
           prepend-icon="tabler-rotate-clockwise-2"
+          width="100%"
           @click="resetPreferences"
         >
           Reset to Default

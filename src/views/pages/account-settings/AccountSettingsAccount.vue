@@ -21,9 +21,13 @@ const accountData = {
 const refInputEl = ref()
 const isConfirmDialogOpen = ref(false)
 const accountDataLocal = ref(structuredClone(accountData))
+const defaultAvatar = avatar1
 const isAccountDeactivated = ref(false)
 const isLoading = ref(false)
 const isSaving = ref(false)
+const isUploadingAvatar = ref(false)
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024 // 5 MB
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif']
 const validateAccountDeactivation = [v => !!v || 'Please confirm account deactivation']
 
 // Compute role without ROLE_ prefix
@@ -66,6 +70,14 @@ const fetchUserData = async () => {
       accountData.status = data.status || ''
       accountData.currentPlan = data.currentPlan || ''
       accountData.userCompanies = data.userCompanies || []
+      
+      // Load avatar from localStorage (base64 images are too large for cookies)
+      const storedAvatar = localStorage.getItem('userAvatar')
+      if (storedAvatar) {
+        accountData.avatarImg = storedAvatar
+      } else {
+        accountData.avatarImg = defaultAvatar
+      }
       
       accountDataLocal.value = structuredClone(accountData)
     }
@@ -117,6 +129,8 @@ const updateUserData = async () => {
       accountData.address = data.address || accountDataLocal.value.address
       accountData.town = data.town || accountDataLocal.value.town
       accountData.zipCode = data.zipCode || accountDataLocal.value.zipCode
+      
+      useSweetAlert.toast('User data updated successfully')
     }
   } catch (err) {
     useSweetAlert.toast('An error occurred while updating user data', 'error')
@@ -136,21 +150,82 @@ onMounted(() => {
 })
 
 
-const changeAvatar = file => {
-  const fileReader = new FileReader()
+const changeAvatar = async (file) => {
   const { files } = file.target
-  if (files && files.length) {
-    fileReader.readAsDataURL(files[0])
-    fileReader.onload = () => {
-      if (typeof fileReader.result === 'string')
-        accountDataLocal.value.avatarImg = fileReader.result
+  if (!files || !files.length) return
+
+  const selectedFile = files[0]
+
+  // Validate file size
+  if (selectedFile.size > MAX_AVATAR_SIZE) {
+    useSweetAlert.errorMessage(`File size must not exceed 5 MB. Current size: ${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`)
+    return
+  }
+
+  // Validate file type
+  if (!ALLOWED_AVATAR_TYPES.includes(selectedFile.type)) {
+    useSweetAlert.errorMessage('Only JPG, GIF, or PNG files are allowed')
+    return
+  }
+
+  try {
+    isUploadingAvatar.value = true
+
+    // Get user data from cookie
+    const userData = useCookie('userData').value
+    if (!userData || !userData.id) {
+      useSweetAlert.errorMessage('User data not found')
+      return
+    }
+
+    // Create FormData for file upload
+    const formData = new FormData()
+    formData.append('file', selectedFile)
+
+    // Upload avatar to server
+    const { data, error } = await axiosApiCall(`/users/${userData.id}/profile-picture`, {
+      method: 'POST',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    if (error) {
+      useSweetAlert.errorMessage('Failed to upload avatar: ' + error.message)
+      return
+    }
+
+    // Format avatar as data URL using base64Image and mediaType from response
+    if (data?.data?.base64Image && data?.data?.mediaType) {
+      const avatarBase64 = `data:${data.data.mediaType};base64,${data.data.base64Image}`
+      
+      // Update local state
+      accountDataLocal.value.avatarImg = avatarBase64
+      accountData.avatarImg = avatarBase64
+
+      // Store avatar in localStorage (cookies have 4KB limit, base64 images are larger)
+      localStorage.setItem('userAvatar', avatarBase64)
+
+      useSweetAlert.toast('Avatar uploaded successfully')
+    } else {
+      useSweetAlert.errorMessage('Invalid response from server')
+    }
+  } catch (err) {
+    useSweetAlert.errorMessage('An error occurred while uploading avatar: ' + err.message)
+  } finally {
+    isUploadingAvatar.value = false
+    // Reset file input
+    if (refInputEl.value) {
+      refInputEl.value.value = ''
     }
   }
 }
 
 // reset avatar image
 const resetAvatar = () => {
-  accountDataLocal.value.avatarImg = accountData.avatarImg
+  const storedAvatar = localStorage.getItem('userAvatar')
+  accountDataLocal.value.avatarImg = storedAvatar || defaultAvatar
 }
 </script>
 
@@ -175,20 +250,22 @@ const resetAvatar = () => {
                 <VBtn
                   color="primary"
                   size="small"
+                  :loading="isUploadingAvatar"
+                  :disabled="isUploadingAvatar"
                   @click="refInputEl?.click()"
                 >
                   <VIcon
                     icon="tabler-cloud-upload"
                     class="d-sm-none"
                   />
-                  <span class="d-none d-sm-block">Upload new photo</span>
+                  <span class="d-none d-sm-block">{{ isUploadingAvatar ? 'Uploading...' : 'Upload new photo' }}</span>
                 </VBtn>
 
                 <input
                   ref="refInputEl"
                   type="file"
                   name="file"
-                  accept=".jpeg,.png,.jpg,GIF"
+                  accept=".jpeg,.png,.jpg,.gif"
                   hidden
                   @input="changeAvatar"
                 >
@@ -198,6 +275,7 @@ const resetAvatar = () => {
                   size="small"
                   color="secondary"
                   variant="tonal"
+                  :disabled="isUploadingAvatar"
                   @click="resetAvatar"
                 >
                   <span class="d-none d-sm-block">Reset</span>
@@ -209,7 +287,7 @@ const resetAvatar = () => {
               </div>
 
               <p class="text-body-1 mb-0">
-                Allowed JPG, GIF or PNG. Max size of 800K
+                Allowed JPG, GIF or PNG. Max size of 5 MB
               </p>
             </form>
           </div>

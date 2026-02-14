@@ -11,6 +11,7 @@ import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 //import 
 import { themeConfig } from '@themeConfig'
+import { useCookie } from '@/@core/composable/useCookie'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
@@ -53,6 +54,32 @@ const rememberMe = ref(false)
 
 const { saveUserPreferences } = useUserPreferences()
 
+const fetchUserAvatar = async (userId) => {
+  try {
+    const {
+      data: avatarData,
+      error
+    } = await axiosApiCall(`/users/${userId}/profile-picture`, {
+      method: 'GET'
+    })
+
+    if (error) {
+      console.warn('Failed to fetch user avatar:', error.message)
+      return null
+    }
+
+    // Format avatar as data URL using base64Image and mediaType from response
+    if (avatarData?.base64Image && avatarData?.mediaType) {
+      return `data:${avatarData.mediaType};base64,${avatarData.base64Image}`
+    }
+
+    return null
+  } catch (error) {
+    console.warn('Error fetching user avatar:', error)
+    return null
+  }
+}
+
 const login = async () => {
 
   //Use axios
@@ -79,7 +106,6 @@ const login = async () => {
     }
     
     const { access_token, refresh_token, userDetails, userPreferences } = loginData
-    userDetails.avatar = `${import.meta.env.BASE_URL ?? '/'}images/avatars/` + userDetails.avatar
     const userAbilityRules = [
         {
           action: 'manage',
@@ -92,11 +118,28 @@ const login = async () => {
 
     useCookie('userAbilityRules').value = userAbilityRules
     ability.update(userAbilityRules)
-    useCookie('userData').value = userDetails
+    
+    // Store reference to userData cookie
+    const userDataCookie = useCookie('userData')
+    userDataCookie.value = userDetails
 
     // ℹ️ Load and apply user preferences (theme customizations, language, etc.)
     if (userPreferences) {
       saveUserPreferences(userPreferences)
+    }
+
+    // Ensure cookies are set before making the next API call
+    await nextTick()
+
+    // Fetch user avatar lazily after successful login
+    if (userDetails?.id) {
+      const avatarBase64 = await fetchUserAvatar(userDetails.id)
+      if (avatarBase64) {
+        // Store avatar in localStorage (cookies have 4KB limit, base64 images are larger)
+        console.log("Fetched user avatar successfully")
+        localStorage.setItem('userAvatar', avatarBase64)
+        console.log("User avatar stored in localStorage")
+      }
     }
 
     // useCookie('accessToken').value = accessToken

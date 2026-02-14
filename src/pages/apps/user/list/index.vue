@@ -214,6 +214,7 @@ async function fetchUsers(){
 const users = computed(() => fetchedUsers.value || []);
 const totalUsers = computed(() => totalFetchedUsers.value);
 
+//TODO: check how we handle addNewUser because this is different from other modules
 const addNewUser = async userData => {
   await $api('/users', {
     method: 'POST',
@@ -226,14 +227,28 @@ const addNewUser = async userData => {
 
 const updateUser = async userData => {
   console.log(JSON.stringify(userData))
-  await customUseApi(`/users/${userData.id}`, {
-    method: 'PUT',
-    body: JSON.stringify(userData),
-    headers: {"Content-Type": 'application/json'}
-  })
+  try {
+    const {
+      data,
+      error,
+    } = await axiosApiCall(`/users/${userData.id}`, {
+      method: 'PUT',
+      body: userData,
+    })
 
-  // Refetch User
-  fetchUsers()
+    if (error) {
+      useSweetAlert.errorMessage('An error occurred: ' + (error.response?.data?.message || error.message))
+      return
+    }
+
+    useSweetAlert.successMessage('User updated successfully')
+    
+    // Refetch User only if successful
+    fetchUsers()
+  } catch (error) {
+    console.error(error)
+    useSweetAlert.errorMessage('An error occurred while updating user')
+  }
 }
 
 const deleteUser = async id => {

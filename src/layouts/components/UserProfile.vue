@@ -7,6 +7,9 @@ const ability = useAbility()
 // TODO: Get type from backend
 const userData = useCookie('userData')
 
+// Get avatar from localStorage (base64 images are too large for cookies)
+const userAvatar = ref(localStorage.getItem('userAvatar'))
+
 const logout = async () => {
 
   // Remove "accessToken" from cookie
@@ -14,6 +17,9 @@ const logout = async () => {
 
   // Remove "userData" from cookie
   userData.value = null
+
+  // Remove avatar from localStorage
+  localStorage.removeItem('userAvatar')
 
   // Redirect to login page
   await router.push('/login')
@@ -80,12 +86,12 @@ const userProfileList = [
     <VAvatar
       size="38"
       class="cursor-pointer"
-      :color="!(userData && userData.avatar) ? 'primary' : undefined"
-      :variant="!(userData && userData.avatar) ? 'tonal' : undefined"
+      :color="!userAvatar ? 'primary' : undefined"
+      :variant="!userAvatar ? 'tonal' : undefined"
     >
       <VImg
-        v-if="userData && userData.avatar"
-        :src="userData.avatar"
+        v-if="userAvatar"
+        :src="userAvatar"
       />
       <VIcon
         v-else
@@ -112,12 +118,12 @@ const userProfileList = [
                   bordered
                 >
                   <VAvatar
-                    :color="!(userData && userData.avatar) ? 'primary' : undefined"
-                    :variant="!(userData && userData.avatar) ? 'tonal' : undefined"
+                    :color="!userAvatar ? 'primary' : undefined"
+                    :variant="!userAvatar ? 'tonal' : undefined"
                   >
                     <VImg
-                      v-if="userData && userData.avatar"
-                      :src="userData.avatar"
+                      v-if="userAvatar"
+                      :src="userAvatar"
                     />
                     <VIcon
                       v-else
